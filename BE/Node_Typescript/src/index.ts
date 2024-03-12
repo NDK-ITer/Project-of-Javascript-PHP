@@ -1,6 +1,16 @@
+import { sequelize } from "./repositories/access/sequelize";
+
 const express = require('express');
+const body = require('body-parser');
+
 const app = express();
-const PORT = process.env.PORT || 3000; // Sử dụng cổng môi trường hoặc cổng 3000 nếu không có
+const PORT = 7000;
+
+sequelize.sync()
+
+app.use(body.json({
+    limit: '2mb'
+}));
 
 app.get('/', (req:any, res:any) => {
     res.send('Hello, world!');
