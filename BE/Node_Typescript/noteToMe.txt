@@ -1,1 +1,3 @@
 npx tsc --init (tự động tạo tsconfig.json)
+
+ngrok (node, php) để chạy server hosting
