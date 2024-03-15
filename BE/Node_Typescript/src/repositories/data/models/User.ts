@@ -1,4 +1,4 @@
-import { Table, Column, Model, PrimaryKey, ForeignKey, HasOne, BelongsTo } from 'sequelize-typescript';
+import { Table, Column, Model,HasOne, BelongsTo } from 'sequelize-typescript';
 import { Role } from './Role';
 import { Employee } from './Employee';
 import { Employer } from './Employer';
@@ -13,7 +13,7 @@ class User extends Model {
 
     @Column
     Email!: string;
-    
+
     @Column
     Born!: Date;
 

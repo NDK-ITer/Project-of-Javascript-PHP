@@ -1,5 +1,6 @@
-import { Table, Column, Model, BelongsTo } from 'sequelize-typescript';
+import { Table, Column, Model, BelongsTo, HasMany } from 'sequelize-typescript';
 import { User } from './User';
+import { RecruitmentArticle } from './RecruitmentArticle';
 
 @Table
 class Employer extends Model {
@@ -20,6 +21,9 @@ class Employer extends Model {
 
     @BelongsTo(() => User, {foreignKey: 'Id'})
     User!: User
+
+    @HasMany(() => RecruitmentArticle)
+    ListRecruitmentArticle!: RecruitmentArticle[];
 }
 
 export { Employer };
