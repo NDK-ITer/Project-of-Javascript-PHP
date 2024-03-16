@@ -1,0 +1,26 @@
+{
+  "development": {
+    "username": "sa",
+    "password": "sa",
+    "database": "FindJob",
+    "host": "NDK-LAPTOP",
+    "port": 1433,
+    "dialect": "mssql"
+  },
+  "test": {
+    "username": "test",
+    "password": null,
+    "database": "database_test",
+    "host": "localhost",
+    "port": 1433,
+    "dialect": "mssql"
+  },
+  "production": {
+    "username": "production",
+    "password": null,
+    "database": "database_production",
+    "host": "localhost",
+    "port": 1433,
+    "dialect": "mssql"
+  }
+}
