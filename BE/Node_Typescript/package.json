@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
+    "generate-models": "sequelize-auto -o ./migrations -d FindJob -h NDK-LAPTOP -u sa -p 1433 -x sa -e mssql",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon"
   },
@@ -19,7 +20,10 @@
     "nodemon": "^3.1.0",
     "reflect-metadata": "^0.2.1",
     "sequelize": "^6.37.1",
+    "sequelize-auto": "^0.8.8",
+    "sequelize-cli": "^6.6.2",
     "sequelize-typescript": "^2.1.6",
+    "tedious": "^18.1.0",
     "ts-node": "^10.9.2"
   },
   "devDependencies": {

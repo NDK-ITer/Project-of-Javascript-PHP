@@ -1,3 +1,29 @@
 npx tsc --init (tự động tạo tsconfig.json)
 
 ngrok (node, php) để chạy server hosting
+
+npx sequelize-cli init (tạo ra một thư mục mới có tên là migrations)
+
+npx sequelize-cli migration:generate --name create_table_name (Trong đó, create_table_name là tên của migration mới.)
+
+sequelize-auto -o "./models" -d <database> -h <host> -u <username> -p <port> -x <password> -e mssql
+{
+    Trong đó:
+
+    -o "./models": Đường dẫn đến thư mục mà bạn muốn lưu trữ mã mô hình.
+    -d <database>: Tên của cơ sở dữ liệu.
+    -h <host>: Tên hoặc địa chỉ IP của máy chủ cơ sở dữ liệu.
+    -u <username>: Tên người dùng của cơ sở dữ liệu.
+    -p <port>: Cổng của máy chủ cơ sở dữ liệu.
+    -x <password>: Mật khẩu của người dùng cơ sở dữ liệu.
+    -e mssql: Chọn loại cơ sở dữ liệu, ở đây là MSSQL.
+}
+
+sequelize-auto -o ./migrations -d FindJob -h NDK-LAPTOP -u sa -p 1433 -x sa -e mssql
+
+npx sequelize-cli db:migrate (Thực hiện migration)
+
+sequelize-cli migration:generate --name migration-name --models-path ./src/repositories/data/models
+{
+    Trong đó, ./src/repositories/data/models là đường dẫn đến thư mục chứa các file model của bạn. 
+}
