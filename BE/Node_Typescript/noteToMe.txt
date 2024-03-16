@@ -23,7 +23,7 @@ sequelize-auto -o ./migrations -d FindJob -h NDK-LAPTOP -u sa -p 1433 -x sa -e m
 
 npx sequelize-cli db:migrate (Thực hiện migration)
 
-sequelize-cli migration:generate --name migration-name --models-path ./src/repositories/data/models
+npx sequelize-cli migration:generate --name migration-name --models-path ./src/repositories/data/models
 {
     Trong đó, ./src/repositories/data/models là đường dẫn đến thư mục chứa các file model của bạn. 
 }
