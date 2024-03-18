@@ -1,34 +1,40 @@
-import { Table, Column, Model,HasOne, BelongsTo } from 'sequelize-typescript';
+import { Table, Column, Model,HasOne, BelongsTo,DataType, ForeignKey } from 'sequelize-typescript';
 import { Role } from './Role';
 import { Employee } from './Employee';
 import { Employer } from './Employer';
 
 @Table({ tableName: 'users' })
-export class User extends Model<User> {
-    @Column({ primaryKey: true })
+export class User extends Model {
+    @Column({ primaryKey: true, type: DataType.STRING })
+    @ForeignKey(() => Employee)
+    @ForeignKey(() => Employer)
     Id!: string;
 
-    @Column
+    @Column({type: DataType.STRING})
     FullName!: string;
 
-    @Column
+    @Column({type: DataType.STRING})
     Email!: string;
 
-    @Column
+    @Column({type: DataType.DATE})
     Born!: Date;
 
-    @Column
+    @Column({type: DataType.STRING})
     Password!: string;
 
-    @Column
+    @Column({type: DataType.BOOLEAN})
     IsBlock!: boolean;
 
-    @Column
+    @Column({type: DataType.DATE})
     CreateDate!: Date;
 
-    @Column
+    @Column({type: DataType.DATE})
     UpdateDate!: Date;
-
+    //
+    @Column({type: DataType.STRING})
+    @ForeignKey(() => Role)
+    RoleId!: string;
+    //
     @HasOne(() => Employee, {foreignKey: 'Id'})
     Employee!: Employee
 
