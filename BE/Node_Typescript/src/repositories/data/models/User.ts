@@ -3,7 +3,7 @@ import { Role } from './Role';
 import { Employee } from './Employee';
 import { Employer } from './Employer';
 
-@Table({ tableName: 'users' })
+@Table({ timestamps: false })
 export class User extends Model {
     @Column({ primaryKey: true, type: DataType.STRING })
     @ForeignKey(() => Employee)

@@ -1,7 +1,7 @@
 import { Table, Column, Model, HasMany, DataType } from 'sequelize-typescript';
 import { RecruitmentArticle } from './RecruitmentArticle';
 
-@Table
+@Table({ timestamps: false })
 class Field extends Model {
     @Column({ primaryKey: true, type: DataType.STRING })
     Id!: string;

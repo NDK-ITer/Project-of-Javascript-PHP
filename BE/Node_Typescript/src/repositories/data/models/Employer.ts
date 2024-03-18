@@ -2,7 +2,7 @@ import { Table, Column, Model, BelongsTo, HasMany, DataType} from 'sequelize-typ
 import { User } from './User';
 import { RecruitmentArticle } from './RecruitmentArticle';
 
-@Table
+@Table({ timestamps: false })
 class Employer extends Model {
     @Column({ primaryKey: true, type: DataType.STRING })
     Id!: string;

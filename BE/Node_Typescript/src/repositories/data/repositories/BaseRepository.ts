@@ -20,14 +20,11 @@ abstract class BaseRepository<T extends Model>{
     }
 
     async update(id: string, data: Partial<T>): Promise<T | null> {
-        // Thực hiện cập nhật dữ liệu
         const [affectedCount] = await this.model.update(data, { where: { id: id as any } });
 
         if (affectedCount === 0) {
-            // Trường hợp không có bản ghi nào được cập nhật, trả về null
             return null;
         } else {
-            // Trường hợp có bản ghi được cập nhật, lấy bản ghi đã được cập nhật và trả về
             const updatedRecord = await this.model.findByPk(id as any);
             return updatedRecord || null;
         }

@@ -1,7 +1,7 @@
 import { Table, Column, Model, HasMany,DataType } from 'sequelize-typescript';
 import { User } from './User';
 
-@Table
+@Table({ timestamps: false })
 class Role extends Model{
     @Column({ primaryKey: true, type: DataType.STRING })
     Id!: string;

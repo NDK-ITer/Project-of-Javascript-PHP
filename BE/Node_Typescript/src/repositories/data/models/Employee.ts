@@ -4,7 +4,7 @@ import { User } from './User';
 import { RecruitmentArticle } from './RecruitmentArticle';
 import { Enjoy } from './Enjoy';
 
-@Table
+@Table({ timestamps: false })
 class Employee extends Model {
     @Column({ primaryKey: true, type: DataType.STRING })
     Id!: string;
