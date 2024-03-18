@@ -1,10 +1,9 @@
-import { Table, Column, Model, PrimaryKey, ForeignKey, HasMany } from 'sequelize-typescript';
+import { Table, Column, Model, HasMany } from 'sequelize-typescript';
 import { RecruitmentArticle } from './RecruitmentArticle';
 
 @Table
 class Field extends Model {
-    @Column
-    @PrimaryKey 
+    @Column({ primaryKey: true })
     Id!: string;
 
     @Column

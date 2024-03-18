@@ -6,11 +6,7 @@ const body = require('body-parser');
 const app = express();
 const PORT = 7000;
 
-ConnectDatabase.authenticate().then(() => {
-    console.log('Database synchronized');
-}).catch((error: any) => {
-    console.error('Error synchronizing database:', error);
-});
+ConnectDatabase()
 
 app.use(body.json({
     limit: '2mb'

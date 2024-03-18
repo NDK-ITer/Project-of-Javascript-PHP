@@ -3,8 +3,8 @@ import { Role } from './Role';
 import { Employee } from './Employee';
 import { Employer } from './Employer';
 
-@Table
-class User extends Model {
+@Table({ tableName: 'users' })
+export class User extends Model<User> {
     @Column({ primaryKey: true })
     Id!: string;
 
@@ -38,5 +38,3 @@ class User extends Model {
     @BelongsTo(() => Role, {foreignKey: 'RoleId'})
     Role!: Role
 }
-
-export { User };

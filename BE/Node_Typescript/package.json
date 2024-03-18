@@ -4,9 +4,11 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "generate-models": "sequelize-auto -o ./migrations -d FindJob -h NDK-LAPTOP -u sa -p 1433 -x sa -e mssql",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon"
+    "start": "nodemon",
+    "migrate:up": "npx sequelize-cli db:migrate",
+    "migrate:undo": "npx sequelize-cli db:migrate:undo",
+    "migrate:auto": " sequelize-auto-migrations --name init"
   },
   "keywords": [],
   "author": "",
@@ -16,18 +18,20 @@
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "express": "^4.18.3",
-    "mssql": "^10.0.2",
+    "mysql2": "^3.9.2",
     "nodemon": "^3.1.0",
     "reflect-metadata": "^0.2.1",
     "sequelize": "^6.37.1",
     "sequelize-auto": "^0.8.8",
+    "sequelize-auto-migrations": "^1.0.3",
     "sequelize-cli": "^6.6.2",
     "sequelize-typescript": "^2.1.6",
-    "tedious": "^18.1.0",
     "ts-node": "^10.9.2"
   },
   "devDependencies": {
+    "@types/sequelize": "^4.28.20",
     "nodemon": "^3.1.0",
+    "sequelize-cli-typescript": "^3.2.0-c",
     "typescript": "^5.4.2"
   }
 }

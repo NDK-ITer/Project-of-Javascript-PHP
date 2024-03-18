@@ -5,11 +5,11 @@ import { RecruitmentArticle } from './RecruitmentArticle';
 @Table
 class DetailRecruitment extends Model {
     @ForeignKey(() => Employee)
-    @Column
+    @Column({ primaryKey: true })
     EmployeeId!: string;
 
     @ForeignKey(() => RecruitmentArticle)
-    @Column
+    @Column({ primaryKey: true })
     RA_Id!: string;
 
     @Column
