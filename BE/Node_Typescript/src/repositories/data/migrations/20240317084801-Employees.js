@@ -9,11 +9,27 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.STRING
       },
+      FullName: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+      Introduction: {
+        type: Sequelize.STRING,
+        allowNull: true
+      },
       Certification: {
         type: Sequelize.STRING,
         allowNull: true
       },
       CV: {
+        type: Sequelize.STRING,
+        allowNull: true
+      },
+      Gender:{
+        type: Sequelize.STRING,
+        allowNull: true
+      },
+      Address:{
         type: Sequelize.STRING,
         allowNull: true
       },

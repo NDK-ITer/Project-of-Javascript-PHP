@@ -11,13 +11,7 @@ export class User extends Model {
     Id!: string;
 
     @Column({type: DataType.STRING})
-    FullName!: string;
-
-    @Column({type: DataType.STRING})
     Email!: string;
-
-    @Column({type: DataType.DATE})
-    Born!: Date;
 
     @Column({type: DataType.STRING})
     Password!: string;

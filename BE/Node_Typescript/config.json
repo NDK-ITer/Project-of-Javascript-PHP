@@ -5,10 +5,7 @@
     "database": "FindJob",
     "host": "localhost",
     "port": 3306,
-    "dialect": "mysql",
-    "dialectOptions": {
-      "createDatabaseIfNotExist": true
-    }
+    "dialect": "mysql"
   },
   "test": {
     "username": "test",

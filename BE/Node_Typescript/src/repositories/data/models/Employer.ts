@@ -8,6 +8,9 @@ class Employer extends Model {
     Id!: string;
 
     @Column({type: DataType.STRING})
+    CompanyName!: string;
+
+    @Column({type: DataType.STRING})
     Logo!: string;
 
     @Column({type: DataType.STRING})

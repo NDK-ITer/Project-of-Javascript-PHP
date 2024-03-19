@@ -9,6 +9,12 @@ class Employee extends Model {
     @Column({ primaryKey: true, type: DataType.STRING })
     Id!: string;
 
+    @Column({type: DataType.STRING})
+    FullName!: string;
+
+    @Column({type: DataType.STRING})
+    Introduction!: string;
+
     @Column({ allowNull: true,type: DataType.STRING })
     Certification!: string;
 
@@ -17,6 +23,12 @@ class Employee extends Model {
 
     @Column({type: DataType.DATE})
     Born!: Date;
+
+    @Column({type: DataType.STRING})
+    Gender!: string;
+
+    @Column({type: DataType.STRING})
+    Address!: string;
 
     @BelongsTo(() => Field, { foreignKey: 'FieldId' })
     Field!: Field;

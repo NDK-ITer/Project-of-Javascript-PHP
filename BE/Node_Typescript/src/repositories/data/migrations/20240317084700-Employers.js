@@ -9,21 +9,25 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.STRING
       },
+      CompanyName: {
+        allowNull: true,
+        type: Sequelize.STRING
+      },
       Logo: {
         type: Sequelize.STRING,
         allowNull: false
       },
       Description: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: true
       },
       Hotline: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: true
       },
       Address: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: true
       },
       UserId: {
         type: Sequelize.STRING,

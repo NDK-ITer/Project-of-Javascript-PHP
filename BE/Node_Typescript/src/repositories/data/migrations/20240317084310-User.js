@@ -9,16 +9,8 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.STRING
       },
-      FullName: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
       Email: {
         type: Sequelize.STRING,
-        allowNull: false
-      },
-      Born: {
-        type: Sequelize.DATE,
         allowNull: false
       },
       Password: {
