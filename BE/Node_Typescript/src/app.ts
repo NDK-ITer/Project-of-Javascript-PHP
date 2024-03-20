@@ -1,6 +1,7 @@
 import { ConnectDatabase } from "./repositories/access/ConnectDatabase";
 import dotenv from 'dotenv';
 import cors from 'cors';
+import { publicPath } from "./constants";
 
 import UOWService from "./repositories/application/services/UOWService";
 
@@ -25,9 +26,11 @@ app.use(body.json({
 
 app.get('/', async (req: any, res: any) => {
     const uow = new UOWService()
-    const result = await uow.UserService.GetAll()
+    const result = await uow.RoleService.GetAll()
     res.json(result);
 });
+
+app.use('/', express.static(publicPath));
 
 app.listen(port, () => {
     console.log(`http://localhost:${port}/`);

@@ -7,11 +7,23 @@ module.exports = {
       Id: {
         allowNull: false,
         primaryKey: true,
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        references: {
+          model: 'Users',
+          key: 'Id'
+        }
       },
       FullName: {
         type: Sequelize.STRING,
         allowNull: false
+      },
+      Avatar: {
+        type: Sequelize.STRING,
+        allowNull: true
+      },
+      PhoneNumber: {
+        type: Sequelize.STRING,
+        allowNull: true
       },
       Introduction: {
         type: Sequelize.STRING,
@@ -42,14 +54,6 @@ module.exports = {
         allowNull: false,
         references: {
           model: 'Fields',
-          key: 'Id'
-        }
-      },
-      UserId: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        references: {
-          model: 'Users',
           key: 'Id'
         }
       }

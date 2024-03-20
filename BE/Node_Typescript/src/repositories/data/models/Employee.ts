@@ -13,6 +13,12 @@ class Employee extends Model {
     FullName!: string;
 
     @Column({type: DataType.STRING})
+    PhoneNumber!: string;
+
+    @Column({type: DataType.STRING})
+    Avatar!: string;
+
+    @Column({type: DataType.STRING})
     Introduction!: string;
 
     @Column({ allowNull: true,type: DataType.STRING })
