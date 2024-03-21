@@ -4,32 +4,43 @@ namespace App\Services;
 
 use App\Helpers\PopulateRelations;
 use App\Models\User;
+use DateTime;
 use Exception;
 use Illuminate\Http\Request;
 use Ramsey\Uuid\Uuid;
 
 class UserService
 {
-    public static function get(Request $request = null, $id = null)
+
+    public static function get_data(){
+        $query = User::query();
+        return $query->get();;
+    }
+
+    public static function get(array $data = [], $id = null)
     {
+
         try {
+            $data = $data['data'] ?? $data;
             $query = User::query();
-            $relations = $request->input('populate');
+            $relations = $data['populate'] ?? '';
             $model =  $query->getModel();
 
             $query = PopulateRelations::populateRelations($query, $relations, $model);
 
 
+            if (!$id) {
 
-            if ($id === null) {
-                $perpage  = $request->has('per_page') ? $request->input('per_page') : 10;
-                $query = $query->paginate($perpage);
-                //return $query->items();
+                // $perpage  = $data['per_page'] ?? 10;
+                // $query = $query->paginate($perpage);
 
+                $query = $query->get();
                 $data = [
                     'status' => 200,
-                    'message' => "Get all data successfully",
-                    'users' => $query,
+                    'mess' => "Get all data successfully",
+                    'data' => [
+                        "users" => $query
+                    ],
 
                 ];
             } else {
@@ -38,14 +49,18 @@ class UserService
 
                     $data = [
                         'status' => 200,
-                        'message' => "Get data successfully",
-                        'users' => $query,
+                        'mess' => "Get data successfully",
+                        'data' => [
+                            "users" => $query
+                        ],
                     ];
                 } else {
                     $data = [
                         'status' => 404,
-                        'message' => "Data not found",
-                        'users' => $query,
+                        'mess' => "Data not found",
+                        'data' => [
+                            "users" => $query
+                        ],
                     ];
                 }
             }
@@ -55,19 +70,20 @@ class UserService
 
             $data = [
                 'status' => $e->getCode(),
-                'message' => $e->getMessage(),
+                'mess' => $e->getMessage(),
             ];
 
             return response()->json($data, $e->getCode());
         }
     }
 
-    public static function upload(Request $request, $id = null)
+
+    public static function upload(array $data, $id = null)
     {
 
         try {
 
-            $validator = (new User())->validate($request);
+            $validator = (new User())->validate($data);
 
             if ($validator != null) {
                 return response()->json($validator);
@@ -76,28 +92,29 @@ class UserService
             if ($id === null) {
                 $user = new User;
                 //$user->Id = Str::uuid()->toString();
-                $message = 'Data update successfully';
+                $mess = 'Data update successfully';
             } else {
                 $user = User::find($id);
-                $message = 'Data uploaded successfully';
+                $mess = 'Data uploaded successfully';
             }
 
-            $user->Name = $request->Name;
-            $user->FullName = $request->FullName;
-            $user->Email = $request->Email;
-            $user->Password = $request->Password;
-            $user->Born = $request->Born;
-            $user->IsBlock = $request->IsBlock;
-            $user->role_id = '97fd62a1-000e-495f-b906-27dcce86f7d4';
-            // $user->role_id = $request->role_id;
+            $user->FullName =  $data['FullName'] ?? $user->FullName;
+            $user->Email = $data['Email'] ?? $user->Email;
+            $user->Password = $data['Password'] ?? $user->Password;
+            $user->Born = $data['Born'] ?? $user->Born;
+            $user->IsBlock = $data['IsBlock'] ?? 0;
+            $user->role_id = $data['RoleId'] ?? '97fd62a1-000e-495f-b906-27dcce86f7d4';
+            // $user->role_id = $data['RoleId'] ;
             $user->save();
 
-            $users = RoleService::get($request);
+            $users = UserService::get_data();
 
             $data = [
                 'status' => 200,
-                'message' => $message,
-                'data' => $users
+                'mess' => $mess,
+                'data' => [
+                    "users" => $users
+                ],
             ];
 
             return $data;
@@ -105,7 +122,7 @@ class UserService
 
             $data = [
                 'status' => $e->getCode(),
-                'message' => $e->getMessage(),
+                'mess' => $e->getMessage(),
             ];
 
             return response()->json($data, $e->getCode());
@@ -118,17 +135,19 @@ class UserService
 
         if ($user) {
             $user->delete();
-            $user = UserService::get($request);
+            $users = UserService::get_data();
 
             $data = [
                 'status' => 200,
-                'message' => "Data deleted successfully",
-                'data' => $user
+                'mess' => "Data deleted successfully",
+                'data' => [
+                    "users" => $users
+                ],
             ];
         } else {
             $data = [
                 'status' => 404,
-                'message' => "Data not found",
+                'mess' => "Data not found",
             ];
         }
 

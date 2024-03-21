@@ -37,12 +37,11 @@ class User extends Model
     ];
 
     protected $rules = [
-        'Name' => 'required',
         'FullName' => 'required',
         'Email' => 'unique:users|required|email',
         'Password' => 'required|min:8',
-        'Born' => 'required|numeric',
-        'IsBlock' => 'required'
+        'Born' => 'required|date_format:Y-m-d',
+        // 'IsBlock' => 'required'
     ];
 
     public function role(){

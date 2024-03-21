@@ -68,7 +68,7 @@ class RoleService
 
         try {
 
-            $validator = (new Role())->validate($request);
+            $validator = (new Role())->validate($request->all());
 
             if ($validator != null) {
                 return response()->json($validator);
