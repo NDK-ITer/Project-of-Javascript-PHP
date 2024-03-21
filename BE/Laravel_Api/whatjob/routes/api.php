@@ -33,7 +33,8 @@ use Illuminate\Support\Facades\Route;
 
 // });
 Route::post('login', [AuthController::class, "login"]);
-
+Route::get('check', [AuthController::class, "checkToken"]);
+Route::get('logout', [AuthController::class, "logout"]);
 
 Route::get('roles', [RoleController::class, "get"]);
 Route::get('roles/{id}', [RoleController::class, "show"]);

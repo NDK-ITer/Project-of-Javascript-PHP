@@ -5,11 +5,13 @@ namespace App\Models;
 use App\Helpers\Base64Url;
 use App\Helpers\RelationshipsTrait;
 use App\Helpers\ValidatesTrait;
+use Firebase\JWT\JWT;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Ramsey\Uuid\Uuid;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Model
@@ -24,8 +26,10 @@ class User extends Model
         'Email',
         'Password',
         'Born',
+        'IsToken',
         'IsBlock',
-        'role'
+        'role',
+        'token_id'
     ];
 
     protected $hidden = [
@@ -47,59 +51,19 @@ class User extends Model
 
     public function generateToken()
     {
-        $header = [
-            'alg' => 'HS256',
-            'typ' => 'JWT',
+        $headers = [
+            'token_id' => Uuid::uuid4()->toString(),
         ];
 
         $payload = [
-            'iss' => config('jwt.iss'),
-            'aud' => config('jwt.aud'),
-            'iat' => time(),
-            'nbf' => time() + config('jwt.nbf'),
-            'exp' => time() + config('jwt.exp'),
-            'sub' => $this->id,
+            'id' => $this->id,
+            'email' => $this->Email,
+            'exp' => time() + env('JWT_TIME_EXP') // Token expiration time (in seconds)
         ];
 
+        $token = JWT::encode($payload, env('JWT_SECRET'), 'HS512', null, $headers);
 
 
-        $segments = [
-            Base64Url::base64url_encode(json_encode($header)),
-            Base64Url::base64url_encode(json_encode($payload)),
-        ];
-
-        $signing_input = implode('.', $segments);
-
-        $signature = hash_hmac('sha256', $signing_input, config('jwt.secret'), true);
-
-        $segments[] = Base64Url::base64url_encode($signature);
-
-        return implode('.', $segments);
-    }
-
-
-    public function verifyToken($token)
-    {
-        $segments = explode('.', $token);
-
-        if (count($segments) !== 3) {
-            return false;
-        }
-
-        $header = json_decode(Base64Url::base64url_decode($segments[0]));
-        $payload = json_decode(Base64Url::base64url_decode($segments[1]));
-        $signature = Base64Url::base64url_decode($segments[2]);
-
-        $signing_input = implode('.', [$segments[0], $segments[1]]);
-
-        if ($signature !== hash_hmac('sha256', $signing_input, config('jwt.secret'), true)) {
-            return false;
-        }
-
-        if ($payload->exp < time()) {
-            return false;
-        }
-
-        return true;
+        return $token;
     }
 }

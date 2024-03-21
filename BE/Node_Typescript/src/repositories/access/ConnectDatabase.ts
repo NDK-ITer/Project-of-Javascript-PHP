@@ -10,9 +10,9 @@ import { DetailRecruitment } from '../data/models/DetailRecruitment';
 
 const ConnectDatabase = new Sequelize({
     database: 'FindJob',
-    username:'sa',
-    password: 'sa',
-    host: 'NDK-LAPTOP',
+    username:'root',
+    password: '',
+    host: 'localhost',
     port: 1433,
     dialect: 'mssql',
 });

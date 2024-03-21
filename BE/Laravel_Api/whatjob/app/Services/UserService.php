@@ -6,6 +6,7 @@ use App\Helpers\PopulateRelations;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
+use Ramsey\Uuid\Uuid;
 
 class UserService
 {
@@ -132,5 +133,31 @@ class UserService
         }
 
         return response()->json($data, 200);
+    }
+
+    public static function update_expired(User $user, $token)
+    {
+        try {
+            $token_id = AccountService::getIdToken($token);
+            $user->token_id = $token_id;
+            $user->save();
+            return true;
+        } catch (Exception $ex) {
+            echo $ex;
+            return false;
+        }
+    }
+
+    public static function delete_token(User $user)
+    {
+        try {
+            $token_id = '';
+            $user->token_id = $token_id;
+            $user->save();
+            return true;
+        } catch (Exception $ex) {
+            echo $ex;
+            return false;
+        }
     }
 }

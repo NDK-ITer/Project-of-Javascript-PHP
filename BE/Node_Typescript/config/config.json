@@ -1,26 +1,26 @@
 {
   "development": {
-    "username": "sa",
-    "password": "sa",
-    "database": "FindJob",
-    "host": "NDK-LAPTOP",
-    "port": 1433,
-    "dialect": "mssql"
+    "username": "root",
+    "password": null,
+    "database": "database_development",
+    "host": "127.0.0.1",
+    "dialect": "mysql",
+    "modelPaths": ["./src/repositories/data/models"]
   },
   "test": {
-    "username": "test",
+    "username": "root",
     "password": null,
     "database": "database_test",
-    "host": "localhost",
-    "port": 1433,
-    "dialect": "mssql"
+    "host": "127.0.0.1",
+    "dialect": "mysql",
+    "modelPaths": ["./src/repositories/data/models"]
   },
   "production": {
-    "username": "production",
+    "username": "root",
     "password": null,
     "database": "database_production",
-    "host": "localhost",
-    "port": 1433,
-    "dialect": "mssql"
+    "host": "127.0.0.1",
+    "dialect": "mysql",
+    "modelPaths": ["./src/repositories/data/models"]
   }
 }
