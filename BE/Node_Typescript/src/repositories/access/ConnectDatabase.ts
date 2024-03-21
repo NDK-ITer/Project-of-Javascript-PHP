@@ -7,23 +7,35 @@ import { Enjoy } from '../data/models/Enjoy';
 import { Employer } from '../data/models/Employer';
 import { Employee } from '../data/models/Employee';
 import { DetailRecruitment } from '../data/models/DetailRecruitment';
+const config = require('../../../config.json');
 
-const ConnectDatabase = new Sequelize({
-    database: 'FindJob',
-    username:'root',
-    password: '',
-    host: 'localhost',
-    port: 1433,
-    dialect: 'mssql',
+const sequelize = new Sequelize(config.development.database, config.development.username, config.development.password, {
+    host: config.development.host,
+    port: config.development.port,
+    dialect: 'mysql'
 });
 
-ConnectDatabase.addModels([User]);
-ConnectDatabase.addModels([Role]);
-ConnectDatabase.addModels([RecruitmentArticle]);
-ConnectDatabase.addModels([Field]);
-ConnectDatabase.addModels([Enjoy]);
-ConnectDatabase.addModels([Employer]);
-ConnectDatabase.addModels([Employee]);
-ConnectDatabase.addModels([DetailRecruitment]);
+const models = [
+    User,
+    Role,
+    RecruitmentArticle,
+    Field,
+    Enjoy,
+    Employer,
+    Employee,
+    DetailRecruitment
+];
+
+sequelize.addModels(models);
+
+
+let ConnectDatabase = async () => {
+    await sequelize.authenticate().then(() => {
+        console.log('Database synchronized');
+    }).catch((error: any) => {
+        console.error('Error synchronizing database:', error);
+    });
+}
+
 
 export { ConnectDatabase };

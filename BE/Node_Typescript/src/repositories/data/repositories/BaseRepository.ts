@@ -1,3 +1,4 @@
+import { FindOptions } from 'sequelize';
 import { Model, ModelCtor } from 'sequelize-typescript';
 
 abstract class BaseRepository<T extends Model>{
@@ -7,30 +8,42 @@ abstract class BaseRepository<T extends Model>{
         this.model = model;
     }
 
-    async create(data: any): Promise<T> {
+    async create(data: any): Promise<T | null> {
         return await this.model.create(data);
     }
 
-    async findAll(): Promise<T[]> {
-        return await this.model.findAll();
+    async getAll(include?: FindOptions['include']): Promise<T[]> {
+        return await this.model.findAll({ include });
     }
 
-    async findById(id: string): Promise<T | null> {
-        return await this.model.findByPk(id);
+    async findById(id: string, include?: FindOptions['include']): Promise<T | null> {
+        return await this.model.findByPk(id, { include });
     }
 
     async update(id: string, data: Partial<T>): Promise<T | null> {
-        // Thực hiện cập nhật dữ liệu
         const [affectedCount] = await this.model.update(data, { where: { id: id as any } });
-
         if (affectedCount === 0) {
-            // Trường hợp không có bản ghi nào được cập nhật, trả về null
             return null;
         } else {
-            // Trường hợp có bản ghi được cập nhật, lấy bản ghi đã được cập nhật và trả về
             const updatedRecord = await this.model.findByPk(id as any);
             return updatedRecord || null;
         }
+    }
+
+    async findByProperties(properties: Partial<T>, include?: FindOptions['include']): Promise<T | null> {
+        const whereClause: any = {};
+        for (const key in properties) {
+            whereClause[key] = properties[key];
+        }
+        return await this.model.findOne({ where: whereClause, include });
+    }
+
+    async filter(filterObj: Partial<T>, include?: FindOptions['include']): Promise<T[]> {
+        const whereClause: any = {};
+        for (const key in filterObj) {
+            whereClause[key] = filterObj[key];
+        }
+        return await this.model.findAll({ where: whereClause, include });
     }
 
     async delete(id: string): Promise<boolean> {

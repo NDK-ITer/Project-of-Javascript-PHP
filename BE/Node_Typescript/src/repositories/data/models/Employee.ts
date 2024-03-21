@@ -1,24 +1,41 @@
-import { Table, Column, Model, ForeignKey, BeforeSave, BelongsTo, BelongsToMany } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, BeforeSave, BelongsTo, BelongsToMany } from 'sequelize-typescript';
 import { Field } from './Field';
 import { User } from './User';
 import { RecruitmentArticle } from './RecruitmentArticle';
 import { Enjoy } from './Enjoy';
 
-@Table
+@Table({ timestamps: false })
 class Employee extends Model {
-    @Column({ primaryKey: true })
+    @Column({ primaryKey: true, type: DataType.STRING })
     Id!: string;
 
-    @Column({ allowNull: true })
+    @Column({type: DataType.STRING})
+    FullName!: string;
+
+    @Column({type: DataType.STRING})
+    PhoneNumber!: string;
+
+    @Column({type: DataType.STRING})
+    Avatar!: string;
+
+    @Column({type: DataType.STRING})
+    Introduction!: string;
+
+    @Column({ allowNull: true,type: DataType.STRING })
     Certification!: string;
 
-    @Column({ allowNull: true })
+    @Column({ allowNull: true,type: DataType.STRING })
     CV!: string;
 
-    @Column
+    @Column({type: DataType.DATE})
     Born!: Date;
 
-    @Column
+    @Column({type: DataType.STRING})
+    Gender!: string;
+
+    @Column({type: DataType.STRING})
+    Address!: string;
+
     @BelongsTo(() => Field, { foreignKey: 'FieldId' })
     Field!: Field;
 
