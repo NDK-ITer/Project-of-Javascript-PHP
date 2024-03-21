@@ -1,4 +1,4 @@
-import { Table, Column, Model, DataType, BeforeSave, BelongsTo, BelongsToMany } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, BeforeSave, BelongsTo, BelongsToMany, ForeignKey } from 'sequelize-typescript';
 import { Field } from './Field';
 import { User } from './User';
 import { RecruitmentArticle } from './RecruitmentArticle';
@@ -7,6 +7,7 @@ import { Enjoy } from './Enjoy';
 @Table({ timestamps: false })
 class Employee extends Model {
     @Column({ primaryKey: true, type: DataType.STRING })
+    @ForeignKey(() => User)
     Id!: string;
 
     @Column({type: DataType.STRING})

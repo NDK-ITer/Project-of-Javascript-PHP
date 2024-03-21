@@ -8,16 +8,12 @@ abstract class BaseRepository<T extends Model>{
         this.model = model;
     }
 
-    async create(data: any): Promise<T | null> {
-        return await this.model.create(data);
+    async create(data: any, include?: FindOptions['include']): Promise<T | null> {
+        return await this.model.create(data, { include });
     }
 
-    async getAll(include?: FindOptions['include']): Promise<T[]> {
-        return await this.model.findAll({ include });
-    }
-
-    async findById(id: string, include?: FindOptions['include']): Promise<T | null> {
-        return await this.model.findByPk(id, { include });
+    async getAll(): Promise<T[]> {
+        return await this.model.findAll();
     }
 
     async update(id: string, data: Partial<T>): Promise<T | null> {
@@ -30,20 +26,24 @@ abstract class BaseRepository<T extends Model>{
         }
     }
 
-    async findByProperties(properties: Partial<T>, include?: FindOptions['include']): Promise<T | null> {
+    async getById(id: string, include?: FindOptions['include']): Promise<T | null> {
+        return await this.model.findByPk(id, { include });
+    }
+
+    async find(properties: Partial<T>): Promise<T | null> {
         const whereClause: any = {};
         for (const key in properties) {
             whereClause[key] = properties[key];
         }
-        return await this.model.findOne({ where: whereClause, include });
+        return await this.model.findOne({ where: whereClause });
     }
-
-    async filter(filterObj: Partial<T>, include?: FindOptions['include']): Promise<T[]> {
+    
+    async filter(filterObj: Partial<T>): Promise<T[]> {
         const whereClause: any = {};
         for (const key in filterObj) {
             whereClause[key] = filterObj[key];
         }
-        return await this.model.findAll({ where: whereClause, include });
+        return await this.model.findAll({ where: whereClause });
     }
 
     async delete(id: string): Promise<boolean> {

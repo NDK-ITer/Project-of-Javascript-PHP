@@ -1,6 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
 import BaseService from "../BaseService";
 import { Authenticate } from '../../libs/Authenticate';
+import { Employee } from '../../../data/models/Employee';
+import { Employer } from '../../../data/models/Employer';
 
 export default class UserService extends BaseService {
 
@@ -11,11 +13,14 @@ export default class UserService extends BaseService {
     public async Create(data: {
         email: string,
         password: string,
+        roleId: string,
         employee?: {
             fullName: string,
+            gender: string,
             born: Date,
             address: string,
             phoneNumber: string,
+            fieldId: string
             avatar: string,
         },
         employer?: {
@@ -25,27 +30,46 @@ export default class UserService extends BaseService {
             logo: string
         }
     }): Promise<any> {
-        const role: any = this.ImportRole()
+        const role: any = await this.ImportRole()
+        const user: any = await this.uow.UserRepository.find({Email: data.email})
+        if(user){return{
+            state: 1,
+            mess: `email: ${data.email} is exist`
+        }}
         let newUser: any = {
             Id: uuidv4().toString(),
             Email: data.email,
-            Password: Authenticate.HashingPassword(data.password),
+            Password: await Authenticate.HashingPassword(data.password),
             IsBlock: false,
             CreateDate: new Date(),
             UpdateDate: new Date(),
         }
-        if (data.employee != null) {
-            newUser.RoleId = role.Employee
+        if (data.employee != null && data.roleId == role.Employee.id) {
+            newUser.RoleId = role.Employee.id
             newUser.Employee = {
                 Id: newUser.Id,
                 FullName: data.employee.fullName,
                 Born: data.employee.born,
+                Gender: data.employee.gender,
+                FieldId: data.employee.fieldId,
                 Address: data.employee.address,
                 PhoneNumber: data.employee.phoneNumber,
                 Avatar: data.employee.avatar
             }
-        } else if (data.employer != null) {
-            newUser.RoleId = role.Employer
+            const result = await this.uow.UserRepository.create(newUser, Employee);
+            if (!result) {
+                return {
+                    state: 0,
+                    mess: 'some error when create user'
+                }
+            }
+            return {
+                state: 1,
+                data: result
+            }
+
+        } else if (data.employer != null && data.roleId == role.Employer.id) {
+            newUser.RoleId = role.Employer.id
             newUser.Employer = {
                 Id: newUser.Id,
                 CompanyName: data.employer.companyName,
@@ -53,22 +77,23 @@ export default class UserService extends BaseService {
                 Hotline: data.employer.hotline,
                 Address: data.employer.address
             }
+            const result = await this.uow.UserRepository.create(newUser, Employer);
+            if (!result) {
+                return {
+                    state: 0,
+                    mess: 'some error when create user'
+                }
+            }
+            return {
+                state: 1,
+                data: result
+            }
+
         } else {
             return {
                 state: 0,
                 mess: 'cannot create new user !'
             }
-        }
-        const result = await this.uow.UserRepository.create(newUser);
-        if (!result) {
-            return {
-                state: 0,
-                mess: 'some error when create user'
-            }
-        }
-        return {
-            state: 1,
-            data: result
         }
     }
 
@@ -77,7 +102,7 @@ export default class UserService extends BaseService {
         password: string
     }): Promise<any> {
         const role = await this.ImportRole()
-        const user: any = await this.uow.UserRepository.findByProperties({ Email: data.email })
+        const user = await this.uow.UserRepository.find({ Email: data.email })
         if (!user) {
             return {
                 state: 0,
@@ -96,24 +121,26 @@ export default class UserService extends BaseService {
             id: user.Id
         }, secretKey)
 
-        if (jwt) {
+        if (!jwt) {
             return {
                 state: 0,
                 mess: `Error get jwt`
             }
         }
         let userData: any
-        if (user.RoleId == role.Employee) {
-            const parts = user.Employee.FullName.split(' ');
+        if (user.RoleId == role.Employee.id) {
+            const employee:any = await this.uow.EmployeeRepository.getById(user.Id)
+            const parts = employee.FullName.split(' ');
             const lastName = parts[parts.length - 1];
             userData = {
                 displayName: lastName,
-                avatar: user.Employee.Avatar
+                avatar: employee.Avatar
             }
-        } else if (user.RoleId == role.Employer) {
+        } else if (user.RoleId == role.Employer.id) {
+            const employer:any = await this.uow.EmployerRepository.getById(user.Id)
             userData = {
-                displayName: user.Employer.CompanyName,
-                avatar: user.Employer.Logo
+                displayName: employer.CompanyName,
+                avatar: employer.Logo
             }
         } else {
             userData = {
@@ -128,7 +155,38 @@ export default class UserService extends BaseService {
     }
 
     public async GetById(id: string): Promise<any> {
+        const user = await this.uow.UserRepository.getById(id)
+        if (!user) {
+            return {
+                state: 0,
+                mess: `not found user with id: ${id}`
+            }
+        }
+        const role = await this.ImportRole()
+        if (user.RoleId == role.Employee.id) {
+            return {
+                state: 1,
+                data: {
+                    id: user.Id,
+                    avatar: user.Employee.Avatar,
+                    fullName: user.Employee.FullName,
+                    born: user.Employee.Born,
+                    gender: user.Employee.Gender,
+                    email: user.Email,
+                    phoneNumber: user.Employee.PhoneNumber,
+                    address: user.Employee.Address
+                }
+            }
+        } else if (user.RoleId == role.Employer.id) {
+            return {
+                state: 1,
+                data: {
+                    id: user.Id,
+                }
+            }
+        } else {
 
+        }
     }
 
     public async GetAll(): Promise<any> {
