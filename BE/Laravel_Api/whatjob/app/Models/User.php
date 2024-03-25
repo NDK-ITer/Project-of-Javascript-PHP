@@ -21,7 +21,6 @@ class User extends Model
 
     protected $fillable = [
         //'id',
-        'Name',
         'FullName',
         'Email',
         'Password',
@@ -40,7 +39,7 @@ class User extends Model
         'FullName' => 'required',
         'Email' => 'unique:users|required|email',
         'Password' => 'required|min:8',
-        'Born' => 'required|date_format:Y-m-d',
+        // 'Born' => 'date_format:Y-m-d',
         // 'IsBlock' => 'required'
     ];
 

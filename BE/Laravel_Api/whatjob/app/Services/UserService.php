@@ -98,12 +98,12 @@ class UserService
                 $mess = 'Data uploaded successfully';
             }
 
-            $user->FullName =  $data['FullName'] ?? $user->FullName;
-            $user->Email = $data['Email'] ?? $user->Email;
-            $user->Password = $data['Password'] ?? $user->Password;
-            $user->Born = $data['Born'] ?? $user->Born;
-            $user->IsBlock = $data['IsBlock'] ?? 0;
-            $user->role_id = $data['RoleId'] ?? '97fd62a1-000e-495f-b906-27dcce86f7d4';
+            $user->FullName =  $data['fullName'] ?? $user->FullName;
+            $user->Email = $data['email'] ?? $user->Email;
+            $user->Password = $data['password'] ?? $user->Password;
+            $user->Born = $data['born'] ?? $user->Born;
+            $user->IsBlock = $data['isBlock'] ?? 0;
+            $user->role_id = $data['roleId'] ?? '97fd62a1-000e-495f-b906-27dcce86f7d4';
             // $user->role_id = $data['RoleId'] ;
             $user->save();
 

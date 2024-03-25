@@ -17,8 +17,8 @@ class AccountService
 
     public static function login(array $credentials)
     {
-        $user = User::where('Email', $credentials['Email'])->first();
-        if (!$user || ($credentials['Password'] != $user->Password)) {
+        $user = User::where('Email', $credentials['email'])->first();
+        if (!$user || ($credentials['password'] != $user->Password)) {
             return response()->json([
                 'error' => 'Invalid credentials'
             ], 401);
@@ -38,6 +38,66 @@ class AccountService
             //'test' => $ds
         ]);
     }
+    public static function readable_random_string($length = 6)
+    {
+        $string = '';
+        $vowels = array("a", "e", "i", "o", "u");
+        $consonants = array(
+            'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm',
+            'n', 'p', 'r', 's', 't', 'v', 'w', 'x', 'y', 'z'
+        );
+
+        $max = $length / 2;
+        for ($i = 1; $i <= $max; $i++) {
+            $string .= $consonants[rand(0, 19)];
+            $string .= $vowels[rand(0, 4)];
+        }
+
+        return $string;
+    }
+    public static function register(array $input)
+    {
+
+        $validator = (new User())->validate($input);
+
+        if ($validator != null) {
+            return response()->json($validator);
+        }
+
+        $ds = array();
+        $ds['FullName'] = $input['fullName'] ?? AccountService::readable_random_string();
+        $ds['Email'] = $input['email'];
+        $ds['Password'] = $input['password'];
+        $ds['token_id'] = '';
+        $ds['Born'] = $input['born'] ?? '';
+        $ds['IsBlock'] = 0;
+        $user = User::create($ds);
+        $user->role_id = $input['roleId'] ?? '97fd62a1-000e-495f-b906-27dcce86f7d4';
+        $user->save();
+        if (!$user) {
+            return response()->json([
+                'result' => false,
+                'message' => 'Cannot register user'
+            ], 500);
+        }
+
+        $token = $user->generateToken();
+        $result = UserService::update_expired($user, $token);
+        if (!$result) {
+            return response()->json([
+                'result' => false,
+                'message' => 'Cannot create token'
+            ], 500);
+        }
+
+        return response()->json([
+            'token' => $token,
+            'user' => $user
+        ]);
+    }
+
+
+
 
     public static function logout(String $token)
     {
@@ -52,7 +112,7 @@ class AccountService
         list($headersB64, $payloadB64, $sig) = explode('.', $token);
         $decoded = json_decode(base64_decode($headersB64), true);
 
-        if($decoded["token_id"] != $user->token_id){
+        if ($decoded["token_id"] != $user->token_id) {
             return response()->json([
                 'status' => 404,
                 'message' => "Expired tokens",
@@ -70,7 +130,7 @@ class AccountService
         return response()->json([
             'status' => 'success',
             'message' => 'Successfully logged out',
-        ],200);
+        ], 200);
     }
 
     public static function getIdToken(String $token)

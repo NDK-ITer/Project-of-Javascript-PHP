@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Helpers\PopulateRelations;
+use App\Models\Field;
 use App\Models\Role;
 use Exception;
 use Illuminate\Http\Request;
@@ -10,14 +11,16 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
-class RoleService
+class FieldService
 {
-    public static function get(Request $request = null, $id = null)
+    public static function get(array $data = null, $id = null)
     {
 
         try {
-            $query = Role::query();
-            $relations = $request->input('populate');
+
+            $data = $data['data'] ?? $data;
+            $query = Field::query();
+            $relations = $data['populate'] ?? '';
             $model =  $query->getModel();
 
             $query = PopulateRelations::populateRelations($query, $relations, $model);
@@ -27,14 +30,16 @@ class RoleService
                 // $query = $query->paginate($perpage);
                 //return $query->items();
 
-                $query = $query->get();
+                // $query = $query->get();
 
+                $query = $query->get();
                 $data = [
                     'status' => 200,
-                    'message' => "Get all data successfully",
-                    'roles' => collect($query)->keyBy('NormalizeName')->mapWithKeys(function ($item) {
-                        return [$item['NormalizeName'] => $item];
-                    })->toArray(),
+                    'mess' => "Get all data successfully",
+                    'data' => [
+                        "fields" => $query
+                    ],
+
                 ];
             } else {
                 $query = $query->find($id);
@@ -49,14 +54,14 @@ class RoleService
                     $data = [
                         'status' => 404,
                         'message' => "Data not found",
-                        'roles' => $query,
+                        'data' => $query,
                     ];
                 }
             }
 
             return response()->json($data, 200);
         } catch (Exception $e) {
-
+            echo $e->getMessage();
             $data = [
                 'status' => $e->getCode(),
                 'message' => $e->getMessage(),
@@ -66,37 +71,40 @@ class RoleService
         }
     }
 
-    public static function upload(Request $request, $id = null)
+    public static function upload(array $data = null, $id = null)
     {
 
         try {
-
-            $validator = (new Role())->validate($request->all());
-
+            $validator = (new Field())->validate($data);
             if ($validator != null) {
                 return response()->json($validator);
             }
 
             if ($id === null) {
-                $role = new Role;
-                $role->id = Str::uuid()->toString();
+                $field = new Field();
+                // $role->id = Str::uuid()->toString();
 
                 $message = 'Data update successfully';
             } else {
-                $role = Role::find($id);
+                $field = Field::find($id);
+
+                if (!$field) {
+                    $data = [
+                        'status' => 404,
+                        'message' => "Data not found",
+                    ];
+                }
+
                 $message = 'Data uploaded successfully';
             }
-
-            $role->Name = $request->Name;
-            $role->NormalizeName = ltrim(strtolower($request->Name));
-            $role->save();
-
-            $roles = RoleService::get($request);
+            $field->Name = $data['name'];
+            $field->save();
+            $fields = FieldService::get($data);
 
             $data = [
                 'status' => 200,
                 'message' => $message,
-                'data' => $roles
+                'data' => $fields
             ];
 
             return $data;
@@ -111,18 +119,18 @@ class RoleService
         }
     }
 
-    public static function delete(Request $request, $id)
+    public static function delete(array $data = null, $id)
     {
         $role = Role::find($id);
 
         if ($role) {
             $role->delete();
-            $roles = RoleService::get($request);
+            $fields = FieldService::get($data);
 
             $data = [
                 'status' => 200,
                 'message' => "Data deleted successfully",
-                'data' => $roles
+                'data' => $fields
             ];
         } else {
             $data = [

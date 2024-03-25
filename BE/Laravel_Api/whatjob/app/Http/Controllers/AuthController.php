@@ -18,38 +18,16 @@ class AuthController extends Controller
 {
     public function register(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6',
-        ]);
-
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
-
-        $token = Auth::login($user);
-        return response()->json([
-            'status' => 'success',
-            'message' => 'User created successfully',
-            'user' => $user,
-            'authorisation' => [
-                'token' => $token,
-                'type' => 'bearer',
-            ]
-        ]);
+        $result = AccountService::register($request->all());
+        return $result;
     }
 
 
     public function login(Request $request)
     {
-        // Get the login credentials from the request.
-        $credentials = $request->only('Email', 'Password');
 
 
-        $result = AccountService::login($credentials);
+        $result = AccountService::login($request->all());
 
         return $result;
     }
@@ -58,9 +36,9 @@ class AuthController extends Controller
 
     public function checkToken(Request $request)
     {
-        $request = $request->only('Token');
+        $request = $request->only('token');
         try {
-            $token = AccountService::checkToken($request['Token']);
+            $token = AccountService::checkToken($request['token']);
         return response()->json([
             'token' => $token,
         ],200);
