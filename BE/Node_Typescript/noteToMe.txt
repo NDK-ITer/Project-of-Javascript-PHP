@@ -1,0 +1,14 @@
+npx tsc --init (tự động tạo tsconfig.json)
+
+ngrok (node, php) để chạy server hosting
+
+npx sequelize-cli-typescript init (tạo ra một thư mục mới có tên là migrations)
+
+npx sequelize-cli-typescript seed:generate --name <seed-data-name>
+npx sequelize-cli-typescript db:seed:all
+
+npx sequelize-cli-typescript migration:generate --name <migration-name>
+npx sequelize-cli-typescript db:migrate
+npx sequelize-cli-typescript db:migrate:undo
+
+npx sequelize-cli-typescript-typescript init
