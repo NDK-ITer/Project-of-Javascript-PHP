@@ -26,6 +26,7 @@ export class Authenticate {
     }
 
     static async ComparePasswords(enteredPassword: string, hashedPassword: string): Promise<boolean> {
+        if(!enteredPassword || !hashedPassword) return false
         const result = await bcrypt.compare(enteredPassword, hashedPassword);
         return result;
     }
