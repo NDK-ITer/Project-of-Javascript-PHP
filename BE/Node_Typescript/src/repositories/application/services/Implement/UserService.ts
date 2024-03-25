@@ -4,6 +4,7 @@ import { Authenticate } from '../../libs/Authenticate';
 import { Employee } from '../../../data/models/Employee';
 import { Employer } from '../../../data/models/Employer';
 
+
 export default class UserService extends BaseService {
 
     constructor() {
@@ -21,6 +22,11 @@ export default class UserService extends BaseService {
             address: string,
             phoneNumber: string,
             fieldId: string
+        employee?: {
+            fullName: string,
+            born: Date,
+            address: string,
+            phoneNumber: string,
             avatar: string,
         },
         employer?: {
@@ -88,12 +94,16 @@ export default class UserService extends BaseService {
                 state: 1,
                 data: result
             }
-
-        } else {
+        const result = await this.uow.UserRepository.create(newUser);
+        if (!result) {
             return {
                 state: 0,
-                mess: 'cannot create new user !'
+                mess: 'some error when create user'
             }
+        }
+        return {
+            state: 1,
+            data: result
         }
     }
 

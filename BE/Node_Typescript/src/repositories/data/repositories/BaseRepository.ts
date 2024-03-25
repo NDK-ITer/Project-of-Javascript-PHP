@@ -16,6 +16,7 @@ abstract class BaseRepository<T extends Model>{
         return await this.model.findAll();
     }
 
+
     async update(id: string, data: Partial<T>): Promise<T | null> {
         const [affectedCount] = await this.model.update(data, { where: { id: id as any } });
         if (affectedCount === 0) {
@@ -39,11 +40,13 @@ abstract class BaseRepository<T extends Model>{
     }
     
     async filter(filterObj: Partial<T>): Promise<T[]> {
+
         const whereClause: any = {};
         for (const key in filterObj) {
             whereClause[key] = filterObj[key];
         }
         return await this.model.findAll({ where: whereClause });
+
     }
 
     async delete(id: string): Promise<boolean> {
