@@ -3,10 +3,8 @@ import UserService from "./Implement/UserService";
 
 
 export default class UOWService {
-    public RoleService: RoleService
-    public UserService: UserService
+    public static RoleService: RoleService = new RoleService()
+    public static UserService: UserService = new UserService()
     constructor() {
-        this.RoleService = new RoleService()
-        this.UserService = new UserService()
     }
 }
