@@ -1,0 +1,9 @@
+// .sequelizerc
+const path = require('path');
+
+module.exports = {
+    'config': path.resolve('config.json'),
+    'models-path': path.resolve('./src', 'repositories', 'data', 'models'), // Đường dẫn tới thư mục chứa các model của bạn
+    'seeders-path': path.resolve('./src', 'repositories', 'data', 'seeders'),
+    'migrations-path': path.resolve('./src', 'repositories', 'data', 'migrations') // Đường dẫn tới thư mục chứa các migration của bạn
+};
