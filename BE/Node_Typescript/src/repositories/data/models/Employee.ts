@@ -1,4 +1,5 @@
 import { Table, Column, Model, DataType, BeforeSave, BelongsTo, BelongsToMany, ForeignKey } from 'sequelize-typescript';
+
 import { Field } from './Field';
 import { User } from './User';
 import { RecruitmentArticle } from './RecruitmentArticle';
