@@ -1,16 +1,15 @@
-import { Table, Column, Model, PrimaryKey, HasMany } from 'sequelize-typescript';
+import { Table, Column, Model, HasMany,DataType } from 'sequelize-typescript';
 import { User } from './User';
 
-@Table
+@Table({ timestamps: false })
 class Role extends Model{
-    @Column
-    @PrimaryKey 
+    @Column({ primaryKey: true, type: DataType.STRING })
     Id!: string;
 
-    @Column
+    @Column({type: DataType.STRING})
     Name!: string;
 
-    @Column
+    @Column({type: DataType.STRING})
     NormalizeName!: string;
 
     @HasMany(() => User)
