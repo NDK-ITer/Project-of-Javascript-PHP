@@ -1,22 +1,25 @@
-import { Table, Column, Model, BelongsTo, HasMany } from 'sequelize-typescript';
+import { Table, Column, Model, BelongsTo, HasMany, DataType} from 'sequelize-typescript';
 import { User } from './User';
 import { RecruitmentArticle } from './RecruitmentArticle';
 
-@Table
+@Table({ timestamps: false })
 class Employer extends Model {
-    @Column({ primaryKey: true })
+    @Column({ primaryKey: true, type: DataType.STRING })
     Id!: string;
 
-    @Column
+    @Column({type: DataType.STRING})
+    CompanyName!: string;
+
+    @Column({type: DataType.STRING})
     Logo!: string;
 
-    @Column
+    @Column({type: DataType.STRING})
     Description!: string;
 
-    @Column
+    @Column({type: DataType.STRING})
     Hotline!: string;
 
-    @Column
+    @Column({type: DataType.STRING})
     Address!: string;
 
     @BelongsTo(() => User, {foreignKey: 'Id'})

@@ -1,13 +1,12 @@
-import { Table, Column, Model, PrimaryKey, ForeignKey, HasMany } from 'sequelize-typescript';
+import { Table, Column, Model, HasMany, DataType } from 'sequelize-typescript';
 import { RecruitmentArticle } from './RecruitmentArticle';
 
-@Table
+@Table({ timestamps: false })
 class Field extends Model {
-    @Column
-    @PrimaryKey 
+    @Column({ primaryKey: true, type: DataType.STRING })
     Id!: string;
 
-    @Column
+    @Column({type: DataType.STRING})
     Name!: string;
 
     @HasMany(() => RecruitmentArticle)
