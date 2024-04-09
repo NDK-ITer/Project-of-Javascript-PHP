@@ -34,4 +34,18 @@ export default class EmployerService extends BaseService{
             mess: `Cập nhập thông tin thành công.`
         }
     }
+
+    public async GetById(id: string):Promise<any>{
+        const result = await this.uow.EmployerRepository.getById(id)
+        if(!result){
+            return{
+                state: 0,
+                mess: `không có nhà tuyển dụng với id: ${id}}`
+            }
+        }
+        return{
+            state: 1,
+            data: result
+        }
+    }
 }

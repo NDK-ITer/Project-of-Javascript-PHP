@@ -9,6 +9,7 @@ export default class RAService extends BaseService {
 
     public async Create(employerId: string, fieldId: string, data: {
         name: string,
+        description: string,
         requirement: string,
         image: string,
         salary: string,
@@ -23,6 +24,7 @@ export default class RAService extends BaseService {
         const result = await this.uow.RARepository.create({
             Id: v4.toString(),
             Name: data.name,
+            Description: data.description,
             Requirement: data.requirement,
             Image: data.requirement,
             Salary: data.salary,
@@ -131,6 +133,20 @@ export default class RAService extends BaseService {
                 state: 1,
                 data: result
             }
+        }
+    }
+
+    public async GetAll(limit: number, page: number): Promise<any> {
+        const result = await this.uow.RARepository.getAll(limit, page)
+        if (!result) {
+            return {
+                state: 0,
+                mess: `Chưa có dữ liệu`
+            }
+        }
+        return {
+            state: 1,
+            data: result
         }
     }
 }

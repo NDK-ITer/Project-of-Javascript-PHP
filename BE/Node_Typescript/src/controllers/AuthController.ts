@@ -35,23 +35,50 @@ export default class AuthController {
             const result = await UOWService.UserService.Create(newUser)
             res.json(result)
         } catch (error) {
-            res.status(400).json({
-                state: 0,
-                mess: error
+            res.status(500)
+        }
+    }
+
+    static async Login(req: any, res: Response): Promise<any> {
+        try {
+            const data = req.body
+            const loginData: any = {
+                email: data.email,
+                password: data.password
+            }
+            const result = await UOWService.UserService.GetJWT(loginData)
+            res.status(200).json(result)
+        } catch (error) {
+            res.status(500)
+        }
+    }
+
+    static async ResetPassword(req: any, res: Response): Promise<any> {
+        try {
+            const data = req.body
+            const user = req.user
+            const result = await UOWService.UserService.ResetPassword(user.id, data.newPassword)
+            res.status(200).json({
+                state: result.state,
+                mess: result.mess
             })
+        } catch (error) {
+            res.status(500)
         }
 
     }
-    static async Login(req: any, res: Response): Promise<any> {
-        const data = req.body
-        const loginData: any = {
-            email: data.email,
-            password: data.password
+
+    static async ChangeEmail(req: any, res: Response): Promise<any> {
+        try {
+            const data = req.body
+            const user = req.user
+            const result = await UOWService.UserService.ChangeEmail(user.id, data.newEmail)
+            res.status(200).json({
+                state: result.state,
+                mess: result.mess
+            })
+        } catch (error) {
+            res.status(500)
         }
-        const result = await UOWService.UserService.GetJWT(loginData)
-        res.json(result)
-    }
-    static async ResetPassword(req: any, res: Response): Promise<any> {
-        
     }
 }

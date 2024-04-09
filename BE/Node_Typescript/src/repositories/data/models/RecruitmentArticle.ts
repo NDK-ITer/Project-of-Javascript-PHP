@@ -12,6 +12,9 @@ class RecruitmentArticle extends Model {
     @Column({type: DataType.STRING})
     Name!: string;
 
+    @Column({type: DataType.STRING})
+    Description!: string;
+
     @Column({type: DataType.DATE})
     DateUpload!: Date;
 
@@ -23,6 +26,9 @@ class RecruitmentArticle extends Model {
 
     @Column({type: DataType.STRING})
     Salary!: string;
+
+    @Column({type: DataType.STRING})
+    Position!: string;
 
     @Column({type: DataType.STRING})
     AddressWork!: string;

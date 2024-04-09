@@ -5,6 +5,7 @@ import { publicPath } from "./constants";
 
 import authRoute from "./routes/AuthRoute";
 import UOWService from "./repositories/application/services/UOWService";
+import fieldRoute from "./routes/FieldRoute";
 
 const express = require('express');
 const body = require('body-parser');
@@ -18,14 +19,13 @@ const corsOptions = {
     origin: 'http://localhost:3000',
     optionsSuccessStatus: 200
 }
-
 app.use(cors(corsOptions));
-
 app.use(body.json({
     limit: '2mb'
 }));
 //route
-app.use('/api/auth',authRoute)
+app.use('/api', authRoute)
+app.use('/api/field', fieldRoute)
 app.get('/api/tem', async (req: any, res: any) => {
     const result = await UOWService.RoleService.GetAll()
     res.json(result);

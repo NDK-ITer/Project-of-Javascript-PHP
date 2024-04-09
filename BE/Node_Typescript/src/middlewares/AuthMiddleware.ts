@@ -9,14 +9,14 @@ export class AuthMiddleware{
         if (!token) {
             return res.json({ 
                 state: 0,
-                mess: 'Login please!' 
+                mess: 'Chưa đăng nhập' 
             });
         }
         const decodedUser = await Authenticate.VerifyAndDecodeJWT(token, secretKey);
         if (!decodedUser) {
             return res.json({ 
                 state: 0,
-                mess: 'Please login again' 
+                mess: 'Đăng nhập lại' 
             });
         }
         req.user = decodedUser

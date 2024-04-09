@@ -12,8 +12,6 @@ export default class EmployeeService extends BaseService {
         avatar: string,
         phoneNumber: string,
         introduction: string,
-        certification: any,
-        CV: string,
         gender: string,
         address: string,
         born: Date
@@ -23,8 +21,6 @@ export default class EmployeeService extends BaseService {
             Avatar: data.avatar,
             PhoneNumber: data.phoneNumber,
             Introduction: data.introduction,
-            Certification: data.certification,
-            CV: data.CV,
             Gender: data.gender,
             Address: data.address,
             Born: data.born

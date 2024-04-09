@@ -62,7 +62,7 @@ export default class UserService extends BaseService {
             if (!result) {
                 return {
                     state: 0,
-                    mess: 'tạo người dùng không thành công'
+                    mess: 'Đăng ký không thành công'
                 }
             }
             return {
@@ -83,7 +83,7 @@ export default class UserService extends BaseService {
             if (!result) {
                 return {
                     state: 0,
-                    mess: 'tạo người dùng không thành công'
+                    mess: 'Đăng ký không thành công'
                 }
             }
             return {
@@ -94,7 +94,7 @@ export default class UserService extends BaseService {
         } else {
             return {
                 state: 0,
-                mess: 'Không thể tạo người dùng!'
+                mess: 'Không thể đăng ký'
             }
         }
     }
@@ -120,13 +120,14 @@ export default class UserService extends BaseService {
         }
         const secretKey = String(process.env.SECRET_KEY)
         const jwt = await Authenticate.GenerateJWT({
-            id: user.Id
+            id: user.Id,
+            roleId: user.RoleId
         }, secretKey)
 
         if (!jwt) {
             return {
                 state: 0,
-                mess: `Lỗi khi lấy token`
+                mess: `Lỗi lấy token`
             }
         }
         let userData: any
@@ -167,6 +168,7 @@ export default class UserService extends BaseService {
         const role = await this.ImportRole()
         if (user.RoleId == role.Employee.id) {
             const employee: any = await this.uow.EmployeeRepository.getById(user.Id)
+            const fieldEmployee: any = await this.uow.FieldRepository.getById(employee.FieldId)
             return {
                 state: 1,
                 data: {
@@ -177,7 +179,8 @@ export default class UserService extends BaseService {
                     born: employee.Born,
                     gender: employee.Gender,
                     phoneNumber: employee.PhoneNumber,
-                    address: employee.Address
+                    address: employee.Address,
+                    field: fieldEmployee.Name
                 }
             }
         } else if (user.RoleId == role.Employer.id) {

@@ -5,7 +5,7 @@ export default class RoleService extends BaseService {
         super();
     }
 
-    public async GetAll(): Promise<any> {
+    public async GetAll(): Promise<{state: number, data: any}> {
         const role = await this.ImportRole()
         return {
             state: 1,
