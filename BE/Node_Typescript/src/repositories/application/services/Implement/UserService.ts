@@ -130,14 +130,16 @@ export default class UserService extends BaseService {
                 mess: `Lỗi lấy token`
             }
         }
-        let userData: any
+        let userData: any = {
+            roleId: user.RoleId,
+        }
         if (user.RoleId == role.Employee.id) {
             const employee: any = await this.uow.EmployeeRepository.getById(user.Id)
             const parts = employee.FullName.split(' ');
             const lastName = parts[parts.length - 1];
             userData = {
                 displayName: lastName,
-                avatar: employee.Avatar
+                avatar: employee.Avatar,
             }
         } else if (user.RoleId == role.Employer.id) {
             const employer: any = await this.uow.EmployerRepository.getById(user.Id)

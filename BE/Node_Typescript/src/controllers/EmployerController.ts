@@ -35,4 +35,26 @@ export default class EmployerController {
             res.status(500)
         }
     }
+
+    static async GetById(req: any, res: Response): Promise<any> {
+        try {
+            const user = req.user
+            const result = await UOWService.EmployerService.GetById(user.id)
+            if (result.state == 1) {
+                const data = result.data
+                res.status(200).json({
+                    state: result.state,
+                    data: {
+                        companyName: data.CompanyName,
+                        logo: data.Logo,
+                        description: data.Description,
+                        hotLine: data.Hotline,
+                        address: data.Address
+                    }
+                })
+            }
+        } catch (error) {
+            res.status(500)
+        }
+    }
 }
