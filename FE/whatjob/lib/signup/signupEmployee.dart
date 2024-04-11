@@ -1,10 +1,23 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:whatjob/baseULR.dart';
+import 'package:whatjob/model/Field.dart';
+import 'package:whatjob/service/feildService.dart';
+import 'package:whatjob/service/userService.dart';
 import 'package:whatjob/utils/colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
 
 class SignUpEmployee extends StatefulWidget {
-  const SignUpEmployee({super.key});
+  final String email;
+  final String password;
+
+  const SignUpEmployee({
+    super.key,
+    required this.email,
+    required this.password,
+  });
 
   @override
   _SignUpEmployeeState createState() => _SignUpEmployeeState();
@@ -15,8 +28,6 @@ class _SignUpEmployeeState extends State<SignUpEmployee> {
   final TextEditingController _birthdayController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
-
-  String _selectedField = 'IT';
 
   late DateTime selectedDate = DateTime.now();
 
@@ -42,6 +53,24 @@ class _SignUpEmployeeState extends State<SignUpEmployee> {
       _selectedValue = value;
     });
   }
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchFields();
+  }
+
+  List<Field> fields = [];
+  late Field selectedField = Field(id: '', name: '');
+
+  Future<void> _fetchFields() async {
+    final fieldsJson = await FieldService.fetchFields();
+    fields = fieldsJson.map((fieldJson) => Field.fromJson(fieldJson)).toList();
+    setState(() {
+      selectedField = fields.isNotEmpty ? fields[0] : Field(id: '', name: '');
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -305,29 +334,32 @@ class _SignUpEmployeeState extends State<SignUpEmployee> {
                                     color: AppColors.green,
                                     borderRadius: BorderRadius.circular(20),
                                   ),
-                                  child: DropdownButton<String>(
-                                    value: _selectedField,
-                                    onChanged: (String? newValue) {
+                                  child: DropdownButton<Field>(
+                                    value: selectedField,
+                                    onChanged: (Field? newValue) {
                                       setState(() {
-                                        _selectedField = newValue!;
+                                        selectedField = newValue!;
                                       });
                                     },
-                                    underline: Container(width:MediaQuery.of(context).size.width,),
+                                    underline: Container(
+                                      width: MediaQuery.of(context).size.width,
+                                    ),
                                     style: const TextStyle(
                                         color: Colors.white,
                                         fontFamily: "Comfortaa"),
                                     dropdownColor: Colors.black,
                                     icon: const Icon(Icons.arrow_drop_down,
                                         color: Colors.white),
-                                    items: <String>['Marketing', 'IT', 'Law']
-                                        .map<DropdownMenuItem<String>>(
-                                            (String value) {
-                                      return DropdownMenuItem<String>(
-                                        value: value,
+                                    items: fields.map((Field field) {
+                                      return DropdownMenuItem<Field>(
+                                        value: field,
                                         child: SizedBox(
-                                          width:MediaQuery.of(context).size.width - 175,
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width -
+                                              175,
                                           child: Text(
-                                            value,
+                                            field.name,
                                             style: const TextStyle(
                                                 fontSize: 16.0,
                                                 fontFamily: "Comfortaa"),
@@ -345,7 +377,23 @@ class _SignUpEmployeeState extends State<SignUpEmployee> {
                           height: 30,
                         ),
                         ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Map<String, dynamic> userData = {
+                              'email': widget.email,
+                              'password': widget.password,
+                              'roleId': "b947a44b-a827-412a-8d1d-8def7df24d12",
+                              'employee': {
+                                'fullName': _nameController.text,
+                                'gender':
+                                    _selectedValue == 1 ? 'Male' : 'Female',
+                                'born': _birthdayController.text,
+                                'address': _addressController.text,
+                                'phoneNumber': _phoneController.text,
+                                'fieldId': selectedField.id,
+                              }
+                            };
+                            UserService.registerUser(userData);
+                          },
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 40, vertical: 12),
@@ -376,13 +424,4 @@ class _SignUpEmployeeState extends State<SignUpEmployee> {
       ),
     );
   }
-
-  // void _login() {
-  //   String username = _usernameController.text;
-  //   String password = _passwordController.text;
-
-  //   // Your login logic goes here
-  //   print('Username: $username');
-  //   print('Password: $password');
-  // }
 }

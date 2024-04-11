@@ -1,4 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:whatjob/home/home.dart';
+import 'package:whatjob/model/user.dart';
+import 'package:whatjob/service/userService.dart';
 import 'package:whatjob/utils/colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -40,7 +45,6 @@ class _LoginState extends State<Login> {
                   fontWeight: FontWeight.bold),
             ),
           ),
-
           Positioned(
             bottom: -90,
             left: -110,
@@ -111,6 +115,7 @@ class _LoginState extends State<Login> {
                         ),
                         TextField(
                           controller: _passwordController,
+                          obscureText: true,
                           decoration: InputDecoration(
                             hintText: "PassWord",
                             prefixIcon: Padding(
@@ -163,7 +168,7 @@ class _LoginState extends State<Login> {
                           height: 30,
                         ),
                         ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () => _login(context),
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 30, vertical: 12),
@@ -181,23 +186,23 @@ class _LoginState extends State<Login> {
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(left: 30 ,top: 20),
+                          padding: const EdgeInsets.only(left: 30, top: 20),
                           child: Row(
                             children: [
                               const Text("Don't have account?",
-                                style: TextStyle(fontSize: 14, fontFamily: 'Comfortaa')),
+                                  style: TextStyle(
+                                      fontSize: 14, fontFamily: 'Comfortaa')),
                               const SizedBox(
                                 width: 5,
                               ),
                               GestureDetector(
-                                onTap: () {},
-                                child: const Text(
-                                  "Sign Up",
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontFamily: 'Comfortaa',
-                                    color: AppColors.green,
-                                    fontWeight: FontWeight.bold)))
+                                  onTap: () {},
+                                  child: const Text("Sign Up",
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          fontFamily: 'Comfortaa',
+                                          color: AppColors.green,
+                                          fontWeight: FontWeight.bold)))
                             ],
                           ),
                         ),
@@ -211,18 +216,67 @@ class _LoginState extends State<Login> {
               ],
             ),
           ),
-          
         ],
       ),
     );
   }
 
-  void _login() {
+  void _login(BuildContext context) async {
     String username = _emailController.text;
     String password = _passwordController.text;
 
-    // Your login logic goes here
-    print('Username: $username');
-    print('Password: $password');
+    // Validate username and password
+    if (username.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Cần nhập username và password.'),
+        ),
+      );
+      return; // Exit the function if fields are empty
+    }
+
+    Map<String, dynamic> userData = {
+      'email': username,
+      'password': password,
+    };
+
+    try {
+      final response = await UserService.login(userData);
+
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
+        final int state = responseData['state'];
+        final userDataJson = responseData['data'];
+        final User user = User.fromJson(userDataJson);
+        
+        if (state == 1) {
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => Home(
+              user: user,
+            ),
+          ));
+        } else {
+          final String errorMessage = responseData['mess'];
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(errorMessage),
+            ),
+          );
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to login. Please try again later.'),
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to login. Please try again later.'),
+        ),
+      );
+    }
   }
+
 }

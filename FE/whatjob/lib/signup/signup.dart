@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:whatjob/signup/signupEmployee.dart';
+import 'package:whatjob/signup/signupEmployer.dart';
 import 'package:whatjob/utils/colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -112,6 +114,7 @@ class _SignUpState extends State<SignUp> {
                         ),
                         TextField(
                           controller: _passwordController,
+                          obscureText: true,
                           decoration: InputDecoration(
                             hintText: "PassWord",
                             prefixIcon: Padding(
@@ -146,6 +149,7 @@ class _SignUpState extends State<SignUp> {
                         ),
                         TextField(
                           controller: _comfirmPasswordController,
+                          obscureText: true,
                           decoration: InputDecoration(
                             hintText: "Comfirm PassWord",
                             prefixIcon: Padding(
@@ -225,7 +229,40 @@ class _SignUpState extends State<SignUp> {
                           height: 30,
                         ),
                         ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            if (_passwordController.text ==
+                                _comfirmPasswordController.text) {
+                              if (_selectedRole == 'Employee') {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => SignUpEmployee(
+                                      email: _emailController.text,
+                                      password: _passwordController.text,
+                                    ),
+                                  ),
+                                );
+                              } else {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => SignUpEmployer(
+                                      email: _emailController.text,
+                                      password: _passwordController.text,
+                                    ),
+                                  ),
+                                );
+                              }
+                            } else {
+                              // Nếu mật khẩu và xác nhận mật khẩu không trùng nhau, xuất thông báo
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                      'Password and Confirm Password do not match!'),
+                                ),
+                              );
+                            }
+                          },
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 40, vertical: 12),
@@ -256,13 +293,4 @@ class _SignUpState extends State<SignUp> {
       ),
     );
   }
-
-  // void _login() {
-  //   String username = _usernameController.text;
-  //   String password = _passwordController.text;
-
-  //   // Your login logic goes here
-  //   print('Username: $username');
-  //   print('Password: $password');
-  // }
 }

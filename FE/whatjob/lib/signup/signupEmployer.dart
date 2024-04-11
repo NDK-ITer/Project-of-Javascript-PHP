@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:whatjob/service/userService.dart';
 import 'package:whatjob/utils/colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class SignUpEmployer extends StatefulWidget {
-  const SignUpEmployer({super.key});
+  final String email;
+  final String password;
+
+  const SignUpEmployer({
+    super.key,
+    required this.email,
+    required this.password,
+  });
 
   @override
   _SignUpEmployerState createState() => _SignUpEmployerState();
@@ -11,11 +19,8 @@ class SignUpEmployer extends StatefulWidget {
 
 class _SignUpEmployerState extends State<SignUpEmployer> {
   TextEditingController _nameController = TextEditingController();
-  TextEditingController _emailController = TextEditingController();
   TextEditingController _addressController = TextEditingController();
   TextEditingController _phoneController = TextEditingController();
-
-  String _selectedField = 'IT';
 
   @override
   Widget build(BuildContext context) {
@@ -161,7 +166,21 @@ class _SignUpEmployerState extends State<SignUpEmployer> {
                           height: 40,
                         ),
                         ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Map<String, dynamic> userData = {
+                              'email': widget.email,
+                              'password': widget.password,
+                              'roleId': "f09b3e4e-86bb-4367-a84f-1f14acddc4bc",
+                              'employer': {
+                                "companyName": _nameController.text,
+                                "address": _addressController.text,
+                                "hotline": _phoneController.text,
+                              }
+                            };
+
+                            print(userData.toString());
+                            UserService.registerUser(userData);
+                          },
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 40, vertical: 12),
@@ -192,5 +211,4 @@ class _SignUpEmployerState extends State<SignUpEmployer> {
       ),
     );
   }
-
 }
