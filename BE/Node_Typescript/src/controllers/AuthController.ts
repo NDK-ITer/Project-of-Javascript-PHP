@@ -1,5 +1,7 @@
 import { Response } from "express";
 import UOWService from "../repositories/application/services/UOWService"
+import session from 'express-session';
+
 
 export default class AuthController {
     static async Register(req: any, res: Response): Promise<any> {
@@ -65,7 +67,6 @@ export default class AuthController {
         } catch (error) {
             res.status(500)
         }
-
     }
 
     static async ChangeEmail(req: any, res: Response): Promise<any> {
@@ -77,6 +78,19 @@ export default class AuthController {
                 state: result.state,
                 mess: result.mess
             })
+        } catch (error) {
+            res.status(500)
+        }
+    }
+
+    static async GetAllRole(req: any, res: Response): Promise<any> {
+        try {
+            const result = await UOWService.RoleService.GetAll()
+            res.status(200).json({
+                state: result.state,
+                data: result.data
+            })
+            res.json(result);
         } catch (error) {
             res.status(500)
         }

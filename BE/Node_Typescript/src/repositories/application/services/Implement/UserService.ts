@@ -130,9 +130,7 @@ export default class UserService extends BaseService {
                 mess: `Lỗi lấy token`
             }
         }
-        let userData: any = {
-            roleId: user.RoleId,
-        }
+        let userData: any = {}
         if (user.RoleId == role.Employee.id) {
             const employee: any = await this.uow.EmployeeRepository.getById(user.Id)
             const parts = employee.FullName.split(' ');
@@ -152,6 +150,7 @@ export default class UserService extends BaseService {
                 displayName: user.Email
             }
         }
+        userData.roleId = user.RoleId
         return {
             state: 1,
             data: userData,
@@ -212,16 +211,16 @@ export default class UserService extends BaseService {
 
     public async GetAll(): Promise<any> {
         const result = await this.uow.UserRepository.getAll()
-        if(!result){
-            return{
+        if (!result) {
+            return {
                 state: 0,
                 mess: `Không thể lấy dánh sách người dùng.`
             }
         }
-        return{
+        return {
             state: 1,
             data: result,
-        }        
+        }
     }
 
     public async Block(id: string): Promise<any> {
@@ -239,29 +238,29 @@ export default class UserService extends BaseService {
         }
     }
 
-    public async ResetPassword(id: string, newPassword: string): Promise<any>{
-        const result = await this.uow.UserRepository.update(id, {Password: await Authenticate.HashingPassword(newPassword)})
-        if(!result){
-            return{
+    public async ResetPassword(id: string, newPassword: string): Promise<any> {
+        const result = await this.uow.UserRepository.update(id, { Password: await Authenticate.HashingPassword(newPassword) })
+        if (!result) {
+            return {
                 state: 0,
                 mess: `Đổi mật khẩu không thành công.`
             }
         }
-        return{
+        return {
             state: 1,
             mess: `Đổi mật khẩu thành công.`
         }
     }
 
-    public async ChangeEmail(id: string, newEmail: string): Promise<any>{
-        const result = await this.uow.UserRepository.update(id, {Email: newEmail})
-        if(!result){
-            return{
+    public async ChangeEmail(id: string, newEmail: string): Promise<any> {
+        const result = await this.uow.UserRepository.update(id, { Email: newEmail })
+        if (!result) {
+            return {
                 state: 0,
                 mess: `Cập nhập Email không thành công.`
             }
         }
-        return{
+        return {
             state: 1,
             data: result,
             mess: `Cập nhập Email thành công.`
