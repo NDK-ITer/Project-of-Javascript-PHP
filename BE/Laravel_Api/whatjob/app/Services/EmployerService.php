@@ -3,23 +3,22 @@
 namespace App\Services;
 
 use App\Helpers\PopulateRelations;
-use App\Models\Field;
-use App\Models\Role;
+use App\Models\Employer;
+use App\Models\User;
 use Exception;
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
+use Ramsey\Uuid\Type\Integer;
 
-class FieldService
+class EmployerService
 {
     public static function get(array $data = null, $id = null)
     {
-
         try {
 
             $data = $data['data'] ?? $data;
-            $query = Field::query();
+            $query = Employer::query();
             $relations = $data['populate'] ?? '';
             $model =  $query->getModel();
 
@@ -73,42 +72,51 @@ class FieldService
 
     public static function upload(array $data = null, $id = null)
     {
-
         try {
-            $validator = (new Field())->validate($data);
+
+            $validator = (new Employer())->validate($data);
+
             if ($validator != null) {
                 return response()->json($validator);
             }
 
             if ($id === null) {
-                $field = new Field();
-                // $role->id = Str::uuid()->toString();
-
-                $message = 'Data update successfully';
+                $employer = new Employer;
+                $employer->id = $data['id'];
             } else {
-                $field = Field::find($id);
-
-                if (!$field) {
+                $employer = Employer::find($id);
+                if (!$employer) {
                     $data = [
                         'status' => 404,
                         'message' => "Data not found",
                     ];
+                    return response()->json($data, 404);
                 }
-                $message = 'Data uploaded successfully';
             }
-            $field->name = $data['name'];
-            $field->save();
-            $fields = FieldService::get($data);
+            $data = $data ?? [];
+            $employer->companyName = $data['companyName'] ?? $employer->companyName;
+            $employer->logo = $data['logo'] ?? $employer->logo;
+            $employer->description = $data['description'] ?? $employer->description;
+            $employer->hotline = $data['hotline'] ?? $employer->hotline;
+            $employer->address = $data['address'] ?? $employer->address;
+            $employer->field_id = $data['fieldId'] ?? null;
+            if (!$employer->save()) {
+                return response()->json([
+                    'status' => 500,
+                    'message' => $employer->getErrors(),
+                ], 500);
+            }
+
+            $employers = EmployerService::get($data);
 
             $data = [
                 'status' => 200,
-                'message' => $message,
-                'data' => $fields
+                'message' => $id === null ? 'Data uploaded successfully' : 'Data update successfully',
+                'data' => $employers
             ];
 
             return $data;
         } catch (Exception $e) {
-
             $data = [
                 'status' => $e->getCode(),
                 'message' => $e->getMessage(),
@@ -120,18 +128,19 @@ class FieldService
 
     public static function delete(array $data = null, $id)
     {
-        $field = Field::find($id);
-
-        if ($field) {
-            $field->delete();
-            $fields = FieldService::get($data);
-
+        $user = User::find($id);
+        if($user){
+            $user->IsBlock = !$user->IsBlock->toString;
+            $user->save();
             $data = [
                 'status' => 200,
-                'message' => "Data deleted successfully",
-                'data' => $fields
+                'mess' => "Data deleted successfully",
+                'data' => [
+                    "user" => $user
+                ],
             ];
-        } else {
+        }
+        else{
             $data = [
                 'status' => 404,
                 'message' => "Data not found",

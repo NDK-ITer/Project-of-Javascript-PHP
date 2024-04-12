@@ -23,17 +23,17 @@ class RoleService
             $query = PopulateRelations::populateRelations($query, $relations, $model);
 
             if ($id === null) {
-                // $perpage  = $request->has('per_page') ? $request->input('per_page') : 10;
-                // $query = $query->paginate($perpage);
-                //return $query->items();
+                $limit = 10;
+                $page =  $request->input('page');
+                $query = $query->paginate($limit , ['*'], 'page', $page);
 
-                $query = $query->get();
+                $query = $query->items();
 
                 $data = [
                     'status' => 200,
                     'message' => "Get all data successfully",
-                    'roles' => collect($query)->keyBy('NormalizeName')->mapWithKeys(function ($item) {
-                        return [$item['NormalizeName'] => $item];
+                    'roles' => collect($query)->keyBy('normalizeName')->mapWithKeys(function ($item) {
+                        return [$item['normalizeName'] => $item];
                     })->toArray(),
                 ];
             } else {
@@ -87,8 +87,8 @@ class RoleService
                 $message = 'Data uploaded successfully';
             }
 
-            $role->Name = $request->Name;
-            $role->NormalizeName = ltrim(strtolower($request->Name));
+            $role->name = $request->name;
+            $role->normalizeName = ltrim(strtolower($request->name));
             $role->save();
 
             $roles = RoleService::get($request);

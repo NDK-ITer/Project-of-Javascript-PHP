@@ -7,31 +7,34 @@ use App\Helpers\ValidatesTrait;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\Request;
 
-class Role extends Model
+class Employee extends Model
 {
     use HasFactory, HasUuids;
     use RelationshipsTrait, ValidatesTrait;
 
+
     protected $fillable = [
         //'id',
-        'name',
-        'normalizeName'
+        'FullName',
+        'Avatar',
+        'PhoneNumber',
+        'Introduction',
+        'Certification',
+        'CV',
+        'Gender',
+        'Address',
+        'Born',
+        'field_id',
     ];
 
-    protected $hidden = [
-        'created_at',
-        'updated_at',
-        'normalizeName'
-    ];
 
     protected $rules = [
-        'name' => 'required'
+        // 'id' => 'required'
     ];
 
-    public function users()
-    {
-        return $this->hasMany(User::class);
+    public function user(){
+        return $this->hasOne(User::class, 'id', 'id');
     }
+
 }

@@ -3,15 +3,14 @@
 namespace App\Services;
 
 use App\Helpers\PopulateRelations;
-use App\Models\Field;
-use App\Models\Role;
+use App\Models\Recruitment_Article;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
-class FieldService
+class Recruitment_ArticleService
 {
     public static function get(array $data = null, $id = null)
     {
@@ -19,7 +18,7 @@ class FieldService
         try {
 
             $data = $data['data'] ?? $data;
-            $query = Field::query();
+            $query = Recruitment_Article::query();
             $relations = $data['populate'] ?? '';
             $model =  $query->getModel();
 
@@ -37,7 +36,7 @@ class FieldService
                     'status' => 200,
                     'mess' => "Get all data successfully",
                     'data' => [
-                        "fields" => $query
+                        "Recruitment_Article" => $query
                     ],
 
                 ];
@@ -75,20 +74,20 @@ class FieldService
     {
 
         try {
-            $validator = (new Field())->validate($data);
+            $validator = (new Recruitment_Article())->validate($data);
             if ($validator != null) {
                 return response()->json($validator);
             }
 
             if ($id === null) {
-                $field = new Field();
+                $ra = new Recruitment_Article();
                 // $role->id = Str::uuid()->toString();
 
                 $message = 'Data update successfully';
             } else {
-                $field = Field::find($id);
+                $recruitment_article = Recruitment_Article::find($id);
 
-                if (!$field) {
+                if (!$recruitment_article) {
                     $data = [
                         'status' => 404,
                         'message' => "Data not found",
@@ -96,14 +95,29 @@ class FieldService
                 }
                 $message = 'Data uploaded successfully';
             }
-            $field->name = $data['name'];
-            $field->save();
-            $fields = FieldService::get($data);
+            $recruitment_article->name = $data['name'] ?? $recruitment_article->name;
+            $recruitment_article->requirement = $data['requirement'] ?? $recruitment_article->requirement;
+            $recruitment_article->description = $data['description'] ?? $recruitment_article->description;
+            $recruitment_article->image = $data['image'] ?? $recruitment_article->image;
+            $recruitment_article->salary = $data['salary'] ?? $recruitment_article->salary;
+            $recruitment_article->addressWork = $data['addressWork'] ?? $recruitment_article->addressWork;
+            $recruitment_article->isApproved = $data['isApproved'] ?? $recruitment_article->isApproved;
+            $recruitment_article->endSubmission = $data['endSubmission'] ?? $recruitment_article->endSubmission;
+            $recruitment_article->ageEmployee = $data['ageEmployee'] ?? $recruitment_article->ageEmployee;
+            $recruitment_article->countEmployee = $data['countEmployee'] ?? $recruitment_article->countEmployee;
+            $recruitment_article->formOfWork = $data['formOfWork'] ?? $recruitment_article->formOfWork;
+            $recruitment_article->yearsOfExperience = $data['yearsOfExperience'] ?? $recruitment_article->yearsOfExperience;
+            $recruitment_article->degree = $data['degree'] ?? $recruitment_article->degree;
+            $recruitment_article->employer_id = $data['employer_id'] ?? $recruitment_article->employer_id;
+            $recruitment_article->field_id = $data['field_id'] ?? $recruitment_article->field_id;
+            $recruitment_article->save();
+
+            $recruitment_article = Recruitment_Article::get($data);
 
             $data = [
                 'status' => 200,
                 'message' => $message,
-                'data' => $fields
+                'data' => $recruitment_article
             ];
 
             return $data;
@@ -120,16 +134,16 @@ class FieldService
 
     public static function delete(array $data = null, $id)
     {
-        $field = Field::find($id);
+        $recruitment_article = Recruitment_Article::find($id);
 
-        if ($field) {
-            $field->delete();
-            $fields = FieldService::get($data);
+        if ($recruitment_article) {
+            $recruitment_article->delete();
+            $recruitment_article = Recruitment_Article::get($data);
 
             $data = [
                 'status' => 200,
                 'message' => "Data deleted successfully",
-                'data' => $fields
+                'data' => $recruitment_article
             ];
         } else {
             $data = [

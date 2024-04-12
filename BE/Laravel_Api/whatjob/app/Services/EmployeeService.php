@@ -3,36 +3,38 @@
 namespace App\Services;
 
 use App\Helpers\PopulateRelations;
-use App\Models\Field;
-use App\Models\Role;
+use App\Models\Employee;
+use App\Models\User;
 use Exception;
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
+use Ramsey\Uuid\Type\Integer;
 
-class FieldService
+class EmployeeService
 {
     public static function get(array $data = null, $id = null)
     {
-
         try {
 
             $data = $data['data'] ?? $data;
-            $query = Field::query();
+            $query = Employee::query();
             $relations = $data['populate'] ?? '';
             $model =  $query->getModel();
 
             $query = PopulateRelations::populateRelations($query, $relations, $model);
-
+            $employee = Employee::find($id);
+            return $employee->user;
             if ($id === null) {
-                // $perpage  = $request->has('per_page') ? $request->input('per_page') : 10;
-                // $query = $query->paginate($perpage);
-                //return $query->items();
+                $limit = 10;
+                $page =  $data['page'] ?? 1;
+                $query = $query->paginate($limit , ['*'], 'page', $page);
+
+
+                $query = $query->items();
+
 
                 // $query = $query->get();
-
-                $query = $query->get();
                 $data = [
                     'status' => 200,
                     'mess' => "Get all data successfully",
@@ -73,42 +75,47 @@ class FieldService
 
     public static function upload(array $data = null, $id = null)
     {
-
         try {
-            $validator = (new Field())->validate($data);
+
+            $validator = (new Employee())->validate($data);
+
             if ($validator != null) {
                 return response()->json($validator);
             }
 
             if ($id === null) {
-                $field = new Field();
-                // $role->id = Str::uuid()->toString();
-
-                $message = 'Data update successfully';
+                $employee = new Employee;
+                $employee->id = $data['id'];
             } else {
-                $field = Field::find($id);
-
-                if (!$field) {
+                $employee = Employee::find($id);
+                if (!$employee) {
                     $data = [
                         'status' => 404,
                         'message' => "Data not found",
                     ];
+                    return response()->json($data, 404);
                 }
-                $message = 'Data uploaded successfully';
             }
-            $field->name = $data['name'];
-            $field->save();
-            $fields = FieldService::get($data);
+
+            $data = $data ?? [];
+            $employee->field_id = $data['fieldId'] ?? null;
+            if (!$employee->save()) {
+                return response()->json([
+                    'status' => 500,
+                    'message' => $employee->getErrors(),
+                ], 500);
+            }
+
+            $employees = EmployeeService::get($data);
 
             $data = [
                 'status' => 200,
-                'message' => $message,
-                'data' => $fields
+                'message' => $id === null ? 'Data uploaded successfully' : 'Data update successfully',
+                'data' => $employees
             ];
 
             return $data;
         } catch (Exception $e) {
-
             $data = [
                 'status' => $e->getCode(),
                 'message' => $e->getMessage(),
@@ -120,23 +127,5 @@ class FieldService
 
     public static function delete(array $data = null, $id)
     {
-        $field = Field::find($id);
-
-        if ($field) {
-            $field->delete();
-            $fields = FieldService::get($data);
-
-            $data = [
-                'status' => 200,
-                'message' => "Data deleted successfully",
-                'data' => $fields
-            ];
-        } else {
-            $data = [
-                'status' => 404,
-                'message' => "Data not found",
-            ];
-        }
-        return response()->json($data, 200);
     }
 }

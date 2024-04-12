@@ -1,10 +1,14 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\EmployerController;
 use App\Http\Controllers\FieldController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
+use App\Models\Employer;
 use App\Models\Field;
+use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -37,6 +41,7 @@ Route::post('login', [AuthController::class, "login"]);
 Route::post('register', [AuthController::class, "register"]);
 Route::get('check', [AuthController::class, "checkToken"]);
 Route::get('logout', [AuthController::class, "logout"]);
+Route::put('/change-email', [UserController::class, "delete"]);
 
 Route::group(['prefix' => 'roles'], function () {
     Route::get('/', [RoleController::class, "get"]);
@@ -53,6 +58,8 @@ Route::group(['prefix' => 'users'], function () {
     Route::post('/', [UserController::class, "upload"]);
     Route::put('/{id}', [UserController::class, "edit"]);
     Route::delete('/{id}', [UserController::class, "delete"]);
+    Route::put('/lock/{id}', [UserController::class, "lock"]);
+
 });
 
 Route::group(['prefix' => 'fields'], function () {
@@ -62,3 +69,22 @@ Route::group(['prefix' => 'fields'], function () {
     Route::put('/{id}', [FieldController::class, "edit"]);
     Route::delete('/{id}', [FieldController::class, "delete"]);
 });
+
+Route::group(['prefix' => 'employers'], function () {
+
+    Route::get('/', [EmployerController::class, "get"]);
+    Route::get('/{id}', [EmployerController::class, "show"]);
+    Route::post('/', [EmployerController::class, "upload"]);
+    Route::put('/{id}', [EmployerController::class, "edit"]);
+    Route::delete('/{id}', [EmployerController::class, "delete"]);
+});
+
+Route::group(['prefix' => 'employees'], function () {
+
+    Route::get('/', [EmployeeController::class, "get"]);
+    Route::get('/{id}', [EmployeeController::class, "show"]);
+    Route::post('/', [EmployeeController::class, "upload"]);
+    Route::put('/{id}', [EmployeeController::class, "edit"]);
+    Route::delete('/{id}', [EmployeeController::class, "delete"]);
+});
+

@@ -17,7 +17,7 @@ class AccountService
 
     public static function login(array $credentials)
     {
-        $user = User::where('Email', $credentials['email'])->first();
+        $user = User::where('email', $credentials['email'])->first();
         if (!$user || ($credentials['password'] != $user->Password)) {
             return response()->json([
                 'error' => 'Invalid credentials'
@@ -65,11 +65,9 @@ class AccountService
         }
 
         $ds = array();
-        $ds['FullName'] = $input['fullName'] ?? AccountService::readable_random_string();
-        $ds['Email'] = $input['email'];
-        $ds['Password'] = $input['password'];
+        $ds['email'] = $input['email'];
+        $ds['password'] = $input['password'];
         $ds['token_id'] = '';
-        $ds['Born'] = $input['born'] ?? '';
         $ds['IsBlock'] = 0;
         $user = User::create($ds);
         $user->role_id = $input['roleId'] ?? '97fd62a1-000e-495f-b906-27dcce86f7d4';

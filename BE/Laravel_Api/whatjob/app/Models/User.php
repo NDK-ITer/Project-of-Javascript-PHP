@@ -21,12 +21,10 @@ class User extends Model
 
     protected $fillable = [
         //'id',
-        'FullName',
-        'Email',
-        'Password',
-        'Born',
-        'IsToken',
-        'IsBlock',
+        'email',
+        'password',
+        'isToken',
+        'isBlock',
         'role',
         'token_id'
     ];
@@ -36,9 +34,9 @@ class User extends Model
     ];
 
     protected $rules = [
-        'FullName' => 'required',
-        'Email' => 'unique:users|required|email',
-        'Password' => 'required|min:8',
+        // 'fullName' => 'required',
+        'email' => 'unique:users|required|email',
+        'password' => 'required|min:8',
         // 'Born' => 'date_format:Y-m-d',
         // 'IsBlock' => 'required'
     ];
@@ -47,21 +45,25 @@ class User extends Model
         return $this->belongsTo(Role::class);
     }
 
+    public function employer(){
+        return $this->hasOne(Employer::class, 'id', 'id');
+    }
+
+    public function employee(){
+        return $this->hasOne(Employee::class, 'id', 'id');
+    }
+
     public function generateToken()
     {
         $headers = [
             'token_id' => Uuid::uuid4()->toString(),
         ];
-
         $payload = [
             'id' => $this->id,
             'email' => $this->Email,
             'exp' => time() + env('JWT_TIME_EXP') // Token expiration time (in seconds)
         ];
-
         $token = JWT::encode($payload, env('JWT_SECRET'), 'HS512', null, $headers);
-
-
         return $token;
     }
 }

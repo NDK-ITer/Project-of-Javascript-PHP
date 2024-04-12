@@ -21,4 +21,8 @@ class Field extends Model
     protected $rules = [
         'name' => 'required'
     ];
+
+    public function recruitment_aricle(){
+        return $this->hasMany(Recruitment_Article::class);
+    }
 }

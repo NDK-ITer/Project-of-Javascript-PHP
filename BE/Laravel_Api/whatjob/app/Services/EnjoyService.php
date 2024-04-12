@@ -3,23 +3,23 @@
 namespace App\Services;
 
 use App\Helpers\PopulateRelations;
-use App\Models\Field;
-use App\Models\Role;
+use App\Models\Employer;
+use App\Models\Enjoy;
+use App\Models\User;
 use Exception;
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
-use Illuminate\Validation\ValidationException;
+use Ramsey\Uuid\Type\Integer;
 
-class FieldService
+class EnjoyService
 {
     public static function get(array $data = null, $id = null)
     {
-
         try {
 
             $data = $data['data'] ?? $data;
-            $query = Field::query();
+            $query = Enjoy::query();
             $relations = $data['populate'] ?? '';
             $model =  $query->getModel();
 
@@ -37,7 +37,7 @@ class FieldService
                     'status' => 200,
                     'mess' => "Get all data successfully",
                     'data' => [
-                        "fields" => $query
+                        "enjoys" => $query
                     ],
 
                 ];
@@ -73,42 +73,47 @@ class FieldService
 
     public static function upload(array $data = null, $id = null)
     {
-
         try {
-            $validator = (new Field())->validate($data);
+
+            $validator = (new Enjoy())->validate($data);
+
             if ($validator != null) {
                 return response()->json($validator);
             }
 
             if ($id === null) {
-                $field = new Field();
-                // $role->id = Str::uuid()->toString();
-
-                $message = 'Data update successfully';
+                $enjoy = new Enjoy;
+                $enjoy->id = $data['id'];
             } else {
-                $field = Field::find($id);
-
-                if (!$field) {
+                $enjoy = Enjoy::find($id);
+                if (!$enjoy) {
                     $data = [
                         'status' => 404,
                         'message' => "Data not found",
                     ];
+                    return response()->json($data, 404);
                 }
-                $message = 'Data uploaded successfully';
             }
-            $field->name = $data['name'];
-            $field->save();
-            $fields = FieldService::get($data);
+            $data = $data ?? [];
+            $enjoy->employee_id = $data['employeeId'] ?? $enjoy->companyName;
+            $enjoy->recruitment_article_id = $data['recruitmentArticleId'] ?? $enjoy->logo;
+            if (!$enjoy->save()) {
+                return response()->json([
+                    'status' => 500,
+                    'message' => $enjoy->getErrors(),
+                ], 500);
+            }
+
+            $enjoys = EnjoyService::get($data);
 
             $data = [
                 'status' => 200,
-                'message' => $message,
-                'data' => $fields
+                'message' => $id === null ? 'Data uploaded successfully' : 'Data update successfully',
+                'data' => $enjoys
             ];
 
             return $data;
         } catch (Exception $e) {
-
             $data = [
                 'status' => $e->getCode(),
                 'message' => $e->getMessage(),
@@ -120,18 +125,19 @@ class FieldService
 
     public static function delete(array $data = null, $id)
     {
-        $field = Field::find($id);
-
-        if ($field) {
-            $field->delete();
-            $fields = FieldService::get($data);
-
+        $enjoy = Enjoy::find($id);
+        if($enjoy){
+            $enjoy->IsBlock = !$enjoy->IsBlock->toString;
+            $enjoy->save();
             $data = [
                 'status' => 200,
-                'message' => "Data deleted successfully",
-                'data' => $fields
+                'mess' => "Data deleted successfully",
+                'data' => [
+                    "enjoy" => $enjoy
+                ],
             ];
-        } else {
+        }
+        else{
             $data = [
                 'status' => 404,
                 'message' => "Data not found",
