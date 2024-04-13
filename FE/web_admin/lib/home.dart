@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:web_admin/core/color.dart';
+import 'package:web_admin/widgets/header.dart';
 import 'package:web_admin/widgets/sidebar.dart';
 
 class HomePage extends StatefulWidget {
@@ -118,10 +119,13 @@ class _HomePageState extends State<HomePage> {
               flex: 1,
               child: SizedBox(
                 child: Container(
-                  child: Center(
-                    child: Text(content,
-                        style: TextStyle(
-                            fontSize: 20, color: AppColors.neutralColor8)),
+                  child: Column(
+                    children: [
+                      Header(title: content),
+                      // Text(content,
+                      //     style: TextStyle(
+                      //         fontSize: 20, color: AppColors.neutralColor8)),
+                    ],
                   ),
                 ),
               ),
