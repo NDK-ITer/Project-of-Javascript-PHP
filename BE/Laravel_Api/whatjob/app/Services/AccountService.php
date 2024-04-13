@@ -18,7 +18,7 @@ class AccountService
     public static function login(array $credentials)
     {
         $user = User::where('email', $credentials['email'])->first();
-        if (!$user || ($credentials['password'] != $user->Password)) {
+        if (!$user || ($credentials['password'] != $user->password)) {
             return response()->json([
                 'error' => 'Invalid credentials'
             ], 401);

@@ -68,27 +68,22 @@ class RoleService
 
     public static function upload(Request $request, $id = null)
     {
-
         try {
-
-            $validator = (new Role())->validate($request->all());
-
-            if ($validator != null) {
-                return response()->json($validator);
-            }
-
+            // $validator = (new Role())->validate($request->all());
+            // if ($validator != null) {
+            //     return response()->json($validator);
+            // }
             if ($id === null) {
                 $role = new Role;
                 $role->id = Str::uuid()->toString();
-
                 $message = 'Data update successfully';
             } else {
                 $role = Role::find($id);
                 $message = 'Data uploaded successfully';
             }
 
-            $role->name = $request->name;
-            $role->normalizeName = ltrim(strtolower($request->name));
+            $role->name = $request->name ?? $role->name;
+            $role->normalizeName = ltrim(strtolower($role->name));
             $role->save();
 
             $roles = RoleService::get($request);
@@ -96,7 +91,7 @@ class RoleService
             $data = [
                 'status' => 200,
                 'message' => $message,
-                'data' => $roles
+                // 'data' => $roles
             ];
 
             return $data;
@@ -117,12 +112,12 @@ class RoleService
 
         if ($role) {
             $role->delete();
-            $roles = RoleService::get($request);
+            // $roles = RoleService::get($request);
 
             $data = [
                 'status' => 200,
                 'message' => "Data deleted successfully",
-                'data' => $roles
+                // 'data' => $roles
             ];
         } else {
             $data = [

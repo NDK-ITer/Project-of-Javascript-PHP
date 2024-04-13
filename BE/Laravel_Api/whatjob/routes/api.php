@@ -6,6 +6,7 @@ use App\Http\Controllers\EmployerController;
 use App\Http\Controllers\FieldController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
+use App\Http\Middleware\RoleMiddLeware;
 use App\Models\Employer;
 use App\Models\Field;
 use App\Models\Role;
@@ -36,14 +37,14 @@ use Illuminate\Support\Facades\Route;
 // Route::group(['middleware' => 'api'], function () {
 //     Route::post('login', 'App\Http\Controllers\AuthController@login');
 // });
-
+//Route::middleware(RoleMiddLeware::class.':'.implode(',', ['admin','employer']))->get('/', [RoleController::class, "get"]);
 Route::post('login', [AuthController::class, "login"]);
 Route::post('register', [AuthController::class, "register"]);
 Route::get('check', [AuthController::class, "checkToken"]);
 Route::get('logout', [AuthController::class, "logout"]);
 Route::put('/change-email', [UserController::class, "delete"]);
 
-Route::group(['prefix' => 'roles'], function () {
+Route::group(['prefix' => 'roles', 'middleware' => RoleMiddLeware::class.':'.implode(',', ['admin'])], function () {
     Route::get('/', [RoleController::class, "get"]);
     Route::get('/{id}', [RoleController::class, "show"]);
     Route::post('/', [RoleController::class, "upload"]);
@@ -52,7 +53,8 @@ Route::group(['prefix' => 'roles'], function () {
 });
 
 
-Route::group(['prefix' => 'users'], function () {
+
+Route::group(['prefix' => 'users', 'middleware' => RoleMiddLeware::class.':'.implode(',', ['admin'])], function () {
     Route::get('/', [UserController::class, "get"]);
     Route::get('/{id}', [UserController::class, "show"]);
     Route::post('/', [UserController::class, "upload"]);
@@ -62,7 +64,7 @@ Route::group(['prefix' => 'users'], function () {
 
 });
 
-Route::group(['prefix' => 'fields'], function () {
+Route::group(['prefix' => 'fields', 'middleware' => RoleMiddLeware::class.':'.implode(',', ['admin'])], function () {
     Route::get('/', [FieldController::class, "get"]);
     Route::get('/{id}', [FieldController::class, "show"]);
     Route::post('/', [FieldController::class, "upload"]);
@@ -70,7 +72,7 @@ Route::group(['prefix' => 'fields'], function () {
     Route::delete('/{id}', [FieldController::class, "delete"]);
 });
 
-Route::group(['prefix' => 'employers'], function () {
+Route::group(['prefix' => 'employers', 'middleware' => RoleMiddLeware::class.':'.implode(',', ['admin'])], function () {
 
     Route::get('/', [EmployerController::class, "get"]);
     Route::get('/{id}', [EmployerController::class, "show"]);
@@ -79,7 +81,7 @@ Route::group(['prefix' => 'employers'], function () {
     Route::delete('/{id}', [EmployerController::class, "delete"]);
 });
 
-Route::group(['prefix' => 'employees'], function () {
+Route::group(['prefix' => 'employees', 'middleware' => RoleMiddLeware::class.':'.implode(',', ['admin'])], function () {
 
     Route::get('/', [EmployeeController::class, "get"]);
     Route::get('/{id}', [EmployeeController::class, "show"]);
