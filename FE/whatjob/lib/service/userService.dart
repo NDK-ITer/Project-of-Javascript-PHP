@@ -2,9 +2,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:whatjob/baseULR.dart';
+import 'package:whatjob/model/role.dart';
 
 class UserService {
-  static Future<void> registerUser(Map<String, dynamic> userData) async {
+  static Future<http.Response> registerUser(Map<String, dynamic> userData) async {
     try {
       final response = await http.post(
         Uri.parse('${BaseURL.baseURL}/api/register'),
@@ -17,11 +18,15 @@ class UserService {
       if (response.statusCode == 200) {
         print('User registered successfully');
         print('Response: ${response.body}');
+        return response;
       } else {
         print('Failed to register user. Error: ${response.reasonPhrase}');
+        // You can throw an error here if you want to handle the failure case differently.
+        throw Exception('Failed to register user. Error: ${response.reasonPhrase}');
       }
     } catch (e) {
       print('Failed to register user. Error: $e');
+      throw e; // Re-throwing the error to propagate it further.
     }
   }
 
@@ -30,7 +35,6 @@ class UserService {
       final response = await http.post(
         Uri.parse('${BaseURL.baseURL}/api/login'),
         headers: <String, String>{
-          "Authorization": 'Bearer + aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
           'Content-Type': 'application/json; charset=UTF-8',
         },
         body: jsonEncode(userData),
@@ -39,7 +43,7 @@ class UserService {
       return response;
     } catch (e) {
       print('Failed to login user. Error: $e');
-      throw e;
+      throw e; // Re-throwing the error to propagate it further.
     }
   }
 }

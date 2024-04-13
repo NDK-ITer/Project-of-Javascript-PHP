@@ -1,11 +1,17 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:whatjob/baseULR.dart';
 import 'package:whatjob/home/home.dart';
+import 'package:whatjob/model/role.dart';
 import 'package:whatjob/model/user.dart';
+import 'package:whatjob/service/roleSerivce.dart';
 import 'package:whatjob/service/userService.dart';
+import 'package:whatjob/signup/signup.dart';
 import 'package:whatjob/utils/colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:http/http.dart' as http;
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -196,7 +202,13 @@ class _LoginState extends State<Login> {
                                 width: 5,
                               ),
                               GestureDetector(
-                                  onTap: () {},
+                                  onTap: () {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => SignUp()),
+                                    );
+                                  },
                                   child: const Text("Sign Up",
                                       style: TextStyle(
                                           fontSize: 14,
@@ -247,12 +259,27 @@ class _LoginState extends State<Login> {
         final responseData = json.decode(response.body);
         final int state = responseData['state'];
         final userDataJson = responseData['data'];
+        final token = responseData['token'];
         final User user = User.fromJson(userDataJson);
-        
+        String roleName = "";
+
         if (state == 1) {
+          List<Role> roles = await RoleService.fetchRoles();
+          roles.forEach((role) {
+            if (role.id == user.roleId) {
+              roleName = role.name;
+            }
+          });
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString("token", token);
+          await prefs.setString("roleName", roleName);
+          await prefs.setString("email", username);
+
           Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => Home(
-              user: user,
+              roleName: roleName,
+              token: token,
+              email: username,
             ),
           ));
         } else {
@@ -278,5 +305,4 @@ class _LoginState extends State<Login> {
       );
     }
   }
-
 }

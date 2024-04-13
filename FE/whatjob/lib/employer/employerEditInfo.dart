@@ -1,43 +1,43 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:whatjob/baseULR.dart';
+import 'package:whatjob/home/home.dart';
+import 'package:whatjob/model/employer.dart';
+import 'package:whatjob/service/employerService.dart';
 import 'package:whatjob/utils/colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
 
 class EmployerEditInfo extends StatefulWidget {
-  const EmployerEditInfo({super.key});
+  final Employer employer;
+  final String token;
+  final String roleName;
+  final String email;
+  const EmployerEditInfo({
+    super.key,
+    required this.employer,
+    required this.token,
+    required this.roleName,
+    required this.email,
+  });
 
   @override
   _EmployerEditInfoState createState() => _EmployerEditInfoState();
 }
 
 class _EmployerEditInfoState extends State<EmployerEditInfo> {
+  File? _image;
   final String _avatar =
       'https://firebasestorage.googleapis.com/v0/b/pbox-b4a17.appspot.com/o/Avatar%2FIMG_1701620785499_1701620796631.jpg?alt=media&token=d0013b7b-b214-486e-8082-c0870ee56b86';
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _birthdayController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _emailController =  TextEditingController();
-  final TextEditingController _introduceController = TextEditingController();
-
-  String _selectedField = 'IT';
-
-  late DateTime selectedDate;
-
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
-    );
-    if (picked != null && picked != selectedDate) {
-      setState(() {
-        selectedDate = picked;
-        _birthdayController.text = DateFormat('dd/MM/yyyy').format(picked);
-      });
-    }
-  }
+  final TextEditingController _descriptionController = TextEditingController();
 
   int _selectedValue = 1;
 
@@ -45,6 +45,14 @@ class _EmployerEditInfoState extends State<EmployerEditInfo> {
     setState(() {
       _selectedValue = value;
     });
+  }
+
+  void initState() {
+    super.initState();
+    _nameController.text = widget.employer.companyName;
+    _addressController.text = widget.employer.address;
+    _phoneController.text = widget.employer.hotLine;
+    _descriptionController.text = widget.employer.description;
   }
 
   @override
@@ -83,16 +91,20 @@ class _EmployerEditInfoState extends State<EmployerEditInfo> {
               height: 140,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                image: DecorationImage(
-                  fit: BoxFit.cover,
-                  image: NetworkImage(_avatar),
-                  onError: (exception, stackTrace) {},
-                ),
+                image: _image != null
+                    ? DecorationImage(
+                        fit: BoxFit.cover,
+                        image: FileImage(_image!),
+                      )
+                    : DecorationImage(
+                        fit: BoxFit.cover,
+                        image: NetworkImage(widget.employer.logo),
+                      ),
               ),
             ),
           ),
           TextButton(
-              onPressed: () {},
+              onPressed: onPressedChooseAva,
               child: const Text(
                 "Chọn",
                 style: TextStyle(
@@ -218,83 +230,13 @@ class _EmployerEditInfoState extends State<EmployerEditInfo> {
                         width: 2.0,
                       ),
                     ),
-                    child: TextField(
-                      controller: _emailController,
-                      decoration: const InputDecoration(
-                        hintText: "Email",
-                        border: InputBorder.none,
-                      ),
-                      cursorColor: AppColors.green,
-                      style: const TextStyle(
-                          color: AppColors.green,
-                          fontSize: 15,
-                          fontFamily: "Comfortaa"),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Container(
-                    width: MediaQuery.of(context).size.width,
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                    decoration: BoxDecoration(
-                      color: AppColors.green,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: DropdownButton<String>(
-                      value: _selectedField,
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          _selectedField = newValue!;
-                        });
-                      },
-                      underline: Container(
-                        width: MediaQuery.of(context).size.width,
-                      ),
-                      style: const TextStyle(
-                          color: Colors.white, fontFamily: "Comfortaa"),
-                      dropdownColor: Colors.black,
-                      icon: const Icon(Icons.arrow_drop_down,
-                          color: Colors.white),
-                      items: <String>['Marketing', 'IT', 'Law']
-                          .map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: SizedBox(
-                            width: MediaQuery.of(context).size.width - 125,
-                            child: Text(
-                              value,
-                              style: const TextStyle(
-                                  fontSize: 16.0, fontFamily: "Comfortaa"),
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Container(
-                    width: MediaQuery.of(context).size.width,
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 15, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: AppColors.green, // Màu của viền
-                        width: 2.0,
-                      ),
-                    ),
                     child: SingleChildScrollView(
                       child: ConstrainedBox(
                         constraints: const BoxConstraints(
                           maxHeight: 6 * 20.0,
                         ),
                         child: TextField(
-                          controller: _introduceController,
+                          controller: _descriptionController,
                           decoration: const InputDecoration(
                             hintText: 'Introduce',
                             border: InputBorder.none,
@@ -303,9 +245,9 @@ class _EmployerEditInfoState extends State<EmployerEditInfo> {
                           ),
                           cursorColor: AppColors.green,
                           style: const TextStyle(
-                            fontSize: 16,
-                            fontFamily: 'Comfortaa',
-                          ),
+                              color: AppColors.green,
+                              fontSize: 15,
+                              fontFamily: "Comfortaa"),
                           maxLines: null,
                         ),
                       ),
@@ -315,7 +257,31 @@ class _EmployerEditInfoState extends State<EmployerEditInfo> {
                     height: 20,
                   ),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      Map<String, dynamic> newData = {
+                        'companyName': _nameController.text,
+                        'logo': _image == null ? widget.employer.logo : await uploadImageToFirebaseStorage(_image!),
+                        'description': _descriptionController.text,
+                        'hotLine': _phoneController.text,
+                        'address': _addressController.text,
+                      };
+                      final response = await EmployerService.updateInfo(
+                          widget.token, newData);
+                      final responseData = json.decode(response.body);
+                      final int state = responseData['state'];
+                      if (state == 1) {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => Home(
+                                    token: widget.token,
+                                    email: widget.email,
+                                    roleName: widget.roleName,
+                                    
+                                  )),
+                        );
+                      }
+                    },
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 40, vertical: 15),
@@ -339,5 +305,45 @@ class _EmployerEditInfoState extends State<EmployerEditInfo> {
         ]),
       ),
     );
+  }
+
+  //====================================
+
+  Future<void> deleteImageFromFirebaseStorage(String imageURL) async {
+    FirebaseStorage storage = FirebaseStorage.instance;
+    Reference imageRef = storage.refFromURL(imageURL);
+
+    try {
+      await imageRef.delete();
+    } catch (e) {
+      print('Lỗi khi xóa hình ảnh từ Firebase Storage: $e');
+    }
+  }
+
+  String getFileNameFromPath(String path) {
+    return path.split('/').last;
+  }
+
+  Future<String> uploadImageToFirebaseStorage(File file) async {
+    FirebaseStorage storage = FirebaseStorage.instance;
+    Reference storageReference =
+        storage.ref().child('Avatar/${getFileNameFromPath(file.path)}');
+    UploadTask uploadTask = storageReference.putFile(file);
+    TaskSnapshot snapshot = await uploadTask;
+    String downloadURL = await snapshot.ref.getDownloadURL();
+    return downloadURL;
+  }
+
+  Future<void> onPressedChooseAva() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+      } else {
+        print('No image selected.');
+      }
+    });
   }
 }

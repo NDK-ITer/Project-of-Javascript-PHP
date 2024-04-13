@@ -1,15 +1,33 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:whatjob/employer/employerEditInfo.dart';
+import 'package:whatjob/login/login.dart';
+import 'package:whatjob/model/employee.dart';
+import 'package:whatjob/model/employer.dart';
 import 'package:whatjob/post/post.dart';
+import 'package:whatjob/service/employerService.dart';
 import 'package:whatjob/utils/colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
+import 'package:firebase_core/firebase_core.dart';
+
 
 class EmployerHomeInfo extends StatefulWidget {
-  const EmployerHomeInfo({super.key});
+  final String token;
+  final String email;
+  final String roleName;
+
+  const EmployerHomeInfo({
+    super.key,
+    required this.token,
+    required this.email,
+    required this.roleName,
+  });
 
   @override
   _EmployerHomeInfoState createState() => _EmployerHomeInfoState();
@@ -22,17 +40,43 @@ class _EmployerHomeInfoState extends State<EmployerHomeInfo> {
 
   int _selectedIndex = 0;
 
-  Widget _selectedWidget = const BlogPosts();
+  late Widget _selectedWidget;
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
       if (index == 0) {
-        _selectedWidget = const BlogPosts();
+        _selectedWidget = BlogPosts(employer: employer, email: widget.email, token: widget.token, roleName: widget.roleName,);
       } else {
-        _selectedWidget = const CompanyInfo();
+        _selectedWidget = CompanyInfo(employer: employer, email: widget.email, token: widget.token, roleName: widget.roleName,);
       }
     });
+  }
+
+  bool _isDoneUpdatingDistance = false;
+  late Employer employer;
+
+  void _getUserInfo(String token) async {
+    try {
+      final employerResponse = await EmployerService.getInfo(token);
+      final employerData = json.decode(employerResponse.body);
+      final userDataJson = employerData['data'];
+      employer = Employer.fromJson(userDataJson);
+       _selectedWidget = BlogPosts(employer: employer, email: widget.email, token: widget.token, roleName: widget.roleName,);
+    } catch (e) {
+      print('Failed to get user info: $e');
+    }
+
+    setState(() {
+      _isDoneUpdatingDistance = true;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    employer = Employer.empty();
+    _getUserInfo(widget.token);
   }
 
   @override
@@ -40,214 +84,232 @@ class _EmployerHomeInfoState extends State<EmployerHomeInfo> {
     return Scaffold(
         backgroundColor: AppColors.yellow,
         resizeToAvoidBottomInset: false,
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 40, horizontal: 10),
-                child: Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(
-                        Icons.arrow_back_ios_rounded,
-                        color: AppColors.green,
-                        size: 30,
-                      ),
-                      onPressed: () {
-                        //Navigator.of(context).pop();
-                      },
-                    ),
-                    const SizedBox(
-                      width: 40,
-                    ),
-                    Expanded(
-                      flex: 5,
-                      child: Image.asset(
-                        'assets/images/logo.png',
-                        height: 60,
-                        width: 110,
-                      ),
-                    ),
-                    SizedBox(
-                      width: 45,
-                      height: 45,
-                      child: ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                            elevation: 7,
-                            padding: EdgeInsets.zero,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            backgroundColor: AppColors.green),
-                        child: Center(
-                          child: SvgPicture.asset(
-                            'assets/svg/search.svg',
-                            height: 25,
-                            width: 25,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 8,
-                    ),
-                    SizedBox(
-                      width: 45,
-                      height: 45,
-                      child: ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                            elevation: 7,
-                            padding: EdgeInsets.zero,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            backgroundColor: AppColors.green),
-                        child: Center(
-                          child: SvgPicture.asset(
-                            'assets/svg/bell.svg',
-                            height: 25,
-                            width: 25,
-                          ),
-                        ),
-                      ),
-                    )
-                  ],
+        body: !_isDoneUpdatingDistance
+            ? const Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.green),
                 ),
-              ),
-              const SizedBox(
-                width: 10,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Container(
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(30),
-                      color: Colors.white),
-                  child: Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 120,
-                          height: 120,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            image: DecorationImage(
-                              fit: BoxFit.cover,
-                              image: NetworkImage(_avatar),
-                              onError: (exception, stackTrace) {},
+              )
+            : SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 40, horizontal: 10),
+                      child: Row(
+                        children: [
+                          IconButton(
+                            icon: const Icon(
+                              Icons.arrow_back_ios_rounded,
+                              color: AppColors.green,
+                              size: 30,
+                            ),
+                            onPressed: () {
+                              //Navigator.of(context).pop();
+                            },
+                          ),
+                          const SizedBox(
+                            width: 40,
+                          ),
+                          Expanded(
+                            flex: 5,
+                            child: Image.asset(
+                              'assets/images/logo.png',
+                              height: 60,
+                              width: 110,
                             ),
                           ),
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        const Expanded(
-                          flex: 2,
-                          child: Column(
-                            children: [
-                              Align(
-                                alignment: Alignment.centerLeft,
-                                child: Text(
-                                  "Công ty A - Trùm Đa Cấp",
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontFamily: "Comfortaa",
-                                    fontWeight: FontWeight.bold,
+                          SizedBox(
+                            width: 45,
+                            height: 45,
+                            child: ElevatedButton(
+                              onPressed: () {},
+                              style: ElevatedButton.styleFrom(
+                                  elevation: 7,
+                                  padding: EdgeInsets.zero,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15),
                                   ),
-                                  maxLines: 3,
-                                  overflow: TextOverflow.ellipsis,
+                                  backgroundColor: AppColors.green),
+                              child: Center(
+                                child: SvgPicture.asset(
+                                  'assets/svg/search.svg',
+                                  height: 25,
+                                  width: 25,
                                 ),
                               ),
-                              Padding(
-                                padding: EdgeInsets.only(top: 5, right: 5),
-                                child: Text(
-                                  "Mãi giàu, giàu mãi, mãi giàu",
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    fontFamily: "Comfortaa",
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 8,
+                          ),
+                          SizedBox(
+                            width: 45,
+                            height: 45,
+                            child: ElevatedButton(
+                              onPressed: () {},
+                              style: ElevatedButton.styleFrom(
+                                  elevation: 7,
+                                  padding: EdgeInsets.zero,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15),
                                   ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
+                                  backgroundColor: AppColors.green),
+                              child: Center(
+                                child: SvgPicture.asset(
+                                  'assets/svg/bell.svg',
+                                  height: 25,
+                                  width: 25,
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30),
+                            color: Colors.white),
+                        child: Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 120,
+                                height: 120,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  image: DecorationImage(
+                                    fit: BoxFit.cover,
+                                    image: NetworkImage(employer.logo),
+                                    onError: (exception, stackTrace) {},
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              Expanded(
+                                flex: 2,
+                                child: Column(
+                                  children: [
+                                    Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Text(
+                                        employer.companyName,
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          fontFamily: "Comfortaa",
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        maxLines: 3,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    const Padding(
+                                      padding:
+                                          EdgeInsets.only(top: 5, right: 5),
+                                      child: Text(
+                                        "Mãi giàu, giàu mãi, mãi giàu",
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          fontFamily: "Comfortaa",
+                                        ),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              Container(
-                margin: const EdgeInsets.only(left: 10, top: 20),
-                color: AppColors.yellow,
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Row(
-                  children: [
-                    GestureDetector(
-                      onTap: () => _onItemTapped(0),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 13, horizontal: 18),
-                        margin: const EdgeInsets.only(right: 5),
-                        decoration: BoxDecoration(
-                          color: _selectedIndex == 0
-                              ? AppColors.green
-                              : Colors.white,
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        child: Text(
-                          'Bài Viết',
-                          style: TextStyle(
-                              color: _selectedIndex == 0
-                                  ? Colors.white
-                                  : AppColors.green,
-                              fontFamily: "Comfortaa",
-                              fontWeight: FontWeight.bold,
-                              fontSize: 13),
-                        ),
                       ),
                     ),
-                    GestureDetector(
-                      onTap: () => _onItemTapped(1),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 13, horizontal: 18),
-                        margin: const EdgeInsets.only(left: 5),
-                        decoration: BoxDecoration(
-                          color: _selectedIndex == 1
-                              ? AppColors.green
-                              : Colors.white,
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        child: Text(
-                          'Thông tin',
-                          style: TextStyle(
-                              color: _selectedIndex == 1
-                                  ? Colors.white
-                                  : AppColors.green,
-                              fontFamily: "Comfortaa",
-                              fontWeight: FontWeight.bold,
-                              fontSize: 13),
-                        ),
+                    Container(
+                      margin: const EdgeInsets.only(left: 10, top: 20),
+                      color: AppColors.yellow,
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Row(
+                        children: [
+                          GestureDetector(
+                            onTap: () => _onItemTapped(0),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 13, horizontal: 18),
+                              margin: const EdgeInsets.only(right: 5),
+                              decoration: BoxDecoration(
+                                color: _selectedIndex == 0
+                                    ? AppColors.green
+                                    : Colors.white,
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              child: Text(
+                                'Bài Viết',
+                                style: TextStyle(
+                                    color: _selectedIndex == 0
+                                        ? Colors.white
+                                        : AppColors.green,
+                                    fontFamily: "Comfortaa",
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 13),
+                              ),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () => _onItemTapped(1),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 13, horizontal: 18),
+                              margin: const EdgeInsets.only(left: 5),
+                              decoration: BoxDecoration(
+                                color: _selectedIndex == 1
+                                    ? AppColors.green
+                                    : Colors.white,
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              child: Text(
+                                'Thông tin',
+                                style: TextStyle(
+                                    color: _selectedIndex == 1
+                                        ? Colors.white
+                                        : AppColors.green,
+                                    fontFamily: "Comfortaa",
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 13),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
+                    _selectedWidget,
                   ],
                 ),
-              ),
-              _selectedWidget,
-            ],
-          ),
-        ));
+              ));
   }
 }
 
 class BlogPosts extends StatelessWidget {
-  const BlogPosts({super.key});
+  final String token;
+  final String email;
+  final Employer employer;
+  final String roleName;
+
+  const BlogPosts({
+    super.key,
+    required this.token,
+    required this.email,
+    required this.employer,
+    required this.roleName,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -285,7 +347,7 @@ class BlogPosts extends StatelessWidget {
                         shape: BoxShape.circle,
                         image: DecorationImage(
                           fit: BoxFit.cover,
-                          image: const NetworkImage(_avatar),
+                          image: NetworkImage(employer.logo),
                           onError: (exception, stackTrace) {},
                         ),
                       ),
@@ -311,7 +373,17 @@ class BlogPosts extends StatelessWidget {
 }
 
 class CompanyInfo extends StatefulWidget {
-  const CompanyInfo({Key? key}) : super(key: key);
+  final Employer employer;
+  final String email;
+  final String token;
+  final String roleName;
+  const CompanyInfo({
+    super.key,
+    required this.employer,
+    required this.email,
+    required this.token,
+    required this.roleName,
+  });
 
   @override
   _CompanyInfoState createState() => _CompanyInfoState();
@@ -321,9 +393,6 @@ class _CompanyInfoState extends State<CompanyInfo> {
   late GoogleMapController _controller;
   LatLng? _initialLocation;
 
-  final String address =
-      "155A Hoàng Sa, Phường Tân Định, Quận 1, Thành Phố Hồ Chí Minh";
-
   @override
   void initState() {
     super.initState();
@@ -332,7 +401,8 @@ class _CompanyInfoState extends State<CompanyInfo> {
 
   Future<void> _getLocationFromAddress() async {
     try {
-      List<Location> locations = await locationFromAddress(address);
+      List<Location> locations =
+          await locationFromAddress(widget.employer.address);
       if (locations.isNotEmpty) {
         final LatLng latLng =
             LatLng(locations.first.latitude, locations.first.longitude);
@@ -342,8 +412,6 @@ class _CompanyInfoState extends State<CompanyInfo> {
       }
     } catch (e) {
       print('Error: $e');
-      // Xử lý lỗi khi không thể lấy vị trí từ địa chỉ
-      // Ví dụ: Hiển thị thông báo lỗi cho người dùng
     }
   }
 
@@ -366,12 +434,13 @@ class _CompanyInfoState extends State<CompanyInfo> {
             height: 10,
           ),
           Container(
+            width: MediaQuery.of(context).size.width,
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
                 color: Colors.white, borderRadius: BorderRadius.circular(30)),
-            child: const Text(
-              "Với hơn 30 năm kinh nghiệm trong việc dụ dỗ những em trai tơ gái mơ, công ty hứa hẹn sẽ là nơi để làm cho túi tiền của bạn ngày càng thêm dày. Ngại gì mà không apply ngay!",
-              style: TextStyle(
+            child: Text(
+              widget.employer.description,
+              style: const TextStyle(
                   fontFamily: "Comfortaa",
                   fontSize: 13,
                   fontWeight: FontWeight.bold),
@@ -380,13 +449,41 @@ class _CompanyInfoState extends State<CompanyInfo> {
           const SizedBox(
             height: 20,
           ),
-          const Text(
-            "THÔNG TIN DOANH NGHIỆP",
-            style: TextStyle(
-                fontFamily: "Comfortaa",
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: AppColors.darkGreen), 
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Expanded(
+                flex: 9,
+                child: Text(
+                  "THÔNG TIN DOANH NGHIỆP",
+                  style: TextStyle(
+                      fontFamily: "Comfortaa",
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.darkGreen),
+                ),
+              ),
+              Expanded(
+                flex: 1,
+                child: IconButton(
+                  icon: SvgPicture.asset(
+                    'assets/svg/edit.svg',
+                    height: 20,
+                    width: 20,
+                    colorFilter: const ColorFilter.mode(
+                      AppColors.green,
+                      BlendMode.srcIn,
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => EmployerEditInfo(employer: widget.employer, token: widget.token,email: widget.email, roleName: widget.roleName,)),
+                    );
+                  },
+                ),
+              )
+            ],
           ),
           const SizedBox(
             height: 10,
@@ -395,11 +492,11 @@ class _CompanyInfoState extends State<CompanyInfo> {
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
                 color: Colors.white, borderRadius: BorderRadius.circular(30)),
-            child: const Column(
+            child: Column(
               children: [
                 Row(
                   children: [
-                    Expanded(
+                    const Expanded(
                       flex: 2,
                       child: Text(
                         "Email: ",
@@ -412,8 +509,8 @@ class _CompanyInfoState extends State<CompanyInfo> {
                     Expanded(
                       flex: 3,
                       child: Text(
-                        "leanhthu0045@gmail.com",
-                        style: TextStyle(
+                        widget.email,
+                        style: const TextStyle(
                             fontFamily: "Comfortaa",
                             fontSize: 13,
                             fontWeight: FontWeight.bold),
@@ -421,12 +518,12 @@ class _CompanyInfoState extends State<CompanyInfo> {
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 Row(
                   children: [
-                    Expanded(
+                    const Expanded(
                       flex: 2,
                       child: Text(
                         "Địa chỉ:",
@@ -439,8 +536,8 @@ class _CompanyInfoState extends State<CompanyInfo> {
                     Expanded(
                       flex: 3,
                       child: Text(
-                        "155 Đường XXX, Phường XXX, Quận XXX, Thành Phố XXX",
-                        style: TextStyle(
+                        widget.employer.address,
+                        style: const TextStyle(
                             fontFamily: "Comfortaa",
                             fontSize: 13,
                             fontWeight: FontWeight.bold),
@@ -448,12 +545,12 @@ class _CompanyInfoState extends State<CompanyInfo> {
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 Row(
                   children: [
-                    Expanded(
+                    const Expanded(
                       flex: 2,
                       child: Text(
                         "Hotline:",
@@ -466,8 +563,8 @@ class _CompanyInfoState extends State<CompanyInfo> {
                     Expanded(
                       flex: 3,
                       child: Text(
-                        "076xxxxxxx",
-                        style: TextStyle(
+                        widget.employer.hotLine,
+                        style: const TextStyle(
                             fontFamily: "Comfortaa",
                             fontSize: 13,
                             fontWeight: FontWeight.bold),
@@ -514,8 +611,10 @@ class _CompanyInfoState extends State<CompanyInfo> {
                       },
                     )
                   : const Center(
-                      child: CircularProgressIndicator(valueColor:
-                      AlwaysStoppedAnimation<Color>(AppColors.darkGreen),),
+                      child: CircularProgressIndicator(
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(AppColors.darkGreen),
+                      ),
                     ),
             ),
           ),
@@ -524,7 +623,16 @@ class _CompanyInfoState extends State<CompanyInfo> {
           ),
           Center(
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () async {
+                SharedPreferences prefs = await SharedPreferences.getInstance();
+                prefs.setString('token', "");
+                prefs.setString('roleName', "");
+                prefs.setString('email', "");
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => Login()),
+                );
+              },
               style: ElevatedButton.styleFrom(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
@@ -536,9 +644,7 @@ class _CompanyInfoState extends State<CompanyInfo> {
               child: const Text(
                 "Đăng Xuất",
                 style: TextStyle(
-                    fontSize: 16,
-                    fontFamily: 'Comfortaa',
-                    color: Colors.white),
+                    fontSize: 16, fontFamily: 'Comfortaa', color: Colors.white),
               ),
             ),
           ),

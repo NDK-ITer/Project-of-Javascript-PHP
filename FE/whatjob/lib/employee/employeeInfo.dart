@@ -1,18 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:whatjob/employee/employeeEditInfo.dart';
+import 'package:whatjob/login/login.dart';
+import 'package:whatjob/model/employee.dart';
 import 'package:whatjob/utils/colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 
 class EmployeeInfo extends StatefulWidget {
-  const EmployeeInfo({super.key});
+  final Employee employee;
+  final String email;
+  final String token;
+  final String roleName;
+  const EmployeeInfo(
+      {super.key,
+      required this.employee,
+      required this.email,
+      required this.token,
+      required this.roleName
+      });
 
   @override
   _EmployeeInfoState createState() => _EmployeeInfoState();
 }
 
 class _EmployeeInfoState extends State<EmployeeInfo> {
-  final String _avatar =
-      'https://firebasestorage.googleapis.com/v0/b/pbox-b4a17.appspot.com/o/Avatar%2FIMG_1701620785499_1701620796631.jpg?alt=media&token=d0013b7b-b214-486e-8082-c0870ee56b86';
+  String formatDate(DateTime dateTime) {
+    return DateFormat('dd/MM/yyyy').format(dateTime);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,7 +53,9 @@ class _EmployeeInfoState extends State<EmployeeInfo> {
                         //Navigator.of(context).pop();
                       },
                     ),
-                    const SizedBox(width: 40,),
+                    const SizedBox(
+                      width: 40,
+                    ),
                     Expanded(
                       flex: 5,
                       child: Image.asset(
@@ -67,7 +85,9 @@ class _EmployeeInfoState extends State<EmployeeInfo> {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 8,),
+                    const SizedBox(
+                      width: 8,
+                    ),
                     SizedBox(
                       width: 45,
                       height: 45,
@@ -126,28 +146,36 @@ class _EmployeeInfoState extends State<EmployeeInfo> {
                               width: 120,
                               height: 120,
                               decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                image: DecorationImage(
-                                  fit: BoxFit.cover,
-                                  image: NetworkImage(_avatar),
-                                  onError: (exception, stackTrace) {},
-                                ),
-                              ),
+                                  shape: BoxShape.circle,
+                                  image: widget.employee.avatar.isNotEmpty
+                                      ? DecorationImage(
+                                          fit: BoxFit.cover,
+                                          image: NetworkImage(
+                                              widget.employee.avatar),
+                                          onError: (exception, stackTrace) {
+                                            // Handle error if image loading fails
+                                          },
+                                        )
+                                      : const DecorationImage(
+                                          fit: BoxFit.cover,
+                                          image: AssetImage(
+                                              'assets/images/default-avatar.jpg'), // Placeholder image asset path
+                                        )),
                             ),
                             const SizedBox(
                               width: 10,
                             ),
-                            const Expanded(
+                            Expanded(
                               flex: 2,
                               child: Column(
                                 children: [
                                   Padding(
-                                    padding: EdgeInsets.only(top: 25),
+                                    padding: const EdgeInsets.only(top: 25),
                                     child: Align(
                                       alignment: Alignment.centerLeft,
                                       child: Text(
-                                        "Lê Anh Thư",
-                                        style: TextStyle(
+                                        widget.employee.fullName,
+                                        style: const TextStyle(
                                           fontSize: 18,
                                           fontFamily: "Comfortaa",
                                           fontWeight: FontWeight.bold,
@@ -158,10 +186,11 @@ class _EmployeeInfoState extends State<EmployeeInfo> {
                                     ),
                                   ),
                                   Padding(
-                                    padding: EdgeInsets.only(top: 20, right: 5),
+                                    padding: const EdgeInsets.only(
+                                        top: 20, right: 5),
                                     child: Text(
-                                      "Nhận thì nhận không nhận thì cũng phải nhận",
-                                      style: TextStyle(
+                                      widget.employee.introduction ?? "",
+                                      style: const TextStyle(
                                         fontSize: 13,
                                         fontFamily: "Comfortaa",
                                       ),
@@ -216,7 +245,15 @@ class _EmployeeInfoState extends State<EmployeeInfo> {
                                   BlendMode.srcIn,
                                 ),
                               ),
-                              onPressed: () {},
+                              onPressed: () {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => EmployeeEditInfo(
+                                          employee: widget.employee,
+                                          email: widget.email,
+                                          token: widget.token,
+                                          roleName: widget.roleName,
+                                        )));
+                              },
                             ),
                           )
                         ],
@@ -232,13 +269,13 @@ class _EmployeeInfoState extends State<EmployeeInfo> {
                             borderRadius: BorderRadius.circular(20),
                           ),
                         ),
-                        child: const Padding(
-                          padding: EdgeInsets.symmetric(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
                               horizontal: 20, vertical: 25),
                           child: Column(children: [
                             Row(
                               children: [
-                                Expanded(
+                                const Expanded(
                                     flex: 2,
                                     child: Text(
                                       "Ngày sinh:",
@@ -251,8 +288,8 @@ class _EmployeeInfoState extends State<EmployeeInfo> {
                                 Expanded(
                                     flex: 3,
                                     child: Text(
-                                      "07/04/2002",
-                                      style: TextStyle(
+                                      formatDate(widget.employee.born),
+                                      style: const TextStyle(
                                           fontFamily: "Comfortaa",
                                           fontSize: 13,
                                           color: AppColors.green,
@@ -260,12 +297,12 @@ class _EmployeeInfoState extends State<EmployeeInfo> {
                                     )),
                               ],
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 20,
                             ),
                             Row(
                               children: [
-                                Expanded(
+                                const Expanded(
                                     flex: 2,
                                     child: Text(
                                       "Giới tính:",
@@ -278,8 +315,8 @@ class _EmployeeInfoState extends State<EmployeeInfo> {
                                 Expanded(
                                     flex: 3,
                                     child: Text(
-                                      "Nữ",
-                                      style: TextStyle(
+                                      widget.employee.gender,
+                                      style: const TextStyle(
                                           fontFamily: "Comfortaa",
                                           fontSize: 13,
                                           color: AppColors.green,
@@ -287,12 +324,12 @@ class _EmployeeInfoState extends State<EmployeeInfo> {
                                     )),
                               ],
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 20,
                             ),
                             Row(
                               children: [
-                                Expanded(
+                                const Expanded(
                                     flex: 2,
                                     child: Text(
                                       "Email: ",
@@ -305,8 +342,8 @@ class _EmployeeInfoState extends State<EmployeeInfo> {
                                 Expanded(
                                     flex: 3,
                                     child: Text(
-                                      "leanhthu0045@gmail.com",
-                                      style: TextStyle(
+                                      widget.email,
+                                      style: const TextStyle(
                                           fontFamily: "Comfortaa",
                                           fontSize: 13,
                                           color: AppColors.green,
@@ -314,12 +351,12 @@ class _EmployeeInfoState extends State<EmployeeInfo> {
                                     )),
                               ],
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 20,
                             ),
                             Row(
                               children: [
-                                Expanded(
+                                const Expanded(
                                     flex: 2,
                                     child: Text(
                                       "Địa chỉ:",
@@ -332,8 +369,8 @@ class _EmployeeInfoState extends State<EmployeeInfo> {
                                 Expanded(
                                     flex: 3,
                                     child: Text(
-                                      "155 Đường XXX, Phường XXX, Quận XXX, Thành Phố XXX",
-                                      style: TextStyle(
+                                      widget.employee.address,
+                                      style: const TextStyle(
                                           fontFamily: "Comfortaa",
                                           fontSize: 13,
                                           color: AppColors.green,
@@ -341,12 +378,12 @@ class _EmployeeInfoState extends State<EmployeeInfo> {
                                     )),
                               ],
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 20,
                             ),
                             Row(
                               children: [
-                                Expanded(
+                                const Expanded(
                                     flex: 2,
                                     child: Text(
                                       "SĐT:",
@@ -359,8 +396,8 @@ class _EmployeeInfoState extends State<EmployeeInfo> {
                                 Expanded(
                                     flex: 3,
                                     child: Text(
-                                      "076xxxxxxx",
-                                      style: TextStyle(
+                                      widget.employee.phoneNumber,
+                                      style: const TextStyle(
                                           fontFamily: "Comfortaa",
                                           fontSize: 13,
                                           color: AppColors.green,
@@ -368,10 +405,10 @@ class _EmployeeInfoState extends State<EmployeeInfo> {
                                     )),
                               ],
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 20,
                             ),
-                            Row(
+                            const Row(
                               children: [
                                 Expanded(
                                     flex: 2,
@@ -454,7 +491,7 @@ class _EmployeeInfoState extends State<EmployeeInfo> {
                               ),
                             ),
                             onPressed: () {
-                              //Navigator.of(context).pop();
+                              Navigator.pop(context);
                             },
                           ),
                         ],
@@ -491,7 +528,17 @@ class _EmployeeInfoState extends State<EmployeeInfo> {
                       ),
                     ),
                     GestureDetector(
-                      onTap: () {},
+                      onTap: () async {
+                        SharedPreferences prefs =
+                            await SharedPreferences.getInstance();
+                        prefs.setString('token', "");
+                        prefs.setString('roleName', "");
+                        prefs.setString('email', "");
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => Login()),
+                        );
+                      },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [

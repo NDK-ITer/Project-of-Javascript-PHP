@@ -1,28 +1,47 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:whatjob/home/home.dart';
+import 'package:whatjob/model/employee.dart';
+import 'package:whatjob/service/employeeService.dart';
 import 'package:whatjob/utils/colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 
 class EmployeeEditInfo extends StatefulWidget {
-  const EmployeeEditInfo({super.key});
+  final Employee employee;
+  final String email;
+  final String token;
+  final String roleName;
+
+  const EmployeeEditInfo({
+    super.key,
+    required this.employee,
+    required this.email,
+    required this.token,
+    required this.roleName,
+  });
 
   @override
   _EmployeeEditInfoState createState() => _EmployeeEditInfoState();
 }
 
 class _EmployeeEditInfoState extends State<EmployeeEditInfo> {
-  final String _avatar =
-      'https://firebasestorage.googleapis.com/v0/b/pbox-b4a17.appspot.com/o/Avatar%2FIMG_1701620785499_1701620796631.jpg?alt=media&token=d0013b7b-b214-486e-8082-c0870ee56b86';
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _birthdayController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _emailController =  TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _introduceController = TextEditingController();
+  int _selectedValue = 0;
+  File? _image;
 
   String _selectedField = 'IT';
 
-  late DateTime selectedDate;
+  late DateTime selectedDate = widget.employee.born;
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -39,16 +58,109 @@ class _EmployeeEditInfoState extends State<EmployeeEditInfo> {
     }
   }
 
-  int _selectedValue = 1;
+  Future<void> deleteImageFromFirebaseStorage(String imageURL) async {
+    FirebaseStorage storage = FirebaseStorage.instance;
+    Reference imageRef = storage.refFromURL(imageURL);
 
-  void _selectGender(int value) {
+    try {
+      await imageRef.delete();
+    } catch (e) {
+      print('Lỗi khi xóa hình ảnh từ Firebase Storage: $e');
+    }
+  }
+
+  String getFileNameFromPath(String path) {
+    return path.split('/').last;
+  }
+
+  Future<String> uploadImageToFirebaseStorage(File file) async {
+    FirebaseStorage storage = FirebaseStorage.instance;
+    Reference storageReference =
+        storage.ref().child('Avatar/${getFileNameFromPath(file.path)}');
+    UploadTask uploadTask = storageReference.putFile(file);
+    TaskSnapshot snapshot = await uploadTask;
+    String downloadURL = await snapshot.ref.getDownloadURL();
+    return downloadURL;
+  }
+
+  Future<void> onPressedChooseAva() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
     setState(() {
-      _selectedValue = value;
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+      } else {
+        print('No image selected.');
+      }
     });
+  }
+
+  String gender(int value) {
+    return value == 1 ? "Male" : "Female";
+  }
+
+  void editEmployee() async {
+    try {
+      Map<String, dynamic> newData = {
+        "avatar": _image == null
+            ? widget.employee.avatar
+            : await uploadImageToFirebaseStorage(_image!),
+        "fullName": _nameController.text,
+        "introduction": _introduceController.text,
+        "born": _birthdayController.text,
+        "gender": gender(_selectedValue),
+        "address": _addressController.text,
+        "phoneNumber": _phoneController.text,
+        "certification": "",
+      };
+
+      print(newData.toString());
+      final response = await EmployeeService.edit(widget.token, newData);
+      final responseData = json.decode(response.body);
+      final int state = responseData['state'];
+      if (state == 1) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) => Home(
+                    token: widget.token,
+                    email: widget.email,
+                    roleName: widget.roleName,
+                  )),
+        );
+      }
+    } catch (e) {}
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Assign values from widget.employee to controllers
+    _nameController.text = widget.employee.fullName;
+    _birthdayController.text =
+        DateFormat('dd/MM/yyyy').format(widget.employee.born);
+    _addressController.text = widget.employee.address;
+    _phoneController.text = widget.employee.phoneNumber;
+    _emailController.text = widget.email;
+    _introduceController.text = widget.employee.introduction ?? 'Introduce';
   }
 
   @override
   Widget build(BuildContext context) {
+    if (widget.employee.gender == "Male") {
+      _selectedValue = 1;
+    } else {
+      _selectedValue = 2;
+    }
+
+    void _selectGender(int value) {
+      setState(() {
+        _selectedValue = value;
+      });
+    }
+
     return Scaffold(
       backgroundColor: AppColors.yellow,
       appBar: AppBar(
@@ -83,16 +195,20 @@ class _EmployeeEditInfoState extends State<EmployeeEditInfo> {
               height: 140,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                image: DecorationImage(
-                  fit: BoxFit.cover,
-                  image: NetworkImage(_avatar),
-                  onError: (exception, stackTrace) {},
-                ),
+                image: _image != null
+                    ? DecorationImage(
+                        fit: BoxFit.cover,
+                        image: FileImage(_image!),
+                      )
+                    : DecorationImage(
+                        fit: BoxFit.cover,
+                        image: NetworkImage(widget.employee.avatar),
+                      ),
               ),
             ),
           ),
           TextButton(
-              onPressed: () {},
+              onPressed: onPressedChooseAva,
               child: const Text(
                 "Chọn",
                 style: TextStyle(
@@ -137,7 +253,7 @@ class _EmployeeEditInfoState extends State<EmployeeEditInfo> {
                     child: TextField(
                       controller: _nameController,
                       decoration: const InputDecoration(
-                        hintText: "Full Name",
+                        hintText: "Họ và tên",
                         border: InputBorder.none,
                       ),
                       cursorColor: AppColors.green,
@@ -172,7 +288,7 @@ class _EmployeeEditInfoState extends State<EmployeeEditInfo> {
                               ),
                             ),
                             const Text(
-                              "Male",
+                              "Nam",
                               style: TextStyle(
                                   fontSize: 15,
                                   fontFamily: "Comfortaa",
@@ -204,7 +320,7 @@ class _EmployeeEditInfoState extends State<EmployeeEditInfo> {
                               ),
                             ),
                             const Text(
-                              "Female",
+                              "Nữ",
                               style: TextStyle(
                                   fontSize: 15,
                                   fontFamily: "Comfortaa",
@@ -227,11 +343,16 @@ class _EmployeeEditInfoState extends State<EmployeeEditInfo> {
                         width: 2.0,
                       ),
                     ),
-                    child: TextFormField(
+                    child: TextField(
                       controller: _birthdayController,
                       decoration: InputDecoration(
-                        hintText: "Date of birth",
+                        hintText: "Ngày sinh",
                         border: InputBorder.none,
+                        hintStyle: const TextStyle(
+                          color: AppColors.gray,
+                          fontSize: 15,
+                          fontFamily: "Comfortaa",
+                        ),
                         suffixIcon: GestureDetector(
                           onTap: () {
                             _selectDate(context);
@@ -242,7 +363,6 @@ class _EmployeeEditInfoState extends State<EmployeeEditInfo> {
                           ),
                         ),
                       ),
-                      cursorColor: AppColors.green,
                       readOnly: true,
                       style: const TextStyle(
                         color: AppColors.green,
@@ -272,7 +392,7 @@ class _EmployeeEditInfoState extends State<EmployeeEditInfo> {
                     child: TextField(
                       controller: _phoneController,
                       decoration: const InputDecoration(
-                        hintText: "PhoneNumber",
+                        hintText: "Số điện thoại",
                         border: InputBorder.none,
                       ),
                       cursorColor: AppColors.green,
@@ -300,7 +420,7 @@ class _EmployeeEditInfoState extends State<EmployeeEditInfo> {
                     child: TextField(
                       controller: _addressController,
                       decoration: const InputDecoration(
-                        hintText: "Address",
+                        hintText: "Địa chỉ",
                         border: InputBorder.none,
                       ),
                       cursorColor: AppColors.green,
@@ -338,48 +458,48 @@ class _EmployeeEditInfoState extends State<EmployeeEditInfo> {
                           fontFamily: "Comfortaa"),
                     ),
                   ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Container(
-                    width: MediaQuery.of(context).size.width,
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                    decoration: BoxDecoration(
-                      color: AppColors.green,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: DropdownButton<String>(
-                      value: _selectedField,
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          _selectedField = newValue!;
-                        });
-                      },
-                      underline: Container(
-                        width: MediaQuery.of(context).size.width,
-                      ),
-                      style: const TextStyle(
-                          color: Colors.white, fontFamily: "Comfortaa"),
-                      dropdownColor: Colors.black,
-                      icon: const Icon(Icons.arrow_drop_down,
-                          color: Colors.white),
-                      items: <String>['Marketing', 'IT', 'Law']
-                          .map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: SizedBox(
-                            width: MediaQuery.of(context).size.width - 125,
-                            child: Text(
-                              value,
-                              style: const TextStyle(
-                                  fontSize: 16.0, fontFamily: "Comfortaa"),
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ),
+                  // const SizedBox(
+                  //   height: 20,
+                  // ),
+                  // Container(
+                  //   width: MediaQuery.of(context).size.width,
+                  //   padding:
+                  //       const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                  //   decoration: BoxDecoration(
+                  //     color: AppColors.green,
+                  //     borderRadius: BorderRadius.circular(20),
+                  //   ),
+                  //   child: DropdownButton<String>(
+                  //     value: _selectedField,
+                  //     onChanged: (String? newValue) {
+                  //       setState(() {
+                  //         _selectedField = newValue!;
+                  //       });
+                  //     },
+                  //     underline: Container(
+                  //       width: MediaQuery.of(context).size.width,
+                  //     ),
+                  //     style: const TextStyle(
+                  //         color: Colors.white, fontFamily: "Comfortaa"),
+                  //     dropdownColor: Colors.black,
+                  //     icon: const Icon(Icons.arrow_drop_down,
+                  //         color: Colors.white),
+                  //     items: <String>['Marketing', 'IT', 'Law']
+                  //         .map<DropdownMenuItem<String>>((String value) {
+                  //       return DropdownMenuItem<String>(
+                  //         value: value,
+                  //         child: SizedBox(
+                  //           width: MediaQuery.of(context).size.width - 125,
+                  //           child: Text(
+                  //             value,
+                  //             style: const TextStyle(
+                  //                 fontSize: 16.0, fontFamily: "Comfortaa"),
+                  //           ),
+                  //         ),
+                  //       );
+                  //     }).toList(),
+                  //   ),
+                  // ),
                   const SizedBox(
                     height: 20,
                   ),
@@ -403,16 +523,16 @@ class _EmployeeEditInfoState extends State<EmployeeEditInfo> {
                         child: TextField(
                           controller: _introduceController,
                           decoration: const InputDecoration(
-                            hintText: 'Introduce',
+                            hintText: "Giới thiệu",
                             border: InputBorder.none,
                             contentPadding: EdgeInsets.symmetric(
                                 vertical: 10, horizontal: 20),
                           ),
                           cursorColor: AppColors.green,
                           style: const TextStyle(
-                            fontSize: 16,
-                            fontFamily: 'Comfortaa',
-                          ),
+                              color: AppColors.green,
+                              fontSize: 15,
+                              fontFamily: "Comfortaa"),
                           maxLines: null,
                         ),
                       ),
@@ -422,7 +542,7 @@ class _EmployeeEditInfoState extends State<EmployeeEditInfo> {
                     height: 20,
                   ),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () => editEmployee(),
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 40, vertical: 15),

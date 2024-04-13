@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:whatjob/baseULR.dart';
+import 'package:whatjob/login/login.dart';
 import 'package:whatjob/model/Field.dart';
 import 'package:whatjob/service/feildService.dart';
 import 'package:whatjob/service/userService.dart';
@@ -70,7 +71,6 @@ class _SignUpEmployeeState extends State<SignUpEmployee> {
       selectedField = fields.isNotEmpty ? fields[0] : Field(id: '', name: '');
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -377,7 +377,7 @@ class _SignUpEmployeeState extends State<SignUpEmployee> {
                           height: 30,
                         ),
                         ElevatedButton(
-                          onPressed: () {
+                          onPressed: () async {
                             Map<String, dynamic> userData = {
                               'email': widget.email,
                               'password': widget.password,
@@ -392,7 +392,17 @@ class _SignUpEmployeeState extends State<SignUpEmployee> {
                                 'fieldId': selectedField.id,
                               }
                             };
-                            UserService.registerUser(userData);
+                            final respone =
+                                await UserService.registerUser(userData);
+                            final responseData = json.decode(respone.body);
+                            final int state = responseData['state'];
+                            if (state == 1) {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Login()),
+                              );
+                            }
                           },
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(
