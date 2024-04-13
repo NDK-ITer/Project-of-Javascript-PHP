@@ -11,14 +11,20 @@ const transporter = nodemailer.createTransport({
 export class MailSender {
     constructor() { }
 
-    public async send(toEmail: string, subject: string, content: string): Promise<any> {
-        const mailOptions = {
-            from: 'ndksender120802@gmail.com',
-            to: toEmail,
-            subject: subject,
-            text: content
-        };
-        await transporter.sendMail(mailOptions);
+    static async Send(toEmail: string, subject: string, content: string): Promise<boolean> {
+        
+        try {
+            const mailOptions = {
+                from: 'ndksender120802@gmail.com',
+                to: toEmail,
+                subject: subject,
+                text: content
+            };
+            await transporter.sendMail(mailOptions);
+            return true;
+        } catch (error) {
+            return false;
+        }
     }
 }
 

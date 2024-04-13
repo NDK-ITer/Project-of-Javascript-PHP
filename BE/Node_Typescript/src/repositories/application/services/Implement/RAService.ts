@@ -116,7 +116,7 @@ export default class RAService extends BaseService {
         }
     }
 
-    public async GetPublic(): Promise<any> {
+    public async GetPublic(limit: number, page: number): Promise<any> {
         const where: any = {
             EndSubmission: { [Op.gt]: new Date() },
             IsApproved: true

@@ -6,11 +6,10 @@ import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
 
 import authRoute from "./routes/AuthRoute";
-import UOWService from "./repositories/application/services/UOWService";
 import fieldRoute from "./routes/FieldRoute";
 import employeeRoute from "./routes/EmployeeRoute";
 import employerRoute from "./routes/EmployerRoute";
-import { title } from "process";
+import raRoute from "./routes/RARoute";
 
 const express = require('express');
 const body = require('body-parser');
@@ -30,7 +29,7 @@ const optionsSwagger = {
         },
         servers: [
             {
-                url: `http://localhost:${port}/`
+                url: `http://localhost:${port}/api`
             }
         ]
     },
@@ -50,10 +49,7 @@ app.use('/api', authRoute)
 app.use('/api/field', fieldRoute)
 app.use('/api/employee', employeeRoute)
 app.use('/api/employer', employerRoute)
-app.get('/api/tem', async (req: any, res: any) => {
-    const result = await UOWService.RoleService.GetAll()
-    res.json(result);
-});
+app.use('/api/ra',raRoute )
 //static
 app.use('/', express.static(publicPath));
 

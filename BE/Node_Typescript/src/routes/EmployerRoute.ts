@@ -1,5 +1,5 @@
 import EmployerController from "../controllers/EmployerController";
-import { AuthMiddleware } from "../middlewares/AuthMiddleware";
+import AuthMiddleware from "../middlewares/AuthMiddleware";
 
 const employerRoute = require('express').Router();
 
