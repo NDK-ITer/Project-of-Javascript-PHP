@@ -14,6 +14,7 @@ export default class RAService extends BaseService {
         image: string,
         salary: string,
         addressWork: string,
+        position: string,
         endSubmission: Date,
         ageEmployee: string,
         countEmployee: string,
@@ -21,14 +22,17 @@ export default class RAService extends BaseService {
         yearOfExpensive: string,
         degree: string,
     }): Promise<any> {
-        const result = await this.uow.RARepository.create({
-            Id: v4.toString(),
+
+        const newRA = {
+            Id: v4().toString(),
             Name: data.name,
             Description: data.description,
+            DateUpload: Date.now(),
             Requirement: data.requirement,
-            Image: data.requirement,
+            Image: data.image,
             Salary: data.salary,
             AddressWork: data.addressWork,
+            Position: data.position,
             IsApproved: false,
             View: 0,
             EndSubmission: data.endSubmission,
@@ -39,7 +43,8 @@ export default class RAService extends BaseService {
             Degree: data.degree,
             EmployerId: employerId,
             FieldId: fieldId
-        })
+        }
+        const result = await this.uow.RARepository.create(newRA)
         if (!result) {
             return {
                 state: 0,
@@ -147,6 +152,20 @@ export default class RAService extends BaseService {
         return {
             state: 1,
             data: result
+        }
+    }
+
+    public async SetApproved(id: string): Promise<any> {
+        const ra = await this.uow.RARepository.update(id, { IsApproved: true })
+        if (!ra) {
+            return {
+                state: 1,
+                mess: `Có lỗi khi duyệt bài`
+            }
+        }
+        return {
+            state: 1,
+            data: ra
         }
     }
 }

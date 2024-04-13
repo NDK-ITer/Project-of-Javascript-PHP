@@ -68,6 +68,7 @@ export default class RAController {
                 image: req.body.image,
                 salary: req.body.salary,
                 addressWork: req.body.addressWork,
+                position: req.body.position,
                 endSubmission: req.body.endSubmission,
                 ageEmployee: req.body.ageEmployee,
                 countEmployee: req.body.countEmployee,
@@ -137,7 +138,14 @@ export default class RAController {
         try {
             const userId = req.user.id
             const isEmployee = await UOWService.RoleService.CheckIsEmployee(userId);
-        
+            if(!isEmployee) {
+                res.status(200).json({
+                    state: 0,
+                    data: {
+                        mess: `Bạn không được quyền làm điều này`
+                    }
+                })
+            }
         } catch (error) {
             res.status(500)
         }
@@ -146,8 +154,32 @@ export default class RAController {
     static async SetApproved(req: any, res: Response): Promise<any> {
         try {
             const userId = req.user.id
-            const CheckIsAdmin = await UOWService.RoleService.CheckIsAdmin(userId);
-            
+            const checkIsAdmin = await UOWService.RoleService.CheckIsAdmin(userId);
+            if (!checkIsAdmin) {
+                res.status(200).json({
+                    state: 0,
+                    data: {
+                        mess: `Bạn không có quyền duyệt bài`
+                    }
+                })
+            }
+            const raId = req.body.raId
+            const result = await UOWService.RAService.SetApproved(raId)
+            if(result.state == 1){
+                res.status(200).json({
+                    state: 1,
+                    data: {
+                        id: result.data.Id,
+                        mess: `Duyệt bài thành công`
+                    }
+                })
+            }
+            res.status(200).json({
+                state: 0,
+                data: {
+                    mess: `Duyệt bài thành công`
+                }
+            })
         } catch (error) {
             res.status(500)
         }
