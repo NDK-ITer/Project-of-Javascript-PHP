@@ -6,8 +6,9 @@ export default class RAController {
     static async GetById(req: any, res: Response): Promise<any> {
         try {
             const RAId = req.query.id
-            const RA = await UOWService.RAService.GetById(RAId)
+            let RA = await UOWService.RAService.GetById(RAId)
             if (RA.state === 1) {
+                RA = RA.data
                 let employer = await UOWService.EmployerService.GetById(RA.EmployerId)
                 let fieldRA = await UOWService.FieldService.GetById(RA.FieldId)
                 employer = employer.data
