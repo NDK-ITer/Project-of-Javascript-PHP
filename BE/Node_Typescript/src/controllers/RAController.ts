@@ -7,14 +7,39 @@ export default class RAController {
         try {
             const RAId = req.query.id
             const RA = await UOWService.RAService.GetById(RAId)
-            const employer = await UOWService.EmployerService.GetById(RA.EmployerId)
-            let data: any = {
-                id: RA.Id,
-                name: RA.Name,
-                image: RA.Image,
-                dateUpload: RA.DateUpload,
-
+            if (RA.state === 1) {
+                let employer = await UOWService.EmployerService.GetById(RA.EmployerId)
+                let fieldRA = await UOWService.FieldService.GetById(RA.FieldId)
+                employer = employer.data
+                fieldRA = fieldRA.data
+                let data: any = {
+                    id: RA.Id,
+                    name: RA.Name,
+                    image: RA.Image,
+                    dateUpload: RA.DateUpload,
+                    position: RA.Position,
+                    countEmployee: RA.CountEmployee,
+                    ageEmployee: RA.AgeEmployee,
+                    degree: RA.Degree,
+                    yearOfExpensive: RA.YearOfExpensive,
+                    formOfWork: RA.FormOfWork,
+                    fieldName: fieldRA.Name,
+                    salary: RA.Salary,
+                    endSubmission: RA.EndSubmission,
+                    addressWork: RA.AddressWork,
+                    description: RA.Description,
+                }
+                res.status(200).json({
+                    state: 1,
+                    data: data,
+                })
             }
+            res.status(200).json({
+                state: 0,
+                data: {
+                    mess: RA.mess,
+                }
+            })
         } catch (error) {
             res.status(500)
         }
@@ -42,7 +67,7 @@ export default class RAController {
                     listRA.push(element);
                 }
             }
-            console.log("list ra",listRA)
+            console.log("list ra", listRA)
             res.status(200).json({
                 state: result.state,
                 data: listRA,
@@ -67,7 +92,7 @@ export default class RAController {
             const data: any = {
                 name: req.body.name,
                 description: req.body.description,
-                requirement: req.body.requirement,
+                // requirement: req.body.requirement,
                 image: req.body.image,
                 salary: req.body.salary,
                 addressWork: req.body.addressWork,

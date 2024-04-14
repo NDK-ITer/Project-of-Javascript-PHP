@@ -10,7 +10,7 @@ export default class RAService extends BaseService {
     public async Create(employerId: string, fieldId: string, data: {
         name: string,
         description: string,
-        requirement: string,
+        // requirement: string,
         image: string,
         salary: string,
         addressWork: string,
@@ -28,7 +28,7 @@ export default class RAService extends BaseService {
             Name: data.name,
             Description: data.description,
             DateUpload: Date.now(),
-            Requirement: data.requirement,
+            Requirement: "",
             Image: data.image,
             Salary: data.salary,
             AddressWork: data.addressWork,
