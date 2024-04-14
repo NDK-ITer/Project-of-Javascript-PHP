@@ -10,6 +10,7 @@ import 'package:whatjob/model/user.dart';
 import 'package:whatjob/post/post.dart';
 import 'package:whatjob/service/employeeService.dart';
 import 'package:whatjob/service/employerService.dart';
+import 'package:whatjob/service/raService.dart';
 import 'package:whatjob/service/roleSerivce.dart';
 import 'package:whatjob/utils/colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -109,7 +110,7 @@ class _HomeState extends State<Home> {
                             Expanded(
                               flex: 2,
                               child: ElevatedButton(
-                                onPressed: () {
+                                onPressed: () async {
                                   widget.roleName == "Employee"
                                       ? Navigator.pushReplacement(
                                           context,

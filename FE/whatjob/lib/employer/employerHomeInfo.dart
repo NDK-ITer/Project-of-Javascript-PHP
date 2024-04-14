@@ -9,13 +9,13 @@ import 'package:whatjob/employer/employerEditInfo.dart';
 import 'package:whatjob/login/login.dart';
 import 'package:whatjob/model/employee.dart';
 import 'package:whatjob/model/employer.dart';
+import 'package:whatjob/post/newPost.dart';
 import 'package:whatjob/post/post.dart';
 import 'package:whatjob/service/employerService.dart';
 import 'package:whatjob/utils/colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_core/firebase_core.dart';
-
 
 class EmployerHomeInfo extends StatefulWidget {
   final String token;
@@ -46,9 +46,19 @@ class _EmployerHomeInfoState extends State<EmployerHomeInfo> {
     setState(() {
       _selectedIndex = index;
       if (index == 0) {
-        _selectedWidget = BlogPosts(employer: employer, email: widget.email, token: widget.token, roleName: widget.roleName,);
+        _selectedWidget = BlogPosts(
+          employer: employer,
+          email: widget.email,
+          token: widget.token,
+          roleName: widget.roleName,
+        );
       } else {
-        _selectedWidget = CompanyInfo(employer: employer, email: widget.email, token: widget.token, roleName: widget.roleName,);
+        _selectedWidget = CompanyInfo(
+          employer: employer,
+          email: widget.email,
+          token: widget.token,
+          roleName: widget.roleName,
+        );
       }
     });
   }
@@ -62,7 +72,12 @@ class _EmployerHomeInfoState extends State<EmployerHomeInfo> {
       final employerData = json.decode(employerResponse.body);
       final userDataJson = employerData['data'];
       employer = Employer.fromJson(userDataJson);
-       _selectedWidget = BlogPosts(employer: employer, email: widget.email, token: widget.token, roleName: widget.roleName,);
+      _selectedWidget = BlogPosts(
+        employer: employer,
+        email: widget.email,
+        token: widget.token,
+        roleName: widget.roleName,
+      );
     } catch (e) {
       print('Failed to get user info: $e');
     }
@@ -297,20 +312,25 @@ class _EmployerHomeInfoState extends State<EmployerHomeInfo> {
   }
 }
 
-class BlogPosts extends StatelessWidget {
+class BlogPosts extends StatefulWidget {
   final String token;
   final String email;
   final Employer employer;
   final String roleName;
 
   const BlogPosts({
-    super.key,
+    Key? key,
     required this.token,
     required this.email,
     required this.employer,
     required this.roleName,
-  });
+  }) : super(key: key);
 
+  @override
+  _BlogPostsState createState() => _BlogPostsState();
+}
+
+class _BlogPostsState extends State<BlogPosts> {
   @override
   Widget build(BuildContext context) {
     const String _avatar =
@@ -319,51 +339,66 @@ class BlogPosts extends StatelessWidget {
     return Column(
       children: [
         GestureDetector(
-          onTap: () {},
+          onTap: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => NewPost(
+                        companyImage: widget.employer.logo,
+                        compnayName: widget.employer.companyName,
+                        email: widget.email,
+                        token: widget.token,
+                        roleName: widget.roleName,
+                      )),
+            );
+          },
           child: Container(
             width: MediaQuery.of(context).size.width * .9,
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
             margin: const EdgeInsets.only(top: 15, bottom: 10),
             decoration: BoxDecoration(
                 color: Colors.white, borderRadius: BorderRadius.circular(20)),
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const Text(
-                "Thêm bài tuyển dụng",
-                style: TextStyle(
-                    color: AppColors.green,
-                    fontFamily: "Comfortaa",
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 10, left: 10),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        image: DecorationImage(
-                          fit: BoxFit.cover,
-                          image: NetworkImage(employer.logo),
-                          onError: (exception, stackTrace) {},
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "Thêm bài tuyển dụng",
+                  style: TextStyle(
+                      color: AppColors.green,
+                      fontFamily: "Comfortaa",
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10, left: 10),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 50,
+                        height: 50,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          image: DecorationImage(
+                            fit: BoxFit.cover,
+                            image: NetworkImage(widget.employer.logo),
+                            onError: (exception, stackTrace) {},
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    const Text(
-                      "Lời mời chiêu mộ tài năng",
-                      style: TextStyle(
-                          fontFamily: "Comfortaa", fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-              )
-            ]),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      const Text(
+                        "Lời mời chiêu mộ tài năng",
+                        style: TextStyle(
+                            fontFamily: "Comfortaa",
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
           ),
         ),
         for (int i = 0; i < 3; i++) const Post(),
@@ -478,7 +513,13 @@ class _CompanyInfoState extends State<CompanyInfo> {
                   onPressed: () {
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) => EmployerEditInfo(employer: widget.employer, token: widget.token,email: widget.email, roleName: widget.roleName,)),
+                      MaterialPageRoute(
+                          builder: (context) => EmployerEditInfo(
+                                employer: widget.employer,
+                                token: widget.token,
+                                email: widget.email,
+                                roleName: widget.roleName,
+                              )),
                     );
                   },
                 ),

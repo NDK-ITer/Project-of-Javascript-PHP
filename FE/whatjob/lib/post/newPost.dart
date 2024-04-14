@@ -1,17 +1,39 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:whatjob/employer/employerHomeInfo.dart';
+import 'package:whatjob/home/home.dart';
+import 'package:whatjob/model/field.dart';
+import 'package:whatjob/service/feildService.dart';
+import 'package:whatjob/service/raService.dart';
 import 'package:whatjob/utils/colors.dart';
 import 'package:intl/intl.dart';
 
 class NewPost extends StatefulWidget {
-  const NewPost({super.key});
+  final String compnayName;
+  final String companyImage;
+  final String email;
+  final String token;
+  final String roleName;
+
+  const NewPost({
+    super.key,
+    required this.compnayName,
+    required this.companyImage,
+    required this.email,
+    required this.token,
+    required this.roleName,
+  });
 
   @override
   _NewPostState createState() => _NewPostState();
 }
 
 class _NewPostState extends State<NewPost> {
-  final String _avatar =
-      'https://firebasestorage.googleapis.com/v0/b/pbox-b4a17.appspot.com/o/Avatar%2FIMG_1701620785499_1701620796631.jpg?alt=media&token=d0013b7b-b214-486e-8082-c0870ee56b86';
+  File? _image;
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _jobDescriptionController =
@@ -26,6 +48,8 @@ class _NewPostState extends State<NewPost> {
   final TextEditingController _experienceController = TextEditingController();
   final TextEditingController _degreeController = TextEditingController();
   final TextEditingController _feildController = TextEditingController();
+  final TextEditingController _ageController = TextEditingController();
+  final TextEditingController _formOfWorkController = TextEditingController();
 
   late DateTime selectedDate = DateTime.now();
 
@@ -34,14 +58,69 @@ class _NewPostState extends State<NewPost> {
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
+      lastDate: DateTime(2100),
     );
     if (picked != null && picked != selectedDate) {
       setState(() {
         selectedDate = picked;
-        _endSubmissionController.text = DateFormat('dd/MM/yyyy').format(picked);
+        _endSubmissionController.text = DateFormat('yyyy-MM-dd HH:mm:ss').format(picked);
       });
     }
+  }
+
+  Future<void> deleteImageFromFirebaseStorage(String imageURL) async {
+    FirebaseStorage storage = FirebaseStorage.instance;
+    Reference imageRef = storage.refFromURL(imageURL);
+
+    try {
+      await imageRef.delete();
+    } catch (e) {
+      print('Lỗi khi xóa hình ảnh từ Firebase Storage: $e');
+    }
+  }
+
+  String getFileNameFromPath(String path) {
+    return path.split('/').last;
+  }
+
+  Future<String> uploadImageToFirebaseStorage(File file) async {
+    FirebaseStorage storage = FirebaseStorage.instance;
+    Reference storageReference =
+        storage.ref().child('Avatar/${getFileNameFromPath(file.path)}');
+    UploadTask uploadTask = storageReference.putFile(file);
+    TaskSnapshot snapshot = await uploadTask;
+    String downloadURL = await snapshot.ref.getDownloadURL();
+    return downloadURL;
+  }
+
+  Future<void> onPressedChooseAva() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchFields();
+  }
+
+  List<Field> fields = [];
+  late Field selectedField = Field(id: '', name: '');
+
+  Future<void> _fetchFields() async {
+    final fieldsJson = await FieldService.fetchFields();
+    fields = fieldsJson.map((fieldJson) => Field.fromJson(fieldJson)).toList();
+    setState(() {
+      selectedField = fields.isNotEmpty ? fields[0] : Field(id: '', name: '');
+    });
   }
 
   @override
@@ -61,7 +140,17 @@ class _NewPostState extends State<NewPost> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         IconButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => EmployerHomeInfo(
+                                        token: widget.token,
+                                        email: widget.email,
+                                        roleName: widget.roleName,
+                                      )),
+                            );
+                          },
                           icon: const Icon(
                             Icons.close,
                             color: AppColors.green,
@@ -76,7 +165,40 @@ class _NewPostState extends State<NewPost> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () async {
+                            Map<String, dynamic> newData = {
+                              "name": _nameController.text,
+                              "description": _jobDescriptionController.text,
+                              "requirement": "",
+                              "position": _levelController.text,
+                              "image":
+                                  await uploadImageToFirebaseStorage(_image!),
+                              "salary": _salaryController.text,
+                              "addressWork": _workAddressController.text,
+                              "endSubmission": _endSubmissionController.text,
+                              "ageEmployee": _ageController.text,
+                              "countEmployee": _countEmployeeController.text,
+                              "formOfWork": _formOfWorkController.text,
+                              "yearOfExpensive": _experienceController.text,
+                              "degree": _degreeController.text,
+                              "fieldId": selectedField.id
+                            };
+                            final response =
+                                await RAService.newPost(newData, widget.token);
+                            final responseData = json.decode(response.body);
+                            final int state = responseData['state'];
+                            if (state == 1) {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Home(
+                                          token: widget.token,
+                                          email: widget.email,
+                                          roleName: widget.roleName,
+                                        )),
+                              );
+                            }
+                          },
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 20, vertical: 13),
@@ -114,22 +236,22 @@ class _NewPostState extends State<NewPost> {
                           shape: BoxShape.circle,
                           image: DecorationImage(
                             fit: BoxFit.cover,
-                            image: NetworkImage(_avatar),
+                            image: NetworkImage(widget.companyImage),
                             onError: (exception, stackTrace) {},
                           ),
                         ),
                       ),
                     ),
                   ),
-                  const Expanded(
+                  Expanded(
                     flex: 4,
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        "Công ty A - Trùm Đa Cấp",
+                        widget.compnayName,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 13,
                           fontFamily: "Comfortaa",
                           fontWeight: FontWeight.bold,
@@ -383,6 +505,42 @@ class _NewPostState extends State<NewPost> {
                     const SizedBox(
                       height: 20,
                     ),
+                    const Text(
+                      "HÌNH THỨC LÀM VIỆC",
+                      style: TextStyle(
+                          fontFamily: "Comfortaa", fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 15, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: AppColors.green, // Màu của viền
+                          width: 2.0,
+                        ),
+                      ),
+                      child: TextField(
+                        controller: _formOfWorkController,
+                        decoration: const InputDecoration(
+                          hintText: "Cấp bậc..",
+                          border: InputBorder.none,
+                        ),
+                        cursorColor: AppColors.green,
+                        style: const TextStyle(
+                            color: AppColors.darkGreen,
+                            fontSize: 15,
+                            fontFamily: "Comfortaa"),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
                     Row(
                       children: [
                         Expanded(
@@ -476,6 +634,42 @@ class _NewPostState extends State<NewPost> {
                       height: 20,
                     ),
                     const Text(
+                      "ĐỘ TUỔI",
+                      style: TextStyle(
+                          fontFamily: "Comfortaa", fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 15, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: AppColors.green, // Màu của viền
+                          width: 2.0,
+                        ),
+                      ),
+                      child: TextField(
+                        controller: _ageController,
+                        decoration: const InputDecoration(
+                          hintText: "Độ tuổi..",
+                          border: InputBorder.none,
+                        ),
+                        cursorColor: AppColors.green,
+                        style: const TextStyle(
+                            color: AppColors.darkGreen,
+                            fontSize: 15,
+                            fontFamily: "Comfortaa"),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    const Text(
                       "BẰNG CẤP",
                       style: TextStyle(
                           fontFamily: "Comfortaa", fontWeight: FontWeight.bold),
@@ -522,26 +716,39 @@ class _NewPostState extends State<NewPost> {
                     Container(
                       width: MediaQuery.of(context).size.width,
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 15, vertical: 2),
+                          horizontal: 15, vertical: 5),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: AppColors.green,
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: AppColors.green, // Màu của viền
-                          width: 2.0,
-                        ),
                       ),
-                      child: TextField(
-                        controller: _feildController,
-                        decoration: const InputDecoration(
-                          hintText: "Ngành nghề..",
-                          border: InputBorder.none,
+                      child: DropdownButton<Field>(
+                        value: selectedField,
+                        onChanged: (Field? newValue) {
+                          setState(() {
+                            selectedField = newValue!;
+                          });
+                        },
+                        underline: Container(
+                          width: MediaQuery.of(context).size.width,
                         ),
-                        cursorColor: AppColors.green,
                         style: const TextStyle(
-                            color: AppColors.darkGreen,
-                            fontSize: 15,
-                            fontFamily: "Comfortaa"),
+                            color: Colors.white, fontFamily: "Comfortaa"),
+                        dropdownColor: Colors.black,
+                        icon: const Icon(Icons.arrow_drop_down,
+                            color: Colors.white),
+                        items: fields.map((Field field) {
+                          return DropdownMenuItem<Field>(
+                            value: field,
+                            child: SizedBox(
+                              width: MediaQuery.of(context).size.width - 110,
+                              child: Text(
+                                field.name,
+                                style: const TextStyle(
+                                    fontSize: 16.0, fontFamily: "Comfortaa"),
+                              ),
+                            ),
+                          );
+                        }).toList(),
                       ),
                     ),
                     const SizedBox(
@@ -555,18 +762,27 @@ class _NewPostState extends State<NewPost> {
                     const SizedBox(
                       height: 10,
                     ),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width,
-                      height: 300,
-                      child: Image.asset('assets/images/ava.jpg',
-                          fit: BoxFit.fitWidth),
-                    ),
+                    _image == null
+                        ? Container(
+                            width: MediaQuery.of(context).size.width,
+                            height: 300,
+                            decoration:
+                                const BoxDecoration(color: AppColors.gray),
+                          )
+                        : SizedBox(
+                            width: MediaQuery.of(context).size.width,
+                            height: 300,
+                            child: Image.file(
+                              _image!, // Sử dụng Image.file thay vì FileImage
+                              fit: BoxFit.fitWidth,
+                            ),
+                          ),
                     const SizedBox(
                       height: 10,
                     ),
                     Center(
                       child: TextButton(
-                          onPressed: () {},
+                          onPressed: onPressedChooseAva,
                           child: const Text(
                             "Chọn",
                             style: TextStyle(

@@ -159,7 +159,7 @@ class _EmployeeInfoState extends State<EmployeeInfo> {
                                       : const DecorationImage(
                                           fit: BoxFit.cover,
                                           image: AssetImage(
-                                              'assets/images/default-avatar.jpg'), // Placeholder image asset path
+                                              'assets/images/default-avatar.jpg'),
                                         )),
                             ),
                             const SizedBox(
