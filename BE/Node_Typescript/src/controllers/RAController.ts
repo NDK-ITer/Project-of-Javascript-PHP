@@ -24,13 +24,13 @@ export default class RAController {
         try {
             const limit = req.query.limit ? parseInt(req.query.limit as string) : parseInt(process.env.LIMIT_ELEMENT as string);
             const page = req.query.page ? parseInt(req.query.page as string) : 1;
-
             const result = await UOWService.RAService.GetPublic(limit, page)
-            let listRA: any[] = new Array
+            const listRA: any[] = []
             if (result.state == 1) {
-                result.data.array.forEach(async (item: any) => {
-                    const employer = await UOWService.EmployerService.GetById(item.EmployerId)
-                    listRA.push({
+                for (const item of result.data) {
+                    let employer: any = await UOWService.EmployerService.GetById(item.EmployerId);
+                    employer = employer.data;
+                    const element = {
                         id: item.Id,
                         companyName: employer.CompanyName,
                         companyLogo: employer.Logo,
@@ -38,12 +38,15 @@ export default class RAController {
                         description: item.Description,
                         salary: item.Salary,
                         image: item.Image,
-                    })
-                });
+                    };
+                    listRA.push(element);
+                }
             }
+            console.log("list ra",listRA)
             res.status(200).json({
                 state: result.state,
-                data: listRA
+                data: listRA,
+                mess: result.mess
             })
         } catch (error) {
             res.status(500)
@@ -138,7 +141,7 @@ export default class RAController {
         try {
             const userId = req.user.id
             const isEmployee = await UOWService.RoleService.CheckIsEmployee(userId);
-            if(!isEmployee) {
+            if (!isEmployee) {
                 res.status(200).json({
                     state: 0,
                     data: {
@@ -165,7 +168,7 @@ export default class RAController {
             }
             const raId = req.body.raId
             const result = await UOWService.RAService.SetApproved(raId)
-            if(result.state == 1){
+            if (result.state == 1) {
                 res.status(200).json({
                     state: 1,
                     data: {

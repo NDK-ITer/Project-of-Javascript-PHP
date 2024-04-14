@@ -123,11 +123,11 @@ export default class RAService extends BaseService {
 
     public async GetPublic(limit: number, page: number): Promise<any> {
         const where: any = {
-            EndSubmission: { [Op.gt]: new Date() },
+            // EndSubmission: { [Op.gt]: new Date() },
             IsApproved: true
         }
         const result = await this.uow.RARepository.filter(where);
-        if (!result || result.length < 1) {
+        if (!result || result.length <= 0) {
             return {
                 state: 0,
                 mess: `Không có tin tuyển dụng`
