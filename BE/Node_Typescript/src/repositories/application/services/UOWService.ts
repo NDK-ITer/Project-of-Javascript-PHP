@@ -1,3 +1,4 @@
+import DRService from "./Implement/DRService";
 import EmployeeService from "./Implement/EmployeeService";
 import EmployerService from "./Implement/EmployerService";
 import FieldService from "./Implement/FieldService";
@@ -7,6 +8,7 @@ import UserService from "./Implement/UserService";
 
 
 export default class UOWService {
+    public static DRService: DRService = new DRService();
     public static RAService: RAService = new RAService()
     public static RoleService: RoleService = new RoleService()
     public static FieldService: FieldService = new FieldService()

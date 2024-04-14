@@ -165,6 +165,7 @@ export default class RAController {
     static async Apply(req: any, res: Response): Promise<any> {
         try {
             const userId = req.user.id
+            const raId = req.body.raId
             const isEmployee = await UOWService.RoleService.CheckIsEmployee(userId);
             if (!isEmployee) {
                 res.status(200).json({
@@ -174,6 +175,22 @@ export default class RAController {
                     }
                 })
             }
+            
+            const result = await UOWService.DRService.Apply(userId, raId)
+            if(result.state === 1) {
+                res.status(200).json({
+                    state: 1,
+                    data: {
+                        mess: `Ứng tuyển thành công`
+                    }
+                })
+            }
+            res.status(200).json({
+                state: 0,
+                data: {
+                    mess: `Ứng tuyển không thành công`
+                }
+            })
         } catch (error) {
             res.status(500)
         }
