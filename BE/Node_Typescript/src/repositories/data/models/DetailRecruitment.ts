@@ -13,10 +13,10 @@ class DetailRecruitment extends Model {
     RA_Id!: string;
 
     @Column({type: DataType.DATE})
-    DateRecruitment!: Date;
+    DateApply!: Date;
 
     @Column({type: DataType.STRING})
-    CVApply!: String;
+    CVApply!: string;
 }
 
 export { DetailRecruitment }
