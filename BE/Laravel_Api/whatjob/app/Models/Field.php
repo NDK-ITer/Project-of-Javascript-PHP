@@ -22,7 +22,7 @@ class Field extends Model
         'name' => 'required'
     ];
 
-    public function recruitment_aricle(){
-        return $this->hasMany(Recruitment_Article::class);
+    public function recruitmentarticles(){
+        return $this->hasMany(RecruitmentArticle::class);
     }
 }

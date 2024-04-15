@@ -7,6 +7,12 @@ use Illuminate\Http\Request;
 
 class EmployeeController extends Controller
 {
+    public function me(Request $request)
+    {
+        $token = $request->bearerToken('token');
+        $result = EmployeeService::me($request->all(), $token);
+        return $result;
+    }
     public function get(Request $request)
     {
         $result = EmployeeService::get($request->all());

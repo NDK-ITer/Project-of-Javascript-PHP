@@ -24,7 +24,7 @@ class Enjoy extends Model
     ];
 
     public function recruitment_aricle(){
-        return $this->hasOne(Recruitment_Article::class);
+        return $this->hasOne(RecruitmentArticle::class);
     }
 
     public function employee(){

@@ -1,10 +1,12 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, non_constant_identifier_names
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:web_admin/core/color.dart';
+import 'package:web_admin/page/rolepage.dart';
 import 'package:web_admin/widgets/header.dart';
 import 'package:web_admin/widgets/sidebar.dart';
+import 'package:web_admin/widgets/table.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -117,22 +119,26 @@ class _HomePageState extends State<HomePage> {
             ),
             Expanded(
               flex: 1,
-              child: SizedBox(
-                child: Container(
-                  child: Column(
-                    children: [
-                      Header(title: content),
-                      // Text(content,
-                      //     style: TextStyle(
-                      //         fontSize: 20, color: AppColors.neutralColor8)),
-                    ],
-                  ),
-                ),
-              ),
+              child: SwapContent(content),
             )
           ],
         ),
       ),
     );
+  }
+
+  Widget SwapContent(String title) {
+    Widget content = Container();
+    switch (title) {
+      case 'Account':
+        content = Container();
+        break;
+      case 'Role':
+        content = RolePage();
+        break;
+      default:
+        break;
+    }
+    return content;
   }
 }

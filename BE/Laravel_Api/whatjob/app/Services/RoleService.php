@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Helpers\PopulateRelations;
+use App\Http\Resources\RoleResource;
 use App\Models\Role;
 use Exception;
 use Illuminate\Http\Request;
@@ -29,10 +30,12 @@ class RoleService
 
                 $query = $query->items();
 
+                $query = RoleResource::collection($query);
+
                 $data = [
                     'status' => 200,
                     'message' => "Get all data successfully",
-                    'roles' => collect($query)->keyBy('normalizeName')->mapWithKeys(function ($item) {
+                    'data' => collect($query)->keyBy('normalizeName')->mapWithKeys(function ($item) {
                         return [$item['normalizeName'] => $item];
                     })->toArray(),
                 ];

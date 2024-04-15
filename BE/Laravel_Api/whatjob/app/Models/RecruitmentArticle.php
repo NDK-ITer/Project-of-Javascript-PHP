@@ -8,10 +8,13 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Recruitment_Article extends Model
+class RecruitmentArticle extends Model
 {
     use HasFactory, HasUuids;
     use RelationshipsTrait, ValidatesTrait;
+
+    protected $table = 'recruitmentarticles';
+
 
     protected $fillable = [
         'id',
@@ -39,6 +42,6 @@ class Recruitment_Article extends Model
 
     public function field()
     {
-        return $this->belongsTo(Field::class);
+        return $this->belongsTo(Field::class, 'field_id');
     }
 }

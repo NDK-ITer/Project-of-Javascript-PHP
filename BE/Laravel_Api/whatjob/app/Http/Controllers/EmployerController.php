@@ -7,6 +7,12 @@ use App\Services\EmployerService;
 
 class EmployerController extends Controller
 {
+    public function me(Request $request)
+    {
+        $token = $request->bearerToken('token');
+        $result = EmployerService::me($request->all(), $token);
+        return $result;
+    }
     public function get(Request $request)
     {
         $result = EmployerService::get($request->all());

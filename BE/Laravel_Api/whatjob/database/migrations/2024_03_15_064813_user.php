@@ -17,7 +17,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->String('email')-> nullable()->unique();
             $table->String('password')-> nullable();
-            $table->boolean('isBlock')-> nullable();
+            $table->boolean('isBlock')-> nullable()->default(0);
             $table->timestamps();
 
             $table->uuid('role_id')->nullable();

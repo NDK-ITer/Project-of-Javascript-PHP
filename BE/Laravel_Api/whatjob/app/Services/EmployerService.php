@@ -13,6 +13,76 @@ use Ramsey\Uuid\Type\Integer;
 
 class EmployerService
 {
+    public static function me(array $data = null, $token = null)
+    {
+        $JWT_SECRET = "KKtceSicihJCPRp0DnqipgAr1pL3VRvvKRxcjtYW52zsKdSerAoZkgoD58Dww54P";
+        try {
+
+            // $data = $data['data'] ?? $data;
+            // $query = Employer::query();
+            // $relations = $data['populate'] ?? '';
+            // $model =  $query->getModel();
+            // $query = PopulateRelations::populateRelations($query, $relations, $model);
+            list($headersB64, $payloadB64, $sig) = explode('.', $token);
+            $decoded = json_decode(base64_decode($payloadB64), true);
+
+            if ($decoded['id']) {
+                // $user = User::with('employer');
+                // $user = $user->find($decoded['id']);
+                // $query  = $user;
+                $query = Employer::query();
+                $query = $query->find($decoded['id']);
+                // print_r($query);
+                $data = [
+                    'status' => 200,
+                    'mess' => "Get all data successfully",
+                    'data' => $query
+                ];
+                if (!$query) {
+                    $data = [
+                        'status' => 404,
+                        'message' => "Data not found",
+                    ];
+                }
+            } else {
+                $data = [
+                    'status' => 404,
+                    'message' => "Data not found",
+                ];
+            }
+            return $data;
+            // if ($id === null) {
+
+            //     $query = $query->get();
+            //     $data = [
+            //         'status' => 200,
+            //         'mess' => "Get all data successfully",
+            //         'data' => [
+            //             "fields" => $query
+            //         ],
+
+            //     ];
+            // } else {
+            // $query = $query->find($id);
+            // }$data = [
+            //     'status' => 404,
+            //     'message' => "Data not found",
+            //     'data' => $query,
+            // ];
+            // }
+
+            return response()->json($data, 200);
+        } catch (Exception $e) {
+            echo $e->getMessage();
+            $data = [
+                'status' => $e->getCode(),
+                'message' => $e->getMessage(),
+            ];
+
+            return response()->json($data, $e->getCode());
+        }
+    }
+
     public static function get(array $data = null, $id = null)
     {
         try {
@@ -21,7 +91,7 @@ class EmployerService
             $query = Employer::query();
             $relations = $data['populate'] ?? '';
             $model =  $query->getModel();
-
+            return $query->get();
             $query = PopulateRelations::populateRelations($query, $relations, $model);
 
             if ($id === null) {
@@ -94,12 +164,12 @@ class EmployerService
                 }
             }
             $data = $data ?? [];
+            $employer->id = $data['id'] ?? $employer->id;
             $employer->companyName = $data['companyName'] ?? $employer->companyName;
             $employer->logo = $data['logo'] ?? $employer->logo;
             $employer->description = $data['description'] ?? $employer->description;
             $employer->hotline = $data['hotline'] ?? $employer->hotline;
             $employer->address = $data['address'] ?? $employer->address;
-            $employer->field_id = $data['fieldId'] ?? null;
             if (!$employer->save()) {
                 return response()->json([
                     'status' => 500,
@@ -121,7 +191,7 @@ class EmployerService
                 'status' => $e->getCode(),
                 'message' => $e->getMessage(),
             ];
-
+            echo $e->getMessage();
             return response()->json($data, $e->getCode());
         }
     }
@@ -129,7 +199,7 @@ class EmployerService
     public static function delete(array $data = null, $id)
     {
         $user = User::find($id);
-        if($user){
+        if ($user) {
             $user->IsBlock = !$user->IsBlock->toString;
             $user->save();
             $data = [
@@ -139,8 +209,7 @@ class EmployerService
                     "user" => $user
                 ],
             ];
-        }
-        else{
+        } else {
             $data = [
                 'status' => 404,
                 'message' => "Data not found",

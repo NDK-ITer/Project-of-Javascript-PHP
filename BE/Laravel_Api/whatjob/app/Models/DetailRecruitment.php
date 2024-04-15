@@ -16,15 +16,15 @@ class Detail_Recruitment extends Model
     protected $fillable = [
         //'id',
         'employee_id',
-        'recruitment_article_id'
+        'recruitmentarticle_id'
     ];
 
     protected $rules = [
         'name' => 'required'
     ];
 
-    public function recruitment_aricle(){
-        return $this->hasOne(Recruitment_Article::class);
+    public function recruitmentaricle(){
+        return $this->hasOne(RecruitmentArticle::class);
     }
 
     public function employee(){

@@ -16,15 +16,15 @@ class Employee extends Model
 
     protected $fillable = [
         //'id',
-        'FullName',
-        'Avatar',
-        'PhoneNumber',
-        'Introduction',
-        'Certification',
-        'CV',
-        'Gender',
-        'Address',
-        'Born',
+        'fullName',
+        'avatar',
+        'phoneNumber',
+        'introduction',
+        'certification',
+        'cV',
+        'gender',
+        'address',
+        'born',
         'field_id',
     ];
 
@@ -34,7 +34,11 @@ class Employee extends Model
     ];
 
     public function user(){
-        return $this->hasOne(User::class, 'id', 'id');
+        return $this->belongsTo(User::class, 'id', 'id');
+    }
+
+    public function field(){
+        return $this->belongsTo(Field::class, 'field_id');
     }
 
 }

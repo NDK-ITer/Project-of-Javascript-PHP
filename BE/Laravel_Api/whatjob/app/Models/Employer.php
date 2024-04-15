@@ -28,10 +28,10 @@ class Employer extends Model
     ];
 
     public function user(){
-        return $this->hasOne(User::class);
+        return $this->belongsTo(User::class, 'id', 'id');
     }
 
-    public function recruitment_aricle(){
-        return $this->hasMany(Recruitment_Aricle::class);
+    public function recruitmentaricle(){
+        return $this->hasMany(RecruitmentArticle::class);
     }
 }

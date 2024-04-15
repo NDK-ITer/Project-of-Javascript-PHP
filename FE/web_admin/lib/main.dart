@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:web_admin/core/color.dart';
 import 'package:web_admin/home.dart';
 import 'package:web_admin/login.dart';
 
@@ -13,9 +14,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Web Admin WhatJob',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        scrollbarTheme: ScrollbarThemeData(
+          thumbColor: MaterialStateProperty.all(AppColors.neutralColor7),
+          trackColor: MaterialStateProperty.all(AppColors.neutralColor3),
+        ),
         fontFamily: 'Comfortaa',
         useMaterial3: true,
       ),

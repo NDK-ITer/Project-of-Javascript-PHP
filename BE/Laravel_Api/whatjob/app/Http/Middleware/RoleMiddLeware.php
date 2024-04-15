@@ -23,24 +23,26 @@ class RoleMiddLeware
         try {
             $token_id = AccountService::getIdToken($request->bearerToken());
             $user = ((User::where('token_id', $token_id))->get())->first();
-            if($user){
-                if($user->isBlock == 1){
+
+            if ($user) {
+                if ($user->isBlock == 1) {
                     return response()->json(['error' => 'Your account has been blocked'], 403);
                 }
                 $userrole = Role::find($user->role_id);
-                foreach ($roles as $role) {
 
-                    if ($role == $userrole->normalizeName ) {
-                        return $next($request); // Pass the request to the next middleware or controller
+                foreach ($roles as $role) {
+                    $normalizedRole = ltrim(strtolower($role));;
+                    if ($normalizedRole === $userrole->normalizeName) {
+                        return $next($request);
                     }
                 }
-            }
-            else{
+            } else {
                 return response()->json(['error' => 'Expired tokens'], 403);
             }
         } catch (Exception $e) {
             echo $e;
         }
         return response()->json(['error' => 'Unauthorized'], 403);
+        // return $next($request);
     }
 }

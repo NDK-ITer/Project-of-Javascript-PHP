@@ -19,6 +19,11 @@ class UserService
         return $query->get();;
     }
 
+    public static function getIdByEmail($email)
+    {
+        return $user = User::where('email', $email)->first();
+    }
+
     public static function get(array $data = [], $id = null)
     {
 
@@ -39,7 +44,6 @@ class UserService
                 $query = $query->items();
 
                 // return UserResource::collection($query);
-
                 $users = UserResource::collection($query);
                 $data = [
                     'status' => 200,
@@ -211,4 +215,18 @@ class UserService
             return false;
         }
     }
+
+    public static function uploadFile($request, $folder, $name)
+    {
+        if ($request->hasFile($name)) {
+            $file = $request->file($name);
+            $nameFile = $file->getClientOriginalName();
+            $file->move('uploads/' . $folder, $nameFile);
+
+            return 'uploads/' . $folder . '/' . $nameFile;
+        }
+
+        return null;
+    }
+
 }

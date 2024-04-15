@@ -95,6 +95,7 @@ class _SidebarWidgetState extends State<SidebarWidget> {
               children: [
                 for (int i = 0; i < widget.sidebarItems.length; i++) ...[
                   GestureDetector(
+                    behavior: HitTestBehavior.translucent,
                     onTap: () {
                       _onItemTapped(index_parent: i);
                     },

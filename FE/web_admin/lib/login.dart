@@ -81,6 +81,11 @@ class LoginPage extends StatelessWidget {
                               ),
                               const SizedBox(height: 16.0),
                               ButtonWidget(
+                                text: 'Login',
+                                textColor_1: AppColors.neutralColor3,
+                                textColor_2: AppColors.neutralColor8,
+                                backgroundColor_1: AppColors.neutralColor8,
+                                backgroundColor_2: AppColors.neutralColor3,
                                 onTap: () {
                                   Navigator.of(context).push(MaterialPageRoute(
                                     builder: (context) => HomePage(),

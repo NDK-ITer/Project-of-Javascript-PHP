@@ -4,6 +4,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EmployerController;
 use App\Http\Controllers\FieldController;
+use App\Http\Controllers\Recruitment_ArticleController;
+use App\Http\Controllers\RecruitmentArticleController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\RoleMiddLeware;
@@ -72,8 +74,8 @@ Route::group(['prefix' => 'fields', 'middleware' => RoleMiddLeware::class.':'.im
     Route::delete('/{id}', [FieldController::class, "delete"]);
 });
 
-Route::group(['prefix' => 'employers', 'middleware' => RoleMiddLeware::class.':'.implode(',', ['admin'])], function () {
-
+Route::group(['prefix' => 'employers', 'middleware' => RoleMiddLeware::class.':'.implode(',', ['admin, employer'])], function () {
+    Route::get('/me', [EmployerController::class, "me"]);
     Route::get('/', [EmployerController::class, "get"]);
     Route::get('/{id}', [EmployerController::class, "show"]);
     Route::post('/', [EmployerController::class, "upload"]);
@@ -81,12 +83,22 @@ Route::group(['prefix' => 'employers', 'middleware' => RoleMiddLeware::class.':'
     Route::delete('/{id}', [EmployerController::class, "delete"]);
 });
 
-Route::group(['prefix' => 'employees', 'middleware' => RoleMiddLeware::class.':'.implode(',', ['admin'])], function () {
-
+Route::group(['prefix' => 'employees', 'middleware' => RoleMiddLeware::class.':'.implode(',', ['admin, employee'])], function () {
+    Route::get('/me', [EmployeeController::class, "me"]);
     Route::get('/', [EmployeeController::class, "get"]);
     Route::get('/{id}', [EmployeeController::class, "show"]);
     Route::post('/', [EmployeeController::class, "upload"]);
     Route::put('/{id}', [EmployeeController::class, "edit"]);
     Route::delete('/{id}', [EmployeeController::class, "delete"]);
+});
+
+
+Route::group(['prefix' => 'ra', 'middleware' => RoleMiddLeware::class.':'.implode(',', ['admin, employer, employee'])], function () {
+    Route::get('/public/all', [RecruitmentArticleController::class, "getPublicAll"]);
+    Route::get('/', [RecruitmentArticleController::class, "get"]);
+    Route::get('/{id}', [RecruitmentArticleController::class, "show"]);
+    Route::post('/', [RecruitmentArticleController::class, "upload"]);
+    Route::put('/{id}', [RecruitmentArticleController::class, "edit"]);
+    Route::delete('/{id}', [RecruitmentArticleController::class, "delete"]);
 });
 

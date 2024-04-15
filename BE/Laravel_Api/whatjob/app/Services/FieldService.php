@@ -3,7 +3,9 @@
 namespace App\Services;
 
 use App\Helpers\PopulateRelations;
+use App\Http\Resources\FieldResource;
 use App\Models\Field;
+use App\Models\Recruitment_Article;
 use App\Models\Role;
 use Exception;
 use Illuminate\Http\Request;
@@ -22,17 +24,21 @@ class FieldService
             $query = Field::query();
             $relations = $data['populate'] ?? '';
             $model =  $query->getModel();
-
             $query = PopulateRelations::populateRelations($query, $relations, $model);
 
-            if ($id === null) {
-                // $perpage  = $request->has('per_page') ? $request->input('per_page') : 10;
-                // $query = $query->paginate($perpage);
-                //return $query->items();
 
+            if($data['populate'] == '*' || $data['populate'] == 'recruitmentarticles'){
+                $query = Field::with(['recruitmentarticles']);
+            }
+
+            if ($id === null) {
+                $limit = 10;
+                $page =  $data['page'] ?? 1;
+                $query = $query->paginate($limit, ['*'], 'page', $page);
+                $query = $query->items();
                 // $query = $query->get();
 
-                $query = $query->get();
+                $query = FieldResource::collection($query);
                 $data = [
                     'status' => 200,
                     'mess' => "Get all data successfully",

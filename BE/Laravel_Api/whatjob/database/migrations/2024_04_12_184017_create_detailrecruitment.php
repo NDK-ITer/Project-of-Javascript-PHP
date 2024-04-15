@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('detail_recruitment', function (Blueprint $table) {
+        Schema::create('detailrecruitment', function (Blueprint $table) {
             $table->uuid('employee_id');
-            $table->uuid('recruitment_article_id');
-            $table->primary(['employee_id', 'recruitment_article_id']);
+            $table->uuid('recruitmentarticle_id');
+            $table->primary(['employee_id', 'recruitmentarticle_id']);
             $table->foreign('employee_id')->references('id')->on('employees')->onDelete('cascade');
-            $table->foreign('recruitment_article_id')->references('id')->on('recruitment_articles')->onDelete('cascade');
+            $table->foreign('recruitmentarticle_id')->references('id')->on('recruitmentarticles')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('detail_recruitment');
+        Schema::dropIfExists('detailrecruitment');
     }
 };

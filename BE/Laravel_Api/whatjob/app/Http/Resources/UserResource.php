@@ -26,14 +26,15 @@ class UserResource extends JsonResource
             'password' => $this->password,
             'isBlock' => $this->isBlock,
             'role' => $this->role->name,
+            'roleId' => $this->role_id,
             // Thêm các trường khác nếu cần
         ];
         if ($this->employee != null) {
             $employee = $this->whenLoaded('employee', function () {
                 return $this->employee;
-              });
+            });
             $data = array_merge($data, [
-                'fullname' => $employee->fullName,
+                'fullname' => $employee->fullname,
                 'avatar' => $employee->avatar,
                 'phoneNumber' => $employee->phoneNumber,
                 'introduction' => $employee->introduction,
@@ -47,7 +48,7 @@ class UserResource extends JsonResource
         if ($this->employer != null) {
             $employer = $this->whenLoaded('employer', function () {
                 return $this->employer;
-              });
+            });
             $data = array_merge($data, [
                 'companyName' => $employer->companyName,
                 'logo' => $employer->logo,

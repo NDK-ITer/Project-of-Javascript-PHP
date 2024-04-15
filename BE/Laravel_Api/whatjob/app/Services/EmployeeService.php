@@ -13,6 +13,77 @@ use Ramsey\Uuid\Type\Integer;
 
 class EmployeeService
 {
+
+    public static function me(array $data = null, $token = null)
+    {
+        $JWT_SECRET = "KKtceSicihJCPRp0DnqipgAr1pL3VRvvKRxcjtYW52zsKdSerAoZkgoD58Dww54P";
+        try {
+
+            // $data = $data['data'] ?? $data;
+            // $query = Employer::query();
+            // $relations = $data['populate'] ?? '';
+            // $model =  $query->getModel();
+            // $query = PopulateRelations::populateRelations($query, $relations, $model);
+            list($headersB64, $payloadB64, $sig) = explode('.', $token);
+            $decoded = json_decode(base64_decode($payloadB64), true);
+
+            if ($decoded['id']) {
+                // $user = User::with('employer');
+                // $user = $user->find($decoded['id']);
+                // $query  = $user;
+                $query = Employee::query();
+                $query = $query->find($decoded['id']);
+                // print_r($query);
+                $data = [
+                    'status' => 200,
+                    'mess' => "Get all data successfully",
+                    'data' => $query
+                ];
+                if (!$query) {
+                    $data = [
+                        'status' => 404,
+                        'message' => "Data not found",
+                    ];
+                }
+            } else {
+                $data = [
+                    'status' => 404,
+                    'message' => "Data not found",
+                ];
+            }
+            return $data;
+            // if ($id === null) {
+
+            //     $query = $query->get();
+            //     $data = [
+            //         'status' => 200,
+            //         'mess' => "Get all data successfully",
+            //         'data' => [
+            //             "fields" => $query
+            //         ],
+
+            //     ];
+            // } else {
+            // $query = $query->find($id);
+            // }$data = [
+            //     'status' => 404,
+            //     'message' => "Data not found",
+            //     'data' => $query,
+            // ];
+            // }
+
+            return response()->json($data, 200);
+        } catch (Exception $e) {
+            echo $e->getMessage();
+            $data = [
+                'status' => $e->getCode(),
+                'message' => $e->getMessage(),
+            ];
+
+            return response()->json($data, $e->getCode());
+        }
+    }
+
     public static function get(array $data = null, $id = null)
     {
         try {
@@ -23,12 +94,11 @@ class EmployeeService
             $model =  $query->getModel();
 
             $query = PopulateRelations::populateRelations($query, $relations, $model);
-            $employee = Employee::find($id);
-            return $employee->user;
+            return $query->get();
             if ($id === null) {
                 $limit = 10;
                 $page =  $data['page'] ?? 1;
-                $query = $query->paginate($limit , ['*'], 'page', $page);
+                $query = $query->paginate($limit, ['*'], 'page', $page);
 
 
                 $query = $query->items();
@@ -39,7 +109,7 @@ class EmployeeService
                     'status' => 200,
                     'mess' => "Get all data successfully",
                     'data' => [
-                        "fields" => $query
+                        "employees" => $query
                     ],
 
                 ];
@@ -85,7 +155,7 @@ class EmployeeService
 
             if ($id === null) {
                 $employee = new Employee;
-                $employee->id = $data['id'];
+                // $employee->id = $data['id'];
             } else {
                 $employee = Employee::find($id);
                 if (!$employee) {
@@ -95,16 +165,29 @@ class EmployeeService
                     ];
                     return response()->json($data, 404);
                 }
+                $employee->fullname = $data['fullName'] ?? $employee->fullname;
+                $employee->avatar = $data['avatar'] ?? $employee->avatar;
+                $employee->phoneNumber = $data['phoneNumber'] ?? $employee->phoneNumber;
+                $employee->introduction = $data['introduction'] ?? $employee->introduction;
+                $employee->certification = $data['certification'] ?? $employee->certification;
+                $employee->cv = $data['CV'] ?? $employee->cv;
+                $employee->gender = $data['gender'] ?? $employee->gender;
+                $employee->address = $data['address'] ?? $employee->address;
+                $employee->born = $data['born'] ?? $employee->born;
+                $employee->field_id = $data['fieldId'] ?? $employee->field_id;
+                $employee->updated_at = date('Y-m-d H:i:s');
+
+                $employee->save();
             }
 
-            $data = $data ?? [];
-            $employee->field_id = $data['fieldId'] ?? null;
-            if (!$employee->save()) {
-                return response()->json([
-                    'status' => 500,
-                    'message' => $employee->getErrors(),
-                ], 500);
-            }
+            // $data = $data ?? [];
+            // $employee->field_id = $data['fieldId'] ?? null;
+            // if (!$employee->save()) {
+            //     return response()->json([
+            //         'status' => 500,
+            //         'message' => $employee->getErrors(),
+            //     ], 500);
+            // }
 
             $employees = EmployeeService::get($data);
 
@@ -120,7 +203,7 @@ class EmployeeService
                 'status' => $e->getCode(),
                 'message' => $e->getMessage(),
             ];
-
+            echo $e->getMessage();
             return response()->json($data, $e->getCode());
         }
     }

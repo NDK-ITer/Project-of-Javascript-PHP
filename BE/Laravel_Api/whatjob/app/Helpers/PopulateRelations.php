@@ -13,10 +13,12 @@ class PopulateRelations
     public static function populateRelations($query, $relations, $model)
     {
         try {
+            print_r($relations);
             if ($relations !== '' && $relations !== null) {
 
                 if ($relations === '*') {
                     $relations = $model->relationships();
+
                 } else {
                     $relations = is_array($relations) ? $relations : explode(',', $relations);
                 }

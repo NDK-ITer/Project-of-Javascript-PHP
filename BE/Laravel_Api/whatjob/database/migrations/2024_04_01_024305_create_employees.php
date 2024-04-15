@@ -24,8 +24,6 @@ return new class extends Migration
             $table->string('address');
             $table->string('born');
             $table->timestamps();
-            $table->uuid('field_id')->nullable();
-            $table->foreign('field_id')->references('id')->on('fields')->onDelete('cascade');
             $table->foreign('id')->references('id')->on('users')->onDelete('cascade');
         });
     }
