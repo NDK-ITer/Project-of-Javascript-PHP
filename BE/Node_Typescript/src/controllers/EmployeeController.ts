@@ -62,6 +62,7 @@ export default class EmployeeController {
                         phoneNumber: data.PhoneNumber,
                         certification: data.Certification,
                         historyApply: data.historyApply,
+                        cv: data.CV,
                     }
                 })
             }
