@@ -39,6 +39,23 @@ export default class EmployeeService extends BaseService {
         }
     }
 
+    public async UpdateCV(userId: string, newCV: string): Promise<any> {
+        const result = await this.uow.EmployeeRepository.update(userId, {
+            CV: newCV
+        })
+        if (!result) {
+            return {
+                state: 0,
+                mess: `Cập nhập CV không thành công.`
+            }
+        }
+        return {
+            state: 1,
+            data: result,
+            mess: `Cập nhập CV thành công.`
+        }
+    }
+
     public async GetById(id: string): Promise<any> {
         let employee: any = await this.uow.EmployeeRepository.getById(id)
         if (!employee) {
