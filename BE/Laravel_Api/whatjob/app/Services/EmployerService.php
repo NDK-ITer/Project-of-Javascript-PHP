@@ -140,7 +140,7 @@ class EmployerService
         }
     }
 
-    public static function upload(array $data = null, $id = null)
+    public static function upload(array $data = [], $id = null)
     {
         try {
 
@@ -163,13 +163,14 @@ class EmployerService
                     return response()->json($data, 404);
                 }
             }
-            $data = $data ?? [];
+            // $data = $data ?? [];
             $employer->id = $data['id'] ?? $employer->id;
             $employer->companyName = $data['companyName'] ?? $employer->companyName;
             $employer->logo = $data['logo'] ?? $employer->logo;
             $employer->description = $data['description'] ?? $employer->description;
-            $employer->hotline = $data['hotline'] ?? $employer->hotline;
+            $employer->hotline = $data['hotLine'] ?? $employer->hotline;
             $employer->address = $data['address'] ?? $employer->address;
+            print_r($data);
             if (!$employer->save()) {
                 return response()->json([
                     'status' => 500,
@@ -195,6 +196,57 @@ class EmployerService
             return response()->json($data, $e->getCode());
         }
     }
+
+
+    public static function edit(array $data = null, $id = null)
+    {
+        try {
+
+            // $validator = (new Employer())->validate($data);
+
+            // if ($validator != null) {
+            //     return response()->json($validator);
+            // }
+            $employer = Employer::find($id);
+            if (!$employer) {
+                $data = [
+                    'status' => 404,
+                    'message' => "Data not found",
+                ];
+                return response()->json($data, 404);
+            }
+            $employer->id = $data['id'] ?? $employer->id;
+            $employer->companyName = $data['companyName'] ?? $employer->companyName;
+            $employer->logo = $data['logo'] ?? $employer->logo;
+            $employer->description = $data['description'] ?? $employer->description;
+            $employer->hotline = $data['hotline'] ?? $employer->hotline;
+            $employer->address = $data['address'] ?? $employer->address;
+            if (!$employer->save()) {
+                return response()->json([
+                    'status' => 500,
+                    'message' => $employer->getErrors(),
+                ], 500);
+            }
+
+            $employers = EmployerService::get($data);
+
+            $data = [
+                'state' => 1,
+                'message' =>  'Data update successfully',
+                'data' => $employers
+            ];
+
+            return $data;
+        } catch (Exception $e) {
+            $data = [
+                'status' => $e->getCode(),
+                'message' => $e->getMessage(),
+            ];
+            echo $e->getMessage();
+            return response()->json($data, $e->getCode());
+        }
+    }
+
 
     public static function delete(array $data = null, $id)
     {

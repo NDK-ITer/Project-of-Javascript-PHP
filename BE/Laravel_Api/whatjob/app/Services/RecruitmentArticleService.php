@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Helpers\PopulateRelations;
+use App\Http\Resources\RecruitmentArticleResource;
 use App\Models\Employer;
 use App\Models\Recruitment_Article;
 use App\Models\RecruitmentArticle;
@@ -74,7 +75,9 @@ class RecruitmentArticleService
 
                 ];
             } else {
+                $query = $query->with('field');
                 $query = $query->find($id);
+
                 if ($query) {
 
                     $data = [
@@ -128,7 +131,10 @@ class RecruitmentArticleService
 
                 ];
             } else {
+                $query = $query->with('field');
                 $query = $query->find($id);
+
+                $query = RecruitmentArticleResource::make($query);
                 if ($query) {
 
                     $data = [
@@ -157,7 +163,7 @@ class RecruitmentArticleService
         }
     }
 
-    public static function upload(array $data = null, $id = null)
+    public static function upload(array $data = null, $id = null, $token = null)
     {
 
         try {
@@ -165,9 +171,12 @@ class RecruitmentArticleService
             // if ($validator != null) {
             //     return response()->json($validator);
             // }
+            list($headersB64, $payloadB64, $sig) = explode('.', $token);
+            $decoded = json_decode(base64_decode($payloadB64), true);
+            $employer_id = $decoded['id'];
 
             if ($id === null) {
-                $ra = new RecruitmentArticle();
+                $recruitment_article = new RecruitmentArticle();
                 // $role->id = Str::uuid()->toString();
 
                 $message = 'Data update successfully';
@@ -183,37 +192,34 @@ class RecruitmentArticleService
                 }
                 $message = 'Data uploaded successfully';
             }
-            $fields = [
-                'name',
-                'requirement',
-                'description',
-                'image',
-                'salary',
-                'addressWork',
-                'isApproved',
-                'endSubmission',
-                'ageEmployee',
-                'countEmployee',
-                'formOfWork',
-                'yearsOfExperience',
-                'degree',
-                'employer_id',
-                'field_id',
-            ];
-            foreach ($fields as $field) {
-                $recruitment_article->$field = $data[$field] ?? $recruitment_article->$field;
-            }
+            $recruitment_article->name = $data['name'] ?? $recruitment_article->name;
+            // $recruitment_article->requirement = $data['requirement'] ?? $recruitment_article->requirement ?? '';
+            $recruitment_article->requirement = $data['requirement'] ?? '';
+            $recruitment_article->description = $data['description'] ?? $recruitment_article->description;
+            $recruitment_article->position = $data['position'] ?? $recruitment_article->position;
+            $recruitment_article->image = $data['image'] ?? $recruitment_article->image ?? '';
+            $recruitment_article->salary = $data['salary'] ?? $recruitment_article->salary;
+            $recruitment_article->addressWork = $data['addressWork'] ?? $recruitment_article->addressWork;
+            $recruitment_article->isApproved = $data['isApproved'] ?? 0;
+            $recruitment_article->endSubmission = $data['endSubmission'] ?? $recruitment_article->endSubmission;
+            $recruitment_article->ageEmployee = $data['ageEmployee'] ?? $recruitment_article->ageEmployee;
+            $recruitment_article->countEmployee = $data['countEmployee'] ?? $recruitment_article->countEmployee;
+            $recruitment_article->formOfWork = $data['formOfWork'] ?? $recruitment_article->formOfWork;
+            $recruitment_article->yearsOfExperience = $data['yearOfExpensive'] ?? $recruitment_article->yearsOfExperience;
+            $recruitment_article->degree = $data['degree'] ?? $recruitment_article->degree;
+            $recruitment_article->field_id = $data['fieldId'] ?? $recruitment_article->field_id;
+            $recruitment_article->employer_id = $employer_id ?? $recruitment_article->employer_id;
             $recruitment_article->save();
 
-            $recruitment_article = RecruitmentArticle::get();
+            // $recruitment_article = RecruitmentArticle::get();
 
             $data = [
-                'status' => 200,
+                'state' => 1,
                 'message' => $message,
-                'data' => $recruitment_article
+                // 'data' => $recruitment_article
             ];
 
-            return $data;
+            return response()->json($data, 200);;
         } catch (Exception $e) {
 
             $data = [

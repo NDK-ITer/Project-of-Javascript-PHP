@@ -66,7 +66,7 @@ Route::group(['prefix' => 'users', 'middleware' => RoleMiddLeware::class.':'.imp
 
 });
 
-Route::group(['prefix' => 'fields', 'middleware' => RoleMiddLeware::class.':'.implode(',', ['admin'])], function () {
+Route::group(['prefix' => 'fields', 'middleware' => RoleMiddLeware::class.':'.implode(',', ['admin, employee, employer'])], function () {
     Route::get('/', [FieldController::class, "get"]);
     Route::get('/{id}', [FieldController::class, "show"]);
     Route::post('/', [FieldController::class, "upload"]);
@@ -80,6 +80,7 @@ Route::group(['prefix' => 'employers', 'middleware' => RoleMiddLeware::class.':'
     Route::get('/{id}', [EmployerController::class, "show"]);
     Route::post('/', [EmployerController::class, "upload"]);
     Route::put('/{id}', [EmployerController::class, "edit"]);
+    Route::put('/edit', [EmployerController::class, "edit_1"]);
     Route::delete('/{id}', [EmployerController::class, "delete"]);
 });
 
@@ -88,7 +89,9 @@ Route::group(['prefix' => 'employees', 'middleware' => RoleMiddLeware::class.':'
     Route::get('/', [EmployeeController::class, "get"]);
     Route::get('/{id}', [EmployeeController::class, "show"]);
     Route::post('/', [EmployeeController::class, "upload"]);
+
     Route::put('/{id}', [EmployeeController::class, "edit"]);
+    Route::put('/edit', [EmployeeController::class, "edit_1"]);
     Route::delete('/{id}', [EmployeeController::class, "delete"]);
 });
 

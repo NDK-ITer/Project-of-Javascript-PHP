@@ -27,18 +27,19 @@ class FieldService
             $query = PopulateRelations::populateRelations($query, $relations, $model);
 
 
-            if($data['populate'] == '*' || $data['populate'] == 'recruitmentarticles'){
+            if($relations != '' && ($relations == '*' || $relations == 'recruitmentarticles')){
                 $query = Field::with(['recruitmentarticles']);
             }
 
             if ($id === null) {
-                $limit = 10;
-                $page =  $data['page'] ?? 1;
-                $query = $query->paginate($limit, ['*'], 'page', $page);
-                $query = $query->items();
-                // $query = $query->get();
+                // $limit = 10;
+                // $page =  $data['page'] ?? 1;
+                // $query = $query->paginate($limit, ['*'], 'page', $page);
+                // $query = $query->items();
+                // $query = $query->with('recruitmentarticles');
+                $query = $query->get();
 
-                $query = FieldResource::collection($query);
+                // $query = FieldResource::collection($query);
                 $data = [
                     'status' => 200,
                     'mess' => "Get all data successfully",

@@ -99,7 +99,7 @@ class AccountService
             $employee['cv'] = $input['employee']['CV'] ?? '';
             $employee['gender'] = $input['employee']['gender'] ?? '';
             $employee['address'] = $input['employee']['address'] ?? '';
-            $employee['born'] = $input['employee']['born'] ?? '';
+            $employee['born'] = $input['employee']['born'] ?? date('Y-m-d H:i:s');
             $employee['field_id'] = $input['employee']['fieldId'] ?? '';
             $employee['created_at'] = date('Y-m-d H:i:s');
             $employee['updated_at'] = date('Y-m-d H:i:s');

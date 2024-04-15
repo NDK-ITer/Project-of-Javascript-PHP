@@ -26,7 +26,8 @@ class RecruitmentArticleController extends Controller
 
     public function upload(Request $request)
     {
-        $result = RecruitmentArticleService::upload($request->all());
+        $token = $request->bearerToken();
+        $result = RecruitmentArticleService::upload($request->all(), null, $token);
         return $result;
     }
 

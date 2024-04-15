@@ -208,6 +208,60 @@ class EmployeeService
         }
     }
 
+
+    public static function edit(array $data = null, $id = null)
+    {
+        try {
+$temp = $data;
+            $employee = Employee::find($id);
+                if (!$employee) {
+                    $data = [
+                        'status' => 404,
+                        'message' => "Data not found",
+                    ];
+                    return response()->json($data, 404);
+                }
+                $employee->fullname = $data['fullName'] ?? $employee->fullname;
+                $employee->avatar = $data['avatar'] ?? $employee->avatar;
+                $employee->phoneNumber = $data['phoneNumber'] ?? $employee->phoneNumber;
+                $employee->introduction = $data['introduction'] ?? $employee->introduction;
+                $employee->certification = $data['certification'] ?? $employee->certification;
+                $employee->cv = $data['CV'] ?? $employee->cv;
+                $employee->gender = $data['gender'] ?? $employee->gender;
+                $employee->address = $data['address'] ?? $employee->address;
+                $employee->born = $data['born'] ? date('Y-m-d', strtotime($data['born'])) : $employee->born;
+                $employee->field_id = $data['fieldId'] ?? $employee->field_id;
+                $employee->updated_at = date('Y-m-d H:i:s');
+
+                $employee->save();
+
+            // $data = $data ?? [];
+            // $employee->field_id = $data['fieldId'] ?? null;
+            // if (!$employee->save()) {
+            //     return response()->json([
+            //         'status' => 500,
+            //         'message' => $employee->getErrors(),
+            //     ], 500);
+            // }
+
+            $employees = EmployeeService::get($data);
+
+            $data = [
+                'status' => 200,
+                'message' => 'Data update successfully',
+                'data' => $temp
+            ];
+
+            return $data;
+        } catch (Exception $e) {
+            $data = [
+                'status' => $e->getCode(),
+                'message' => $e->getMessage(),
+            ];
+            return response()->json($data, $e->getCode());
+        }
+    }
+
     public static function delete(array $data = null, $id)
     {
     }
