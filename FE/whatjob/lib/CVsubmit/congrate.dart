@@ -6,7 +6,16 @@ import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:file_picker/file_picker.dart';
 
 class Congrate extends StatefulWidget {
-  const Congrate({super.key});
+  final String token;
+  final String roleName;
+  final String email;
+
+  const Congrate({
+    super.key,
+    required this.token,
+    required this.roleName,
+    required this.email,
+  });
 
   @override
   _CongrateState createState() => _CongrateState();

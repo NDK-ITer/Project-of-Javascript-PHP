@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:whatjob/CVsubmit/submitForm.dart';
+import 'package:whatjob/model/employee.dart';
 import 'package:whatjob/model/raDetail.dart';
 import 'package:whatjob/post/post.dart';
 import 'package:whatjob/service/raService.dart';
@@ -12,11 +14,20 @@ class PostDetail extends StatefulWidget {
   final String postId;
   final String logo;
   final String companyName;
+  final String token;
+  final String roleName;
+  final String email;
+  final Employee employee;
+
   const PostDetail({
     super.key,
     required this.postId,
     required this.logo,
     required this.companyName,
+    required this.token,
+    required this.roleName,
+    required this.email,
+    required this.employee,
   });
 
   @override
@@ -222,7 +233,8 @@ class _PostDetailState extends State<PostDetail> {
                                         width: 5,
                                       ),
                                       Text(
-                                        formatDate(raDetail.dateUpload).toString(),
+                                        formatDate(raDetail.dateUpload)
+                                            .toString(),
                                         style: const TextStyle(
                                             fontFamily: "Comfortaa",
                                             fontSize: 13,
@@ -601,7 +613,8 @@ class _PostDetailState extends State<PostDetail> {
                                         width: 5,
                                       ),
                                       Text(
-                                        formatDate(raDetail.endSubmission).toString(),
+                                        formatDate(raDetail.endSubmission)
+                                            .toString(),
                                         style: const TextStyle(
                                             fontFamily: "Comfortaa",
                                             fontSize: 14,
@@ -672,7 +685,19 @@ class _PostDetailState extends State<PostDetail> {
                             ),
                             Center(
                               child: ElevatedButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => SubmitForm(
+                                              employee: widget.employee,
+                                              token: widget.token,
+                                              email: widget.email,
+                                              roleName: widget.roleName,
+                                              postId: widget.postId,
+                                            )),
+                                  );
+                                },
                                 style: ElevatedButton.styleFrom(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 20, vertical: 15),

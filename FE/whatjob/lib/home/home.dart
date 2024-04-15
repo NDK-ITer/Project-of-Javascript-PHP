@@ -112,6 +112,10 @@ class _HomeState extends State<Home> {
                         for (int i = 0; i < postList.length; i++)
                           Post(
                             post: postList[i],
+                            token: widget.token,
+                            email: widget.email,
+                            roleName: widget.roleName,
+                            employee: employee,
                           ),
                       ]))),
                 ),

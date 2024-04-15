@@ -82,4 +82,29 @@ class RAService {
       throw Exception('Failed to load job posting');
     }
   }
+
+  static Future<http.Response> apply(String token, String raId) async {
+    try {
+      final response = await http.post(
+        Uri.parse('${BaseURL.baseURL}/api/ra/apply'),
+        headers: <String, String>{
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode({'raId': raId})
+      );
+
+      print(response.statusCode);
+      if (response.statusCode == 200) {
+        print('Apply successfully');
+        print('Response: ${response.body}');
+      } else {
+        print('Failed to Apply. Error: ${response.reasonPhrase}');
+      }
+      return response;
+    } catch (e) {
+      print('Failed to Apply. Error: $e');
+      throw e;
+    }
+  }
 }

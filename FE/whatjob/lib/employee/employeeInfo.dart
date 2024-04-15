@@ -51,7 +51,7 @@ class _EmployeeInfoState extends State<EmployeeInfo> {
                         size: 30,
                       ),
                       onPressed: () {
-                        //Navigator.of(context).pop();
+                        Navigator.of(context).pop();
                       },
                     ),
                     const SizedBox(

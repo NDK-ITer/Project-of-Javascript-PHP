@@ -137,8 +137,6 @@ class _EmployeeEditInfoState extends State<EmployeeEditInfo> {
   @override
   void initState() {
     super.initState();
-
-    // Assign values from widget.employee to controllers
     _nameController.text = widget.employee.fullName;
     _birthdayController.text =
         DateFormat('dd/MM/yyyy').format(widget.employee.born);
