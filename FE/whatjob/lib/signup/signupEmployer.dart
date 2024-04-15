@@ -1,4 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:whatjob/login/login.dart';
+import 'package:whatjob/model/role.dart';
+import 'package:whatjob/service/roleSerivce.dart';
 import 'package:whatjob/service/userService.dart';
 import 'package:whatjob/utils/colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -21,6 +26,25 @@ class _SignUpEmployerState extends State<SignUpEmployer> {
   TextEditingController _nameController = TextEditingController();
   TextEditingController _addressController = TextEditingController();
   TextEditingController _phoneController = TextEditingController();
+
+  List<Role> roles = [];
+
+  Future<void> _fetchRoles() async {
+    try {
+      final List<Role> fetchedRoles = await RoleService.fetchRoles();
+      setState(() {
+        roles = fetchedRoles;
+      });
+    } catch (e) {
+      print('Error fetching roles: $e');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchRoles();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -166,20 +190,35 @@ class _SignUpEmployerState extends State<SignUpEmployer> {
                           height: 40,
                         ),
                         ElevatedButton(
-                          onPressed: () {
+                          onPressed: () async {
+                            String roleId = "";
+                            for (var role in roles) {
+                              if (role.name == 'Employer') {
+                                roleId = role.id;
+                                break;
+                              }
+                            }
                             Map<String, dynamic> userData = {
                               'email': widget.email,
                               'password': widget.password,
-                              'roleId': "b947a44b-a827-412a-8d1d-8def7df24d12",
+                              'roleId': roleId,
                               'employer': {
                                 "companyName": _nameController.text,
                                 "address": _addressController.text,
                                 "hotline": _phoneController.text,
                               }
                             };
-
-                            print(userData.toString());
-                            UserService.registerUser(userData);
+                            final respone =
+                                await UserService.registerUser(userData);
+                            final responseData = json.decode(respone.body);
+                            final int state = responseData['state'];
+                            if (state == 1) {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Login()),
+                              );
+                            }
                           },
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(

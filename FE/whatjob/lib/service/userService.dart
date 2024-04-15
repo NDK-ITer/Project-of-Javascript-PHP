@@ -21,7 +21,6 @@ class UserService {
         return response;
       } else {
         print('Failed to register user. Error: ${response.reasonPhrase}');
-        // You can throw an error here if you want to handle the failure case differently.
         throw Exception('Failed to register user. Error: ${response.reasonPhrase}');
       }
     } catch (e) {

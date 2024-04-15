@@ -7,6 +7,8 @@ class Employee {
   final String address;
   final String phoneNumber;
   final String certification;
+  final String cv;
+
 
   Employee({
     required this.avatar,
@@ -17,6 +19,7 @@ class Employee {
     required this.address,
     required this.phoneNumber,
     required this.certification,
+    required this.cv,
   });
 
   Employee.empty()
@@ -27,7 +30,8 @@ class Employee {
         gender = '',
         address = '',
         phoneNumber = '',
-        certification = '';
+        certification = '',
+        cv = '';
 
   factory Employee.fromJson(Map<String, dynamic> json) {
     return Employee(
@@ -39,6 +43,7 @@ class Employee {
       address: json['address'] ?? '',
       phoneNumber: json['phoneNumber'] ?? '',
       certification: json['certification'] ?? '',
+      cv: json['cv'] ?? '',
     );
   }
 }

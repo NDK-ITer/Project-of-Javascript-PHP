@@ -109,6 +109,7 @@ class _SubmitFormState extends State<SubmitForm> {
                   ),
                   child: TextField(
                     controller: _nameController,
+                    readOnly: true,
                     decoration: const InputDecoration(
                       hintText: "Nhập Họ Tên",
                       border: InputBorder.none,
@@ -259,6 +260,7 @@ class _SubmitFormState extends State<SubmitForm> {
                   ),
                   child: TextField(
                     controller: _phoneController,
+                    readOnly: true,
                     decoration: const InputDecoration(
                       hintText: "Nhập Số Điện Thoại",
                       border: InputBorder.none,
@@ -292,6 +294,7 @@ class _SubmitFormState extends State<SubmitForm> {
                   ),
                   child: TextField(
                     controller: _addressController,
+                    readOnly: true,
                     decoration: const InputDecoration(
                       hintText: "Nhập địa chỉ",
                       border: InputBorder.none,
@@ -325,6 +328,7 @@ class _SubmitFormState extends State<SubmitForm> {
                   ),
                   child: TextField(
                     controller: _emailController,
+                    readOnly: true,
                     decoration: const InputDecoration(
                       hintText: "Nhập Email",
                       border: InputBorder.none,

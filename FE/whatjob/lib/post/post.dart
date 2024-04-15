@@ -1,21 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:whatjob/model/post.dart';
+import 'package:whatjob/post/postDetail.dart';
 import 'package:whatjob/utils/colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 
 class Post extends StatefulWidget {
-  const Post({super.key});
+  final PostClass post;
+
+  const Post({super.key, required this.post});
 
   @override
   _PostState createState() => _PostState();
 }
 
 class _PostState extends State<Post> {
-  final String _avatar =
-      'https://firebasestorage.googleapis.com/v0/b/pbox-b4a17.appspot.com/o/Avatar%2FIMG_1701620785499_1701620796631.jpg?alt=media&token=d0013b7b-b214-486e-8082-c0870ee56b86';
-
   @override
   Widget build(BuildContext context) {
+    final String _avatar = widget.post.companyLogo;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: Container(
@@ -48,7 +51,7 @@ class _PostState extends State<Post> {
                           ),
                         ),
                       ),
-                      const Expanded(
+                      Expanded(
                         flex: 5,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,20 +59,20 @@ class _PostState extends State<Post> {
                             Align(
                               alignment: Alignment.centerLeft,
                               child: Text(
-                                "Công ty A - Trùm Đa Cấp",
+                                widget.post.companyName,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 13,
                                   fontFamily: "Comfortaa",
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 5,
                             ),
-                            Text(
+                            const Text(
                               "5 phút trước",
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -97,11 +100,11 @@ class _PostState extends State<Post> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Align(
+                        Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
-                            "TUYỂN CỘNG TÁC VIÊN IT",
-                            style: TextStyle(
+                            widget.post.name,
+                            style: const TextStyle(
                               fontFamily: "Comfortaa",
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
@@ -111,11 +114,11 @@ class _PostState extends State<Post> {
                         const SizedBox(
                           height: 5,
                         ),
-                        const Align(
+                        Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
-                            "A là công ty đã có 10 năm kinh nghiệm trong việc lừa đảo những em trai tơ gái mơ. Nay công ty của chúng tôi muốn kết nạp thêm thành viên mới với mong muốn làm cho công ty nên lớn mạnh lớn. Với lợi nhuận 10%/1 lần lừa đảo, mức lương...",
-                            style: TextStyle(
+                            widget.post.description,
+                            style: const TextStyle(
                               fontFamily: "Comfortaa",
                               fontSize: 12,
                             ),
@@ -130,15 +133,16 @@ class _PostState extends State<Post> {
                             borderRadius: BorderRadius.circular(15),
                             border: Border.all(
                               color: AppColors.green, // Màu của viền
+
                               width: 2.0,
                             ),
                           ),
-                          child: const Padding(
-                            padding: EdgeInsets.symmetric(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 10),
                             child: Text(
-                              "Mức lương: 20 - 25 triệu",
-                              style: TextStyle(
+                              "Mức lương: ${widget.post.salary}",
+                              style: const TextStyle(
                                 fontFamily: "Comfortaa",
                                 fontSize: 11,
                                 fontWeight: FontWeight.bold,
@@ -154,7 +158,10 @@ class _PostState extends State<Post> {
           SizedBox(
             width: MediaQuery.of(context).size.width,
             height: 300,
-            child: Image.asset('assets/images/ava.jpg', fit: BoxFit.fitWidth),
+            child: Image.network(
+              widget.post.image,
+              fit: BoxFit.fitWidth,
+            ),
           ),
           Row(
             children: [
@@ -185,7 +192,12 @@ class _PostState extends State<Post> {
               Expanded(
                 flex: 1,
                 child: GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => PostDetail(logo: widget.post.companyLogo, companyName: widget.post.companyName,postId: widget.post.id,)),
+                    );
+                  },
                   child: Container(
                     height: 55,
                     decoration: const ShapeDecoration(

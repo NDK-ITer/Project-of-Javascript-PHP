@@ -44,4 +44,28 @@ class EmployeeService {
       throw e;
     }
   }
+  static Future<http.Response> cvEdit (String token, String cv) async {
+    try {
+      final response = await http.put(
+        Uri.parse('${BaseURL.baseURL}/api/employee/update-cv'),
+        headers: <String, String>{
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode({'newCV': cv}),
+      );
+
+      print(response.statusCode);
+      if (response.statusCode == 200) {
+        print('Employee edited successfully');
+        print('Response: ${response.body}');
+      } else {
+        print('Failed to edit employee. Error: ${response.reasonPhrase}');
+      }
+      return response; // Return the response
+    } catch (e) {
+      print('Failed to edit employee. Error: $e');
+      throw e;
+    }
+  }
 }

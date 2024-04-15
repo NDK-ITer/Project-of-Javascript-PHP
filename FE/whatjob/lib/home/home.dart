@@ -5,6 +5,7 @@ import 'package:whatjob/employee/employeeInfo.dart';
 import 'package:whatjob/employer/employerHomeInfo.dart';
 import 'package:whatjob/model/employee.dart';
 import 'package:whatjob/model/employer.dart';
+import 'package:whatjob/model/post.dart';
 import 'package:whatjob/model/role.dart';
 import 'package:whatjob/model/user.dart';
 import 'package:whatjob/post/post.dart';
@@ -66,12 +67,28 @@ class _HomeState extends State<Home> {
     return lastName;
   }
 
+  List<PostClass> postList = [];
+  Future<void> _loadPosts() async {
+    try {
+      List<PostClass> fetchedPosts = await RAService.fetchPublicItems();
+
+      setState(() {
+        postList = fetchedPosts;
+      });
+    } catch (e) {
+      // Handle error
+
+      print('Error loading posts: $e');
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     employee = Employee.empty();
     employer = Employer.empty();
     _getUserInfo(widget.token);
+    _loadPosts();
   }
 
   @override
@@ -92,7 +109,10 @@ class _HomeState extends State<Home> {
                       height: double.infinity,
                       child: SingleChildScrollView(
                           child: Column(children: [
-                        for (int i = 0; i < 3; i++) const Post(),
+                        for (int i = 0; i < postList.length; i++)
+                          Post(
+                            post: postList[i],
+                          ),
                       ]))),
                 ),
                 Positioned(
@@ -112,7 +132,7 @@ class _HomeState extends State<Home> {
                               child: ElevatedButton(
                                 onPressed: () async {
                                   widget.roleName == "Employee"
-                                      ? Navigator.pushReplacement(
+                                      ? Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
@@ -122,7 +142,7 @@ class _HomeState extends State<Home> {
                                                     employee: employee,
                                                     roleName: widget.roleName,
                                                   )))
-                                      : Navigator.pushReplacement(
+                                      : Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>

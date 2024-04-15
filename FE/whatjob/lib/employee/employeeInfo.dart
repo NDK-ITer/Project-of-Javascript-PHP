@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:whatjob/employee/cvDetail.dart';
 import 'package:whatjob/employee/employeeEditInfo.dart';
 import 'package:whatjob/login/login.dart';
 import 'package:whatjob/model/employee.dart';
@@ -438,7 +439,17 @@ class _EmployeeInfoState extends State<EmployeeInfo> {
                       height: 10,
                     ),
                     GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => CVDetail(
+                                  employee: widget.employee,
+                                  token: widget.token,
+                                  email: widget.email,
+                                  roleName: widget.roleName,
+                                )));
+                      },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -534,7 +545,7 @@ class _EmployeeInfoState extends State<EmployeeInfo> {
                         prefs.setString('token', "");
                         prefs.setString('roleName', "");
                         prefs.setString('email', "");
-                        Navigator.pushReplacement(
+                        Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => Login()),
                         );

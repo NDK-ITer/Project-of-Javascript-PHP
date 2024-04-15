@@ -203,7 +203,7 @@ class _LoginState extends State<Login> {
                               ),
                               GestureDetector(
                                   onTap: () {
-                                    Navigator.pushReplacement(
+                                    Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) => SignUp()),

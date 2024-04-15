@@ -35,8 +35,6 @@ class EmployerHomeInfo extends StatefulWidget {
 
 class _EmployerHomeInfoState extends State<EmployerHomeInfo> {
   List<String> items = ["Bài Viết", "Thông Tin"];
-  final String _avatar =
-      'https://firebasestorage.googleapis.com/v0/b/pbox-b4a17.appspot.com/o/Avatar%2FIMG_1701620785499_1701620796631.jpg?alt=media&token=d0013b7b-b214-486e-8082-c0870ee56b86';
 
   int _selectedIndex = 0;
 
@@ -340,7 +338,7 @@ class _BlogPostsState extends State<BlogPosts> {
       children: [
         GestureDetector(
           onTap: () {
-            Navigator.pushReplacement(
+            Navigator.push(
               context,
               MaterialPageRoute(
                   builder: (context) => NewPost(
@@ -401,7 +399,7 @@ class _BlogPostsState extends State<BlogPosts> {
             ),
           ),
         ),
-        for (int i = 0; i < 3; i++) const Post(),
+        // for (int i = 0; i < 3; i++) const Post(),
       ],
     );
   }
@@ -511,7 +509,7 @@ class _CompanyInfoState extends State<CompanyInfo> {
                     ),
                   ),
                   onPressed: () {
-                    Navigator.pushReplacement(
+                    Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (context) => EmployerEditInfo(
@@ -669,7 +667,7 @@ class _CompanyInfoState extends State<CompanyInfo> {
                 prefs.setString('token', "");
                 prefs.setString('roleName', "");
                 prefs.setString('email', "");
-                Navigator.pushReplacement(
+                Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => Login()),
                 );

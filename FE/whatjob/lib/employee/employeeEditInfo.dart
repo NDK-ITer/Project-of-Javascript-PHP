@@ -120,7 +120,7 @@ class _EmployeeEditInfoState extends State<EmployeeEditInfo> {
       final responseData = json.decode(response.body);
       final int state = responseData['state'];
       if (state == 1) {
-        Navigator.pushReplacement(
+        Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) => Home(
@@ -129,6 +129,7 @@ class _EmployeeEditInfoState extends State<EmployeeEditInfo> {
                     roleName: widget.roleName,
                   )),
         );
+        if(_image != null) {deleteImageFromFirebaseStorage(widget.employee.avatar);};
       }
     } catch (e) {}
   }

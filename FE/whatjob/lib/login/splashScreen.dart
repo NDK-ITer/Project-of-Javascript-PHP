@@ -16,13 +16,13 @@ class SplashScreen extends StatelessWidget {
       String? email = prefs.getString('email') ?? "";
 
       if (token != "") {
-        Navigator.pushReplacement(
+        Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) => Home(token: token, roleName: roleName, email: email,)),
         );
       } else {
-        Navigator.pushReplacement(
+        Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => Login()),
         );

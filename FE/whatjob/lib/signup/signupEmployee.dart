@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:whatjob/baseULR.dart';
 import 'package:whatjob/login/login.dart';
 import 'package:whatjob/model/Field.dart';
+import 'package:whatjob/model/role.dart';
 import 'package:whatjob/service/feildService.dart';
+import 'package:whatjob/service/roleSerivce.dart';
 import 'package:whatjob/service/userService.dart';
 import 'package:whatjob/utils/colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -55,10 +57,24 @@ class _SignUpEmployeeState extends State<SignUpEmployee> {
     });
   }
 
+  List<Role> roles = [];
+
+  Future<void> _fetchRoles() async {
+    try {
+      final List<Role> fetchedRoles = await RoleService.fetchRoles();
+      setState(() {
+        roles = fetchedRoles;
+      });
+    } catch (e) {
+      print('Error fetching roles: $e');
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     _fetchFields();
+    _fetchRoles();
   }
 
   List<Field> fields = [];
@@ -378,10 +394,17 @@ class _SignUpEmployeeState extends State<SignUpEmployee> {
                         ),
                         ElevatedButton(
                           onPressed: () async {
+                            String roleId = "";
+                            for (var role in roles) {
+                              if (role.name == 'Employee') {
+                                roleId = role.id;
+                                break;
+                              }
+                            }
                             Map<String, dynamic> userData = {
                               'email': widget.email,
                               'password': widget.password,
-                              'roleId': "b947a44b-a827-412a-8d1d-8def7df24d12",
+                              'roleId': roleId,
                               'employee': {
                                 'fullName': _nameController.text,
                                 'gender':

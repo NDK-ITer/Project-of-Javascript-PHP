@@ -270,7 +270,7 @@ class _EmployerEditInfoState extends State<EmployerEditInfo> {
                       final responseData = json.decode(response.body);
                       final int state = responseData['state'];
                       if (state == 1) {
-                        Navigator.pushReplacement(
+                        Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => Home(

@@ -141,7 +141,7 @@ class _NewPostState extends State<NewPost> {
                       children: [
                         IconButton(
                           onPressed: () {
-                            Navigator.pushReplacement(
+                            Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => EmployerHomeInfo(
@@ -188,7 +188,7 @@ class _NewPostState extends State<NewPost> {
                             final responseData = json.decode(response.body);
                             final int state = responseData['state'];
                             if (state == 1) {
-                              Navigator.pushReplacement(
+                              Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => Home(
