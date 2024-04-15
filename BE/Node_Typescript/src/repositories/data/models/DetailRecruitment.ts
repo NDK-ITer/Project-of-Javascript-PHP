@@ -14,6 +14,9 @@ class DetailRecruitment extends Model {
 
     @Column({type: DataType.DATE})
     DateRecruitment!: Date;
+
+    @Column({type: DataType.STRING})
+    CVApply!: String;
 }
 
 export { DetailRecruitment }

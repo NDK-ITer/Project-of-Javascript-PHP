@@ -23,6 +23,10 @@ module.exports = {
       DateRecruitment: {
         type: Sequelize.DATE,
         allowNull: false
+      },
+      CVApply: {
+        type: Sequelize.STRING,
+        allowNull: false
       }
     });
   },
