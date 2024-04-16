@@ -2,12 +2,15 @@
 
 namespace App\Services;
 
+use App\Http\Resources\UserResource;
+use App\Models\Employee;
+use App\Models\Employer;
 use App\Models\User;
 use Exception;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Illuminate\Http\Request;
-
+use Ramsey\Uuid\Uuid;
 class AccountService
 {
 
@@ -17,8 +20,8 @@ class AccountService
 
     public static function login(array $credentials)
     {
-        $user = User::where('Email', $credentials['email'])->first();
-        if (!$user || ($credentials['password'] != $user->Password)) {
+        $user = User::where('email', $credentials['email'])->first();
+        if (!$user || ($credentials['password'] != $user->password)) {
             return response()->json([
                 'error' => 'Invalid credentials'
             ], 401);
@@ -31,11 +34,11 @@ class AccountService
                 'message' => 'Cannot create token'
             ], 500);
         }
-
+        $user = UserResource::make($user);
         return response()->json([
+            'state' => 1,
             'token' => $token,
-            'user' => $user,
-            //'test' => $ds
+            'data' => $user,
         ]);
     }
     public static function readable_random_string($length = 6)
@@ -58,31 +61,58 @@ class AccountService
     public static function register(array $input)
     {
 
-        $validator = (new User())->validate($input);
+        try {
+            $validator = (new User())->validate($input);
 
         if ($validator != null) {
             return response()->json($validator);
         }
 
         $ds = array();
-        $ds['FullName'] = $input['fullName'] ?? AccountService::readable_random_string();
-        $ds['Email'] = $input['email'];
-        $ds['Password'] = $input['password'];
-        $ds['token_id'] = '';
-        $ds['Born'] = $input['born'] ?? '';
-        $ds['IsBlock'] = 0;
+        $ds['email'] = $input['email'];
+        $ds['password'] = $input['password'];
         $user = User::create($ds);
-        $user->role_id = $input['roleId'] ?? '97fd62a1-000e-495f-b906-27dcce86f7d4';
+        $user->role_id = $input['roleId'];
         $user->save();
-        if (!$user) {
+        $temp = UserService::getIdByEmail($user->email);
+        if ($input['employer']) {
+
+
+
+            $employer = array();
+            $employer['companyName'] = $input['employer']['companyName'] ?? '';
+            $employer['hotline']  = $input['employer']['hotline'] ?? '';
+            $employer['address'] = $input['employer']['address'] ?? '';
+            $employer['logo'] = '';
+            $employer['description'] = '';
+            $employer['created_at'] = date('Y-m-d H:i:s');
+            $employer['updated_at'] = date('Y-m-d H:i:s');
+            Employer::insert($employer + ['id' => $temp->id]);
+
+        } else if($input['employee']) {
+            $employee = array();
+            $employee['fullname'] = $input['employee']['fullName'] ?? '';
+            $employee['avatar']  = $input['employee']['avatar'] ?? '';
+            $employee['phoneNumber '] = $input['employee']['phoneNumber'] ?? '';
+            $employee['introduction'] = $input['employee']['introduction'] ?? '';
+            $employee['certification'] = $input['employee']['certification'] ?? '';
+            $employee['cv'] = $input['employee']['CV'] ?? '';
+            $employee['gender'] = $input['employee']['gender'] ?? '';
+            $employee['address'] = $input['employee']['address'] ?? '';
+            $employee['born'] = $input['employee']['born'] ?? date('Y-m-d H:i:s');
+            $employee['field_id'] = $input['employee']['fieldId'] ?? '';
+            $employee['created_at'] = date('Y-m-d H:i:s');
+            $employee['updated_at'] = date('Y-m-d H:i:s');
+            Employee::insert($employee + ['id' => $temp->id]);
+        } else {
             return response()->json([
                 'result' => false,
                 'message' => 'Cannot register user'
             ], 500);
         }
-
         $token = $user->generateToken();
         $result = UserService::update_expired($user, $token);
+
         if (!$result) {
             return response()->json([
                 'result' => false,
@@ -94,6 +124,9 @@ class AccountService
             'token' => $token,
             'user' => $user
         ]);
+        } catch (Exception $th) {
+            echo $th;
+        }
     }
 
 

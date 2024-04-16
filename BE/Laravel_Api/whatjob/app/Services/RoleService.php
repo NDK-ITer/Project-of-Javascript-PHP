@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Helpers\PopulateRelations;
+use App\Http\Resources\RoleResource;
 use App\Models\Role;
 use Exception;
 use Illuminate\Http\Request;
@@ -23,17 +24,19 @@ class RoleService
             $query = PopulateRelations::populateRelations($query, $relations, $model);
 
             if ($id === null) {
-                // $perpage  = $request->has('per_page') ? $request->input('per_page') : 10;
-                // $query = $query->paginate($perpage);
-                //return $query->items();
+                $limit = 10;
+                $page =  $request->input('page');
+                $query = $query->paginate($limit , ['*'], 'page', $page);
 
-                $query = $query->get();
+                $query = $query->items();
+
+                $query = RoleResource::collection($query);
 
                 $data = [
                     'status' => 200,
                     'message' => "Get all data successfully",
-                    'roles' => collect($query)->keyBy('NormalizeName')->mapWithKeys(function ($item) {
-                        return [$item['NormalizeName'] => $item];
+                    'data' => collect($query)->keyBy('normalizeName')->mapWithKeys(function ($item) {
+                        return [$item['normalizeName'] => $item];
                     })->toArray(),
                 ];
             } else {
@@ -68,27 +71,22 @@ class RoleService
 
     public static function upload(Request $request, $id = null)
     {
-
         try {
-
-            $validator = (new Role())->validate($request->all());
-
-            if ($validator != null) {
-                return response()->json($validator);
-            }
-
+            // $validator = (new Role())->validate($request->all());
+            // if ($validator != null) {
+            //     return response()->json($validator);
+            // }
             if ($id === null) {
                 $role = new Role;
                 $role->id = Str::uuid()->toString();
-
                 $message = 'Data update successfully';
             } else {
                 $role = Role::find($id);
                 $message = 'Data uploaded successfully';
             }
 
-            $role->Name = $request->Name;
-            $role->NormalizeName = ltrim(strtolower($request->Name));
+            $role->name = $request->name ?? $role->name;
+            $role->normalizeName = ltrim(strtolower($role->name));
             $role->save();
 
             $roles = RoleService::get($request);
@@ -96,7 +94,7 @@ class RoleService
             $data = [
                 'status' => 200,
                 'message' => $message,
-                'data' => $roles
+                // 'data' => $roles
             ];
 
             return $data;
@@ -117,12 +115,12 @@ class RoleService
 
         if ($role) {
             $role->delete();
-            $roles = RoleService::get($request);
+            // $roles = RoleService::get($request);
 
             $data = [
                 'status' => 200,
                 'message' => "Data deleted successfully",
-                'data' => $roles
+                // 'data' => $roles
             ];
         } else {
             $data = [

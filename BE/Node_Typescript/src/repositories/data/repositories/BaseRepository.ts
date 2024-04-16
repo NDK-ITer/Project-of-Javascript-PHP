@@ -1,7 +1,7 @@
-import { FindOptions, Op } from 'sequelize';
+import { FindOptions} from 'sequelize';
 import { Model, ModelCtor } from 'sequelize-typescript';
 
-abstract class BaseRepository<T extends Model>{
+abstract class BaseRepository<T extends Model> {
     protected model: ModelCtor<T>;
 
     constructor(model: ModelCtor<T>) {
@@ -9,7 +9,10 @@ abstract class BaseRepository<T extends Model>{
     }
 
     async create(data: any, include?: FindOptions['include']): Promise<T | null> {
-        return await this.model.create(data, { include });
+        if (include) {
+            return await this.model.create(data, { include });
+        }
+        return await this.model.create(data);
     }
 
     async getAll(page?: number, limit?: number): Promise<T[]> {

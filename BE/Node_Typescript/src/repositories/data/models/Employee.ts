@@ -4,6 +4,7 @@ import { Field } from './Field';
 import { User } from './User';
 import { RecruitmentArticle } from './RecruitmentArticle';
 import { Enjoy } from './Enjoy';
+import { DetailRecruitment } from './DetailRecruitment';
 
 @Table({ timestamps: false })
 class Employee extends Model {
@@ -60,6 +61,9 @@ class Employee extends Model {
 
     @BelongsToMany(() => RecruitmentArticle, () => Enjoy)
     ListEnjoy!: RecruitmentArticle[];
+
+    @BelongsToMany(() => RecruitmentArticle, () => DetailRecruitment)
+    ListDR!: RecruitmentArticle[];
 }
 
 export { Employee };

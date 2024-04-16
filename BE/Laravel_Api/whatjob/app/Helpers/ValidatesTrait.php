@@ -9,7 +9,7 @@ trait ValidatesTrait{
 
     public function validate(array $data)
     {
-        $validator = Validator::make($data, $this->rules);
+        $validator = Validator::make($data, $this->rules ?? []);
 
         if ($validator->fails()) {
             $errors = $validator->errors()->toArray();

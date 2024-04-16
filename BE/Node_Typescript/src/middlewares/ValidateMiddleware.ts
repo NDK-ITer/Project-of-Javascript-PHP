@@ -29,6 +29,7 @@ export default class ValidateMiddleware {
             });
         }
         const passwordRegex: RegExp = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        console.log(passwordRegex.test(password));
         if (!passwordRegex.test(password)) {
             return res.status(200).json({
                 state: 0,

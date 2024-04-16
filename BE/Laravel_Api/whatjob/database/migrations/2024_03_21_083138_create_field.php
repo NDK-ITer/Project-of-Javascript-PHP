@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('fields', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('Name');
+            $table->string('name');
             $table->timestamps();
         });
     }

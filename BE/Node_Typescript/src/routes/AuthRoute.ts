@@ -40,7 +40,7 @@ const authRoute = require('express').Router();
  */
 authRoute.post('/register',
     ValidateMiddleware.EmailValidate,
-    ValidateMiddleware.PasswordValidate,
+    // ValidateMiddleware.PasswordValidate,
     ValidateMiddleware.PhoneNumberValidate,
     AuthController.Register
 )

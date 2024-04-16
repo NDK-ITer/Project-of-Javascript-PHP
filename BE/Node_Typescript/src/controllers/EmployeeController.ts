@@ -19,7 +19,6 @@ export default class EmployeeController {
                 const data = result.data
                 res.status(200).json({
                     state: result.state,
-                    mess: result.mess,
                     data: {
                         avatar: data.Avatar,
                         fullName: data.FullName,
@@ -29,12 +28,15 @@ export default class EmployeeController {
                         email: data.Email,
                         address: data.Address,
                         phoneNumber: data.PhoneNumber,
+                        mess: result.mess,
                     }
                 })
             }
             res.status(200).json({
                 state: result.state,
-                mess: result.mess
+                data:{
+                    mess: result.mess
+                }
             })
         } catch (error) {
             res.status(500)
@@ -60,12 +62,29 @@ export default class EmployeeController {
                         phoneNumber: data.PhoneNumber,
                         certification: data.Certification,
                         historyApply: data.historyApply,
+                        cv: data.CV,
                     }
                 })
             }
             res.status(200).json({
                 state: result.state,
                 mess: result.mess
+            })
+        } catch (error) {
+            res.status(500)
+        }
+    }
+
+    static async UpdateCV(req: any, res: Response): Promise<any>{
+        try {
+            const user = req.user
+            const newCV = req.body.newCV
+            const result = await UOWService.EmployeeService.UpdateCV(user.id, newCV)
+            res.status(200).json({
+                state: result.state,
+                data:{
+                    mess: result.mess
+                }
             })
         } catch (error) {
             res.status(500)

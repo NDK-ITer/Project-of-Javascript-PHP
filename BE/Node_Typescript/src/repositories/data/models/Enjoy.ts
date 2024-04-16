@@ -11,6 +11,12 @@ class Enjoy extends Model {
     @ForeignKey(() => RecruitmentArticle)
     @Column({ primaryKey: true, type: DataType.STRING })
     RA_Id!: string;
+
+    @Column({type: DataType.DATE})
+    DateApply!: Date;
+
+    @Column({type: DataType.STRING})
+    CVApply!: string;
 }
 
 export { Enjoy }

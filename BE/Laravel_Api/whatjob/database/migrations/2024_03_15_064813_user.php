@@ -14,12 +14,10 @@ return new class extends Migration
         //
         if(Schema::hasTable('users')) return;
         Schema::create('users', function (Blueprint $table) {
-            $table->uuid('Id')->primary();
-            $table->String('FullName')->nullable();
-            $table->String('Email')-> nullable()->unique();
-            $table->String('Password')-> nullable();
-            $table->String('Born')-> nullable();
-            $table->boolean('IsBlock')-> nullable();
+            $table->uuid('id')->primary();
+            $table->String('email')-> nullable()->unique();
+            $table->String('password')-> nullable();
+            $table->boolean('isBlock')-> nullable()->default(0);
             $table->timestamps();
 
             $table->uuid('role_id')->nullable();

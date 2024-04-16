@@ -7,6 +7,8 @@ export default class DRService extends BaseService {
     }
 
     public async Apply(employeeId: string, RAId: string): Promise<any> {
+        console.log("ndk: ",employeeId, RAId);
+
         if (employeeId == null || RAId == null) {
             return {
                 state: 0,
@@ -29,10 +31,12 @@ export default class DRService extends BaseService {
         const applyData: any = {
             EmployeeId: employeeId,
             RA_Id: RAId,
-            DateRecruitment: Date.now(),
-            CVApply: employee?.CV,
+            CVApply: employee.CV,
+            DateApply: new Date(),
         }
-        const applyAction = await this.uow.DRRepository.create(applyData)
+        console.log(applyData)
+        const applyAction = await this.uow.EnjoyRepository.create(applyData)
+        console.log("ndk: ", applyAction)
         if(applyAction){
             return {
                 state: 1,
