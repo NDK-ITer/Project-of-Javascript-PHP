@@ -1,9 +1,9 @@
 class User {
-  final String id;
-  final String email;
-  final String role;
-  final String password;
-  final String isBlock;
+  String id;
+  String email;
+  String role;
+  String password;
+  String isBlock;
 
   User({
     required this.id,
@@ -13,11 +13,33 @@ class User {
     required this.password,
   });
 
-  // factory User.fromJson(Map<String, dynamic> json) {
-  //   return User(
-  //     displayName: json['email'],
-  //     avatar: json['avatar'],
-  //     roleId: json['roleId'],
-  //   );
-  // }
+  @override
+  String toString() =>
+      '\nUser { id: $id, email: $email, role: $role, isBlock: $isBlock, password: $password} ';
+
+  static List<String> toName() {
+    return ['select', 'Id', 'Email', 'Role', 'Password', 'IsBlock'];
+  }
+
+  List<String> toArray() => ['false', id!, email, role, password, isBlock];
+
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+      id: json['id'].toString(),
+      email: json['email'].toString(),
+      role: json['role'].toString(),
+      password: json['password'].toString(),
+      isBlock: json['isBlock'].toString(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'email': email,
+      'role': role,
+      'password': password,
+      'isBlock': isBlock,
+    };
+  }
 }

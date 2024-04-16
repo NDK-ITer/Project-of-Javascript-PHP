@@ -11,11 +11,15 @@ class TableWidget extends StatefulWidget {
   final String title;
   final List<List<String>> rows;
   final List<String> columns;
+  final Function(String id) onEdit;
+  final Function(String id) onDelete;
   const TableWidget(
       {super.key,
       required this.title,
       required this.rows,
-      required this.columns});
+      required this.columns,
+      required this.onEdit,
+      required this.onDelete});
   @override
   State<StatefulWidget> createState() {
     return _TableWidgetState();
@@ -250,16 +254,18 @@ class _TableWidgetState extends State<TableWidget> {
                       onPressed: () {
                         // Xử lý khi nhấn nút Edit
                         print('Edit button pressed for row $index');
+                        widget.onEdit(rows[index][1]);
                       },
                     ),
                     SizedBox(
                       width: 10,
                     ),
                     IconButton(
-                      icon: Icon(Icons.delete),
+                      icon: Icon(Icons.delete, color: AppColors.neutralColor8),
                       onPressed: () {
                         // Xử lý khi nhấn nút Edit
                         print('Delete button pressed for row $index');
+                        widget.onDelete(rows[index][1]);
                       },
                     ),
                   ],

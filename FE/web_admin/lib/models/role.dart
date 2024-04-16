@@ -1,28 +1,28 @@
 class Role {
-  final String id;
-  final String name;
-  final String normalizeName;
+   String? id;
+    String name;
+   String? normalizeName;
 
   @override
   String toString() =>
       '\nRole { id: $id, name: $name, normalizeName: $normalizeName} ';
 
   static List<String> toName() {
-    return ['select', 'id', 'name', 'normalizeName'];
+    return ['select', 'Id', 'Name', 'NormalizeName'];
   }
 
-  List<String> toArray() => ['false', id, name, normalizeName];
+  List<String> toArray() => ['false', id!, name, normalizeName!];
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'name': name,
-        'normalizeName': normalizeName,
+    "id": id,
+        "name": name,
+    "normalizeName": normalizeName
       };
 
   Role({
-    required this.id,
+    this.id,
     required this.name,
-    required this.normalizeName,
+    this.normalizeName,
   });
 
   factory Role.fromJson(Map<String, dynamic> json) {

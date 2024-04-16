@@ -31,6 +31,14 @@ class RecruitmentArticleController extends Controller
         return $result;
     }
 
+    public function raApply(Request $request)
+    {
+        $token = $request->bearerToken();
+        $result = RecruitmentArticleService::raApply($request->all(), $token);
+        return $result;
+    }
+
+
     public function edit(Request $request, $id)
     {
         $result = RecruitmentArticleService::upload($request->all(), $id);

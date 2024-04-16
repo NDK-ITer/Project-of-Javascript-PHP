@@ -35,6 +35,10 @@ class RecruitmentArticle extends Model
         'field_id',
     ];
 
+    protected $rule = [
+        'id' => 'number',
+    ];
+
     public function employer()
     {
         return $this->belongsTo(Employer::class);

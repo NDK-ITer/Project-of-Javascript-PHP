@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:web_admin/core/color.dart';
+import 'package:web_admin/page/accountpage.dart';
 import 'package:web_admin/page/rolepage.dart';
 import 'package:web_admin/widgets/header.dart';
 import 'package:web_admin/widgets/sidebar.dart';
@@ -131,7 +132,7 @@ class _HomePageState extends State<HomePage> {
     Widget content = Container();
     switch (title) {
       case 'Account':
-        content = Container();
+        content = UserPage();
         break;
       case 'Role':
         content = RolePage();

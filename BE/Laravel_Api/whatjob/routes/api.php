@@ -98,6 +98,7 @@ Route::group(['prefix' => 'employees', 'middleware' => RoleMiddLeware::class.':'
 
 Route::group(['prefix' => 'ra', 'middleware' => RoleMiddLeware::class.':'.implode(',', ['admin, employer, employee'])], function () {
     Route::get('/public/all', [RecruitmentArticleController::class, "getPublicAll"]);
+    Route::post('/apply', [RecruitmentArticleController::class, "raApply"]);
     Route::get('/', [RecruitmentArticleController::class, "get"]);
     Route::get('/{id}', [RecruitmentArticleController::class, "show"]);
     Route::post('/', [RecruitmentArticleController::class, "upload"]);

@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Helpers\PopulateRelations;
 use App\Http\Resources\RecruitmentArticleResource;
 use App\Models\Employer;
+use App\Models\Enjoy;
 use App\Models\Recruitment_Article;
 use App\Models\RecruitmentArticle;
 use Exception;
@@ -163,7 +164,7 @@ class RecruitmentArticleService
         }
     }
 
-    public static function upload(array $data = null, $id = null, $token = null)
+    public static function raApply(array $data = null, $token = null)
     {
 
         try {
@@ -171,6 +172,43 @@ class RecruitmentArticleService
             // if ($validator != null) {
             //     return response()->json($validator);
             // }
+            list($headersB64, $payloadB64, $sig) = explode('.', $token);
+            $decoded = json_decode(base64_decode($payloadB64), true);
+            $employee_id = $decoded['id'];
+
+            $enjoy = new Enjoy();
+            $enjoy->recruitmentarticle_id = $data['raId'];
+            $enjoy->employee_id = $employee_id;
+            $enjoy->DateApply = date('Y-m-d H:i:s');;
+            $enjoy->CVApply = 'CVApply';
+            // $enjoy->save();
+            // $recruitment_article = RecruitmentArticle::get();
+
+            $data = [
+                'state' => 1,
+                'message' => "Get data upload successfully",
+                // 'data' => $recruitment_article
+            ];
+
+            return response()->json($data, 200);;
+        } catch (Exception $e) {
+
+            $data = [
+                'status' => $e->getCode(),
+                'message' => $e->getMessage(),
+            ];
+            echo $e->getMessage();
+            return response()->json($data, $e->getCode());
+        }
+    }
+    public static function upload(array $data = null, $id = null, $token = null)
+    {
+
+        try {
+            $validator = (new RecruitmentArticle())->validate($data);
+            if ($validator != null) {
+                return response()->json($validator);
+            }
             list($headersB64, $payloadB64, $sig) = explode('.', $token);
             $decoded = json_decode(base64_decode($payloadB64), true);
             $employer_id = $decoded['id'];
@@ -200,7 +238,7 @@ class RecruitmentArticleService
             $recruitment_article->image = $data['image'] ?? $recruitment_article->image ?? '';
             $recruitment_article->salary = $data['salary'] ?? $recruitment_article->salary;
             $recruitment_article->addressWork = $data['addressWork'] ?? $recruitment_article->addressWork;
-            $recruitment_article->isApproved = $data['isApproved'] ?? 0;
+            $recruitment_article->isApproved = 1;//$data['isApproved'] ?? 1;
             $recruitment_article->endSubmission = $data['endSubmission'] ?? $recruitment_article->endSubmission;
             $recruitment_article->ageEmployee = $data['ageEmployee'] ?? $recruitment_article->ageEmployee;
             $recruitment_article->countEmployee = $data['countEmployee'] ?? $recruitment_article->countEmployee;
