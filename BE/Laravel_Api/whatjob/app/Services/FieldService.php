@@ -3,7 +3,9 @@
 namespace App\Services;
 
 use App\Helpers\PopulateRelations;
+use App\Http\Resources\FieldResource;
 use App\Models\Field;
+use App\Models\Recruitment_Article;
 use App\Models\Role;
 use Exception;
 use Illuminate\Http\Request;
@@ -22,17 +24,22 @@ class FieldService
             $query = Field::query();
             $relations = $data['populate'] ?? '';
             $model =  $query->getModel();
-
             $query = PopulateRelations::populateRelations($query, $relations, $model);
 
+
+            if($relations != '' && ($relations == '*' || $relations == 'recruitmentarticles')){
+                $query = Field::with(['recruitmentarticles']);
+            }
+
             if ($id === null) {
-                // $perpage  = $request->has('per_page') ? $request->input('per_page') : 10;
-                // $query = $query->paginate($perpage);
-                //return $query->items();
-
-                // $query = $query->get();
-
+                // $limit = 10;
+                // $page =  $data['page'] ?? 1;
+                // $query = $query->paginate($limit, ['*'], 'page', $page);
+                // $query = $query->items();
+                // $query = $query->with('recruitmentarticles');
                 $query = $query->get();
+
+                // $query = FieldResource::collection($query);
                 $data = [
                     'status' => 200,
                     'mess' => "Get all data successfully",
@@ -94,10 +101,9 @@ class FieldService
                         'message' => "Data not found",
                     ];
                 }
-
                 $message = 'Data uploaded successfully';
             }
-            $field->Name = $data['name'];
+            $field->name = $data['name'];
             $field->save();
             $fields = FieldService::get($data);
 
@@ -121,10 +127,10 @@ class FieldService
 
     public static function delete(array $data = null, $id)
     {
-        $role = Role::find($id);
+        $field = Field::find($id);
 
-        if ($role) {
-            $role->delete();
+        if ($field) {
+            $field->delete();
             $fields = FieldService::get($data);
 
             $data = [

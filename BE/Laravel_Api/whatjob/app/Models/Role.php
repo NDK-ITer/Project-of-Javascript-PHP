@@ -16,12 +16,18 @@ class Role extends Model
 
     protected $fillable = [
         //'id',
-        'Name',
-        'NormalizeName'
+        'name',
+        'normalizeName'
+    ];
+
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+        'normalizeName'
     ];
 
     protected $rules = [
-        'Name' => 'required'
+        'name' => 'required'
     ];
 
     public function users()

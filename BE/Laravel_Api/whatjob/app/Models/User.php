@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Helpers\Base64Url;
 use App\Helpers\RelationshipsTrait;
 use App\Helpers\ValidatesTrait;
+use Exception;
 use Firebase\JWT\JWT;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -21,12 +22,10 @@ class User extends Model
 
     protected $fillable = [
         //'id',
-        'FullName',
-        'Email',
-        'Password',
-        'Born',
-        'IsToken',
-        'IsBlock',
+        'email',
+        'password',
+        'isToken',
+        'isBlock',
         'role',
         'token_id'
     ];
@@ -36,9 +35,9 @@ class User extends Model
     ];
 
     protected $rules = [
-        'FullName' => 'required',
-        'Email' => 'unique:users|required|email',
-        'Password' => 'required|min:8',
+        // 'fullName' => 'required',
+        'email' => 'unique:users|required|email',
+        'password' => 'required|min:8',
         // 'Born' => 'date_format:Y-m-d',
         // 'IsBlock' => 'required'
     ];
@@ -47,21 +46,32 @@ class User extends Model
         return $this->belongsTo(Role::class);
     }
 
+    public function employer(){
+        return $this->hasOne(Employer::class, 'id', 'id');
+    }
+
+    public function employee(){
+        return $this->hasOne(Employee::class, 'id', 'id');
+    }
+
     public function generateToken()
     {
-        $headers = [
-            'token_id' => Uuid::uuid4()->toString(),
-        ];
-
-        $payload = [
-            'id' => $this->id,
-            'email' => $this->Email,
-            'exp' => time() + env('JWT_TIME_EXP') // Token expiration time (in seconds)
-        ];
-
-        $token = JWT::encode($payload, env('JWT_SECRET'), 'HS512', null, $headers);
-
-
-        return $token;
+        try {
+            $headers = [
+                'token_id' => Uuid::uuid4()->toString(),
+            ];
+            $payload = [
+                'id' => $this->id,
+                'email' => $this->email,
+                'exp' => time() + env('JWT_TIME_EXP') // Token expiration time (in seconds)
+            ];
+            $JWT_SECRET_KEY = "KKtceSicihJCPRp0DnqipgAr1pL3VRvvKRxcjtYW52zsKdSerAoZkgoD58Dww54P";
+            $token = JWT::encode($payload, $JWT_SECRET_KEY, 'HS512', null, $headers);
+            return $token;
+        } catch (Exception $th) {
+            echo $th;
+        }
     }
 }
+
+
