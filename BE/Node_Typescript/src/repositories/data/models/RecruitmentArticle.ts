@@ -3,6 +3,7 @@ import { Employer } from './Employer';
 import { Field } from './Field';
 import { Employee } from './Employee';
 import { Enjoy } from './Enjoy';
+import { DetailRecruitment } from './DetailRecruitment';
 
 @Table({ timestamps: false })
 class RecruitmentArticle extends Model {
@@ -11,6 +12,9 @@ class RecruitmentArticle extends Model {
 
     @Column({type: DataType.STRING})
     Name!: string;
+
+    @Column({type: DataType.STRING})
+    Description!: string;
 
     @Column({type: DataType.DATE})
     DateUpload!: Date;
@@ -23,6 +27,9 @@ class RecruitmentArticle extends Model {
 
     @Column({type: DataType.STRING})
     Salary!: string;
+
+    @Column({type: DataType.STRING})
+    Position!: string;
 
     @Column({type: DataType.STRING})
     AddressWork!: string;
@@ -67,6 +74,9 @@ class RecruitmentArticle extends Model {
 
     @BelongsToMany(() => Employee, () => Enjoy)
     ListBeEnjoyed!: Employee[]
+
+    @BelongsToMany(() => Employee, () => DetailRecruitment)
+    ListBeDR!: Employee[]
 }
 
 export { RecruitmentArticle }

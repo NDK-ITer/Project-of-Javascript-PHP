@@ -6,18 +6,18 @@ module.exports = {
     await queryInterface.bulkInsert('roles', [
       {
         Id: '0325ed0a-d2dd-4de5-9ce6-1e0a51b9791c',
-        Name: 'ADMIN',
-        NormalizeName: 'Admin'
+        Name: 'Admin',
+        NormalizeName: 'ADMIN'
       },
       {
         Id: 'f09b3e4e-86bb-4367-a84f-1f14acddc4bc',
-        Name: 'EMPLOYER',
-        NormalizeName: 'Employer'
+        Name: 'Employer',
+        NormalizeName: 'EMPLOYER'
       },
       {
         Id: 'b947a44b-a827-412a-8d1d-8def7df24d12',
-        Name: 'EMPLOYEE',
-        NormalizeName: 'Employee'
+        Name: 'Employee',
+        NormalizeName: 'EMPLOYEE'
       }
     ]);
   },

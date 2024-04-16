@@ -1,5 +1,6 @@
 import * as jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
+import speakeasy from 'speakeasy';
 
 export class Authenticate {
     static async GenerateJWT(payload: any, secretKey: string, expiresIn?: string): Promise<string | null> {
@@ -26,8 +27,17 @@ export class Authenticate {
     }
 
     static async ComparePasswords(enteredPassword: string, hashedPassword: string): Promise<boolean> {
-        if(!enteredPassword || !hashedPassword) return false
+        if (!enteredPassword || !hashedPassword) return false
         const result = await bcrypt.compare(enteredPassword, hashedPassword);
         return result;
+    }
+
+    static async CreateOPTCode(): Promise<string> {
+        const secret = speakeasy.generateSecret({ length: 20 });
+        const token = speakeasy.totp({
+            secret: secret.base32,
+            encoding: 'base32',
+        });
+        return token;
     }
 }

@@ -20,8 +20,13 @@ module.exports = {
           key: 'Id'
         }
       },
-      DateRecruitment: {
+      DateApply: {
         type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+      },
+      CVApply: {
+        type: Sequelize.STRING,
         allowNull: false
       }
     });

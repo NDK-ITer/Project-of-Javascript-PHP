@@ -4,7 +4,6 @@ import { Authenticate } from '../../libs/Authenticate';
 import { Employee } from '../../../data/models/Employee';
 import { Employer } from '../../../data/models/Employer';
 
-
 export default class UserService extends BaseService {
 
     constructor() {
@@ -22,11 +21,6 @@ export default class UserService extends BaseService {
             address: string,
             phoneNumber: string,
             fieldId: string
-        employee?: {
-            fullName: string,
-            born: Date,
-            address: string,
-            phoneNumber: string,
             avatar: string,
         },
         employer?: {
@@ -37,11 +31,13 @@ export default class UserService extends BaseService {
         }
     }): Promise<any> {
         const role: any = await this.ImportRole()
-        const user: any = await this.uow.UserRepository.find({Email: data.email})
-        if(user){return{
-            state: 1,
-            mess: `email: ${data.email} is exist`
-        }}
+        const user: any = await this.uow.UserRepository.find({ Email: data.email })
+        if (user) {
+            return {
+                state: 1,
+                mess: `email: ${data.email} is exist`
+            }
+        }
         let newUser: any = {
             Id: uuidv4().toString(),
             Email: data.email,
@@ -66,7 +62,7 @@ export default class UserService extends BaseService {
             if (!result) {
                 return {
                     state: 0,
-                    mess: 'some error when create user'
+                    mess: 'Đăng ký không thành công'
                 }
             }
             return {
@@ -87,23 +83,19 @@ export default class UserService extends BaseService {
             if (!result) {
                 return {
                     state: 0,
-                    mess: 'some error when create user'
+                    mess: 'Đăng ký không thành công'
                 }
             }
             return {
                 state: 1,
                 data: result
             }
-        const result = await this.uow.UserRepository.create(newUser);
-        if (!result) {
+
+        } else {
             return {
                 state: 0,
-                mess: 'some error when create user'
+                mess: 'Không thể đăng ký'
             }
-        }
-        return {
-            state: 1,
-            data: result
         }
     }
 
@@ -116,38 +108,39 @@ export default class UserService extends BaseService {
         if (!user) {
             return {
                 state: 0,
-                mess: `Not found user with email: ${data.email}`
+                mess: `Không tìm thấy người dùng với email: ${data.email}`
             }
         }
         const checkPassword = await Authenticate.ComparePasswords(data.password, user.Password)
         if (!checkPassword) {
             return {
                 state: 0,
-                mess: `Password Invalid!`
+                mess: `Sai mất khẩu`
             }
         }
         const secretKey = String(process.env.SECRET_KEY)
         const jwt = await Authenticate.GenerateJWT({
-            id: user.Id
+            id: user.Id,
+            roleId: user.RoleId
         }, secretKey)
 
         if (!jwt) {
             return {
                 state: 0,
-                mess: `Error get jwt`
+                mess: `Lỗi lấy token`
             }
         }
-        let userData: any
+        let userData: any = {}
         if (user.RoleId == role.Employee.id) {
-            const employee:any = await this.uow.EmployeeRepository.getById(user.Id)
+            const employee: any = await this.uow.EmployeeRepository.getById(user.Id)
             const parts = employee.FullName.split(' ');
             const lastName = parts[parts.length - 1];
             userData = {
                 displayName: lastName,
-                avatar: employee.Avatar
+                avatar: employee.Avatar,
             }
         } else if (user.RoleId == role.Employer.id) {
-            const employer:any = await this.uow.EmployerRepository.getById(user.Id)
+            const employer: any = await this.uow.EmployerRepository.getById(user.Id)
             userData = {
                 displayName: employer.CompanyName,
                 avatar: employer.Logo
@@ -157,10 +150,11 @@ export default class UserService extends BaseService {
                 displayName: user.Email
             }
         }
+        userData.roleId = user.RoleId
         return {
             state: 1,
             data: userData,
-            jwt: jwt
+            token: jwt
         }
     }
 
@@ -169,41 +163,164 @@ export default class UserService extends BaseService {
         if (!user) {
             return {
                 state: 0,
-                mess: `not found user with id: ${id}`
+                mess: `Không tìm thấy người dùng với mã: ${id}`
             }
         }
         const role = await this.ImportRole()
         if (user.RoleId == role.Employee.id) {
+            const employee: any = await this.uow.EmployeeRepository.getById(user.Id)
+            const fieldEmployee: any = await this.uow.FieldRepository.getById(employee.FieldId)
             return {
                 state: 1,
                 data: {
                     id: user.Id,
-                    avatar: user.Employee.Avatar,
-                    fullName: user.Employee.FullName,
-                    born: user.Employee.Born,
-                    gender: user.Employee.Gender,
                     email: user.Email,
-                    phoneNumber: user.Employee.PhoneNumber,
-                    address: user.Employee.Address
+                    avatar: employee.Avatar,
+                    fullName: employee.FullName,
+                    born: employee.Born,
+                    gender: employee.Gender,
+                    phoneNumber: employee.PhoneNumber,
+                    address: employee.Address,
+                    field: fieldEmployee.Name
                 }
             }
         } else if (user.RoleId == role.Employer.id) {
+            const employer: any = await this.uow.EmployerRepository.getById(user.Id)
             return {
                 state: 1,
                 data: {
                     id: user.Id,
+                    email: user.Email,
+                    companyName: employer.CompanyName,
+                    logo: employer.Logo,
+                    description: employer.Description,
+                    hotLine: employer.Hotline,
+                    address: employer.Address,
+                }
+            }
+        } else if(user.RoleId == role.Admin.id){
+            return {
+                state: 1,
+                data: {
+                    id: user.Id,
+                    email: user.Email
+                }
+            }
+        }
+        return {
+            state: 1,
+                data: {
+                    mess: `Người dùng không tồn tại`
+                }
+        }
+    }
+
+    public async GetByEmail(email: string): Promise<any> {
+        const user = await this.uow.UserRepository.find({Email: email})
+        if (!user) {
+            return {
+                state: 0,
+                mess: `Không tìm thấy người dùng với email: ${email}`
+            }
+        }
+        const role = await this.ImportRole()
+        if (user.RoleId == role.Employee.id) {
+            const employee: any = await this.uow.EmployeeRepository.getById(user.Id)
+            const fieldEmployee: any = await this.uow.FieldRepository.getById(employee.FieldId)
+            return {
+                state: 1,
+                data: {
+                    id: user.Id,
+                    email: user.Email,
+                    avatar: employee.Avatar,
+                    fullName: employee.FullName,
+                    born: employee.Born,
+                    gender: employee.Gender,
+                    phoneNumber: employee.PhoneNumber,
+                    address: employee.Address,
+                    field: fieldEmployee.Name
+                }
+            }
+        } else if (user.RoleId == role.Employer.id) {
+            const employer: any = await this.uow.EmployerRepository.getById(user.Id)
+            return {
+                state: 1,
+                data: {
+                    id: user.Id,
+                    email: user.Email,
+                    companyName: employer.CompanyName,
+                    logo: employer.Logo,
+                    description: employer.Description,
+                    hotLine: employer.Hotline,
+                    address: employer.Address,
                 }
             }
         } else {
-
+            return {
+                state: 1,
+                data: {
+                    id: user.Id,
+                    email: user.Email
+                }
+            }
         }
     }
 
     public async GetAll(): Promise<any> {
-
+        const result = await this.uow.UserRepository.getAll()
+        if (!result) {
+            return {
+                state: 0,
+                mess: `Không thể lấy dánh sách người dùng.`
+            }
+        }
+        return {
+            state: 1,
+            data: result,
+        }
     }
 
     public async Block(id: string): Promise<any> {
+        const result = await this.uow.UserRepository.update(id, { IsBlock: true })
+        if (!result) {
+            return {
+                state: 0,
+                mess: `Có lỗi khi khóa người dùng: ${id}`
+            }
+        }
+        return {
+            state: 1,
+            mess: `Khóa người dùng thành công`,
+            data: result
+        }
+    }
 
+    public async ResetPassword(id: string, newPassword: string): Promise<any> {
+        const result = await this.uow.UserRepository.update(id, { Password: await Authenticate.HashingPassword(newPassword) })
+        if (!result) {
+            return {
+                state: 0,
+                mess: `Đổi mật khẩu không thành công.`
+            }
+        }
+        return {
+            state: 1,
+            mess: `Đổi mật khẩu thành công.`
+        }
+    }
+
+    public async ChangeEmail(id: string, newEmail: string): Promise<any> {
+        const result = await this.uow.UserRepository.update(id, { Email: newEmail })
+        if (!result) {
+            return {
+                state: 0,
+                mess: `Cập nhập Email không thành công.`
+            }
+        }
+        return {
+            state: 1,
+            data: result,
+            mess: `Cập nhập Email thành công.`
+        }
     }
 }

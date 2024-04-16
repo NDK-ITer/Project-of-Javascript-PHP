@@ -13,6 +13,10 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false
       },
+      Description: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
       DateUpload: {
         type: Sequelize.DATE,
         allowNull: false
@@ -30,6 +34,10 @@ module.exports = {
         allowNull: false
       },
       AddressWork: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+      Position: {
         type: Sequelize.STRING,
         allowNull: false
       },

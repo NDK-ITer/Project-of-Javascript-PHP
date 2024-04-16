@@ -31,7 +31,7 @@ sequelize.addModels(models);
 
 let ConnectDatabase = async () => {
     await sequelize.authenticate().then(() => {
-        console.log('Database synchronized');
+        console.log('Connect data is successful');
     }).catch((error: any) => {
         console.error('Error synchronizing database:', error);
     });
