@@ -33,7 +33,7 @@ export default class RAService extends BaseService {
             Salary: data.salary,
             AddressWork: data.addressWork,
             Position: data.position,
-            IsApproved: false,
+            IsApproved: true,
             View: 0,
             EndSubmission: data.endSubmission,
             AgeEmployee: data.ageEmployee,
