@@ -34,7 +34,12 @@ export default class DRService extends BaseService {
             CVApply: employee.CV,
             DateApply: new Date(),
         }
-        console.log(applyData)
+        if(await this.uow.EnjoyRepository.filter({EmployeeId: employeeId, RA_Id: RAId})) {
+            return {
+                state: 0,
+                mess: `Bạn đã ứng tuyển tại công ty này!`
+            }
+        }
         const applyAction = await this.uow.EnjoyRepository.create(applyData)
         console.log("ndk: ", applyAction)
         if(applyAction){
