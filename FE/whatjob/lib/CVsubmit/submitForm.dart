@@ -447,26 +447,27 @@ class _SubmitFormState extends State<SubmitForm> {
                             )
                           ],
                         )
-                      : ElevatedButton(
-                          onPressed: () {
-                            _openFilePicker();
-                          },
-                          style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(13),
-                            ),
-                            backgroundColor: AppColors.green,
-                          ),
-                          child: const Text(
-                            'Chọn file CV (.pdf)',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 15,
-                              fontFamily: "Comfortaa",
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
+                      : Container()
+                      // : ElevatedButton(
+                      //     onPressed: () {
+                      //       _openFilePicker();
+                      //     },
+                      //     style: ElevatedButton.styleFrom(
+                      //       shape: RoundedRectangleBorder(
+                      //         borderRadius: BorderRadius.circular(13),
+                      //       ),
+                      //       backgroundColor: AppColors.green,
+                      //     ),
+                      //     child: const Text(
+                      //       'Chọn file CV (.pdf)',
+                      //       style: TextStyle(
+                      //         color: Colors.white,
+                      //         fontSize: 15,
+                      //         fontFamily: "Comfortaa",
+                      //         fontWeight: FontWeight.bold,
+                      //       ),
+                      //     ),
+                      //   ),
                 ],
               )
             ],

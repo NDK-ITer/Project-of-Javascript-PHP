@@ -118,7 +118,7 @@ class _EmployerHomeInfoState extends State<EmployerHomeInfo> {
                               size: 30,
                             ),
                             onPressed: () {
-                              //Navigator.of(context).pop();
+                              Navigator.of(context).pop();
                             },
                           ),
                           const SizedBox(

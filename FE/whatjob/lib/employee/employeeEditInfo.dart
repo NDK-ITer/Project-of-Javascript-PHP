@@ -106,13 +106,12 @@ class _EmployeeEditInfoState extends State<EmployeeEditInfo> {
         "avatar": _image == null
             ? widget.employee.avatar
             : await uploadImageToFirebaseStorage(_image!),
-        "fullName": _nameController.text,
-        "introduction": _introduceController.text,
-        "born": _birthdayController.text,
-        "gender": gender(_selectedValue),
-        "address": _addressController.text,
-        "phoneNumber": _phoneController.text,
-        "certification": "",
+        "fullName": _nameController.text ?? "",
+        "introduction": _introduceController.text ?? "",
+        "born": _birthdayController.text ?? "",
+        "gender": gender(_selectedValue) ?? "",
+        "address": _addressController.text ?? "",
+        "phoneNumber": _phoneController.text ?? "",
       };
 
       print(newData.toString());
@@ -138,8 +137,7 @@ class _EmployeeEditInfoState extends State<EmployeeEditInfo> {
   void initState() {
     super.initState();
     _nameController.text = widget.employee.fullName;
-    _birthdayController.text =
-        DateFormat('dd/MM/yyyy').format(widget.employee.born);
+    _birthdayController.text =DateFormat('yyyy-MM-dd HH:mm:ss').format(widget.employee.born);
     _addressController.text = widget.employee.address;
     _phoneController.text = widget.employee.phoneNumber;
     _emailController.text = widget.email;

@@ -186,18 +186,23 @@ class _EmployeeInfoState extends State<EmployeeInfo> {
                                       ),
                                     ),
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        top: 20, right: 5),
-                                    child: Text(
-                                      widget.employee.introduction ?? "",
-                                      style: const TextStyle(
-                                        fontSize: 13,
-                                        fontFamily: "Comfortaa",
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            top: 20, right: 5),
+                                        child: Text(
+                                          widget.employee.introduction,
+                                          style: const TextStyle(
+                                            fontSize: 13,
+                                            fontFamily: "Comfortaa",
+                                          ),
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
                                       ),
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
+                                    ],
                                   ),
                                 ],
                               ),

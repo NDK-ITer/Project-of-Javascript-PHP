@@ -1,3 +1,3 @@
 class BaseURL {
-  static const String baseURL = 'http://192.168.1.11:7000';
+  static const String baseURL = 'http://10.17.13.141:7000';
 }

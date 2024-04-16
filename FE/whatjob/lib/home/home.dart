@@ -228,18 +228,29 @@ class _HomeState extends State<Home> {
                                       width: 10,
                                     ),
                                     widget.roleName == "Employee"
-                                        ? Text(splitName(employee.fullName),
-                                            style: const TextStyle(
-                                                fontSize: 15,
-                                                fontFamily: 'Comfortaa',
-                                                color: AppColors.green,
-                                                fontWeight: FontWeight.bold))
-                                        : Text(splitName(employer.companyName),
-                                            style: const TextStyle(
-                                                fontSize: 15,
-                                                fontFamily: 'Comfortaa',
-                                                color: AppColors.green,
-                                                fontWeight: FontWeight.bold)),
+                                        ? SizedBox(
+                                          width: 35,
+                                          child: Text(splitName(employee.fullName),
+                                              style: const TextStyle(
+                                                  fontSize: 15,
+                                                  fontFamily: 'Comfortaa',
+                                                  color: AppColors.green,
+                                                  fontWeight: FontWeight.bold),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              ),
+                                        )
+                                        : SizedBox(
+                                          width: 35,
+                                          child: Text(splitName(employer.companyName),
+                                              style: const TextStyle(
+                                                  fontSize: 15,
+                                                  fontFamily: 'Comfortaa',
+                                                  color: AppColors.green,
+                                                  fontWeight: FontWeight.bold),
+                                                  overflow: TextOverflow.ellipsis,
+                                              ),
+                                        ),
                                   ],
                                 ),
                               ),

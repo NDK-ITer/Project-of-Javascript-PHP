@@ -93,7 +93,7 @@ class _PostDetailState extends State<PostDetail> {
                                   size: 30,
                                 ),
                                 onPressed: () {
-                                  // Navigator.of(context).pop();
+                                  Navigator.of(context).pop();
                                 },
                               ),
                             ),
@@ -182,7 +182,7 @@ class _PostDetailState extends State<PostDetail> {
                           width: MediaQuery.of(context).size.width,
                           height: 300,
                           child: Image.network(
-                            widget.logo,
+                            raDetail.image,
                             fit: BoxFit.fitWidth,
                           ),
                         )),
