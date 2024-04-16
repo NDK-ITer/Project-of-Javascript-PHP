@@ -11,7 +11,7 @@ class RAService {
       Map<String, dynamic> userData, String token) async {
     try {
       var response;
-      if(BaseURL.serve == 'php') {
+      if (BaseURL.serve == 'php') {
         response = await http.post(
           Uri.parse('${BaseURL.baseURL}/api/ra'),
           headers: <String, String>{
@@ -20,7 +20,7 @@ class RAService {
           },
           body: jsonEncode(userData),
         );
-      } else{
+      } else {
         response = await http.post(
           Uri.parse('${BaseURL.baseURL}/api/ra/upload'),
           headers: <String, String>{
@@ -63,16 +63,16 @@ class RAService {
 
   static Future<List<PostClass>> fetchPublicItems({String token = ''}) async {
     var response;
-    if(BaseURL.serve == 'php') {
+    if (BaseURL.serve == 'php') {
       response = await http.get(
         Uri.parse('${BaseURL.baseURL}/api/ra/public/all'),
         headers: <String, String>{
           'Authorization': 'Bearer $token',
         },
       );
-    } else{
+    } else {
       final response =
-      await http.get(Uri.parse('${BaseURL.baseURL}/api/ra/public/all'));
+          await http.get(Uri.parse('${BaseURL.baseURL}/api/ra/public/all'));
     }
     print(response.body);
     if (response.statusCode == 200) {
@@ -94,24 +94,49 @@ class RAService {
     }
   }
 
-  static Future<http.Response> fetchRADetail(String id, {String? token = ''}) async {
-var response;
-    if(BaseURL.serve == 'php') {
+  static Future<http.Response> fetchRADetail(String id,
+      {String? token = ''}) async {
+    var response;
+    if (BaseURL.serve == 'php') {
       response = await http.get(
         Uri.parse('${BaseURL.baseURL}/api/ra/$id'),
         headers: <String, String>{
           'Authorization': 'Bearer $token',
         },
       );
-    } else{
+    } else {
       final response =
-      await http.get(Uri.parse('${BaseURL.baseURL}/api/ra/public?id=$id'));
+          await http.get(Uri.parse('${BaseURL.baseURL}/api/ra/public?id=$id'));
     }
     print(response.body);
     if (response.statusCode == 200) {
       return response;
     } else {
       throw Exception('Failed to load job posting');
+    }
+  }
+
+  static Future<http.Response> apply(String token, String raId) async {
+    try {
+      final response =
+          await http.post(Uri.parse('${BaseURL.baseURL}/api/ra/apply'),
+              headers: <String, String>{
+                'Authorization': 'Bearer $token',
+                'Content-Type': 'application/json; charset=UTF-8',
+              },
+              body: jsonEncode({'raId': raId}));
+
+      print(response.body);
+      if (response.statusCode == 200) {
+        print('Apply successfully');
+        print('Response: ${response.body}');
+      } else {
+        print('Failed to Apply. Error: ${response.reasonPhrase}');
+      }
+      return response;
+    } catch (e) {
+      print('Failed to Apply. Error: $e');
+      throw e;
     }
   }
 }

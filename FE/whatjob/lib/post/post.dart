@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:whatjob/model/employee.dart';
 import 'package:whatjob/model/post.dart';
 import 'package:whatjob/post/postDetail.dart';
 import 'package:whatjob/utils/colors.dart';
@@ -7,8 +8,18 @@ import 'package:intl/intl.dart';
 
 class Post extends StatefulWidget {
   final PostClass post;
+  final String token;
+  final String roleName;
+  final String email;
+  final Employee employee;
 
-  const Post({super.key, required this.post});
+  const Post(
+      {super.key,
+      required this.post,
+      required this.token,
+      required this.roleName,
+      required this.email,
+      required this.employee});
 
   @override
   _PostState createState() => _PostState();
@@ -195,7 +206,16 @@ class _PostState extends State<Post> {
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => PostDetail(logo: widget.post.companyLogo, companyName: widget.post.companyName,postId: widget.post.id,)),
+                      MaterialPageRoute(
+                          builder: (context) => PostDetail(
+                                logo: widget.post.companyLogo,
+                                companyName: widget.post.companyName,
+                                postId: widget.post.id,
+                                token: widget.token,
+                                email: widget.email,
+                                roleName: widget.roleName,
+                                employee: widget.employee,
+                              )),
                     );
                   },
                   child: Container(

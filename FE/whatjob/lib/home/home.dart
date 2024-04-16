@@ -42,13 +42,12 @@ class _HomeState extends State<Home> {
     try {
       print(widget.roleName);
       if (widget.roleName == "Employee") {
-
         final employeeResponse = await EmployeeService.getInfo(token);
         final employeeData = json.decode(employeeResponse.body);
         final userDataJson = employeeData['data'];
 
         employee = Employee.fromJson(userDataJson);
-print(employee.toString());
+        print(employee.toString());
       } else {
         final employerResponse = await EmployerService.getInfo(token);
         final employerData = json.decode(employerResponse.body);
@@ -74,7 +73,8 @@ print(employee.toString());
   List<PostClass> postList = [];
   Future<void> _loadPosts() async {
     try {
-      List<PostClass> fetchedPosts = await RAService.fetchPublicItems(token: widget.token);
+      List<PostClass> fetchedPosts =
+          await RAService.fetchPublicItems(token: widget.token);
       setState(() {
         postList = fetchedPosts;
       });
@@ -99,10 +99,10 @@ print(employee.toString());
       backgroundColor: AppColors.yellow,
       body: !_isDoneUpdatingDistance
           ? const Center(
-            child: CircularProgressIndicator(
+              child: CircularProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(AppColors.green),
               ),
-          )
+            )
           : Stack(
               children: [
                 Padding(
@@ -114,6 +114,10 @@ print(employee.toString());
                         for (int i = 0; i < postList.length; i++)
                           Post(
                             post: postList[i],
+                            token: widget.token,
+                            email: widget.email,
+                            roleName: widget.roleName,
+                            employee: employee,
                           ),
                       ]))),
                 ),

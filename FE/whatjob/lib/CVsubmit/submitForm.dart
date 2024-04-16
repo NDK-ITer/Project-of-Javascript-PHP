@@ -1,4 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:whatjob/CVsubmit/congrate.dart';
+import 'package:whatjob/home/home.dart';
+import 'package:whatjob/model/employee.dart';
+import 'package:whatjob/service/raService.dart';
 import 'package:whatjob/utils/colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
@@ -6,7 +12,20 @@ import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:file_picker/file_picker.dart';
 
 class SubmitForm extends StatefulWidget {
-  const SubmitForm({super.key});
+  final String token;
+  final String roleName;
+  final String email;
+  final String postId;
+  final Employee employee;
+
+  const SubmitForm({
+    super.key,
+    required this.token,
+    required this.roleName,
+    required this.email,
+    required this.postId,
+    required this.employee,
+  });
 
   @override
   _SubmitFormState createState() => _SubmitFormState();
@@ -57,6 +76,16 @@ class _SubmitFormState extends State<SubmitForm> {
         _pdfPath = file.path!;
       });
     }
+  }
+
+  void initState() {
+    super.initState();
+    _nameController.text = widget.employee.fullName;
+    _birthdayController.text =
+        DateFormat('dd/MM/yyyy').format(widget.employee.born);
+    _addressController.text = widget.employee.address;
+    _phoneController.text = widget.employee.phoneNumber;
+    _emailController.text = widget.email;
   }
 
   @override
@@ -121,76 +150,76 @@ class _SubmitFormState extends State<SubmitForm> {
                         fontFamily: "Comfortaa"),
                   ),
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                        child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _selectedValue = 1;
-                        });
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Transform.scale(
-                            scale: 1.3,
-                            child: Radio(
-                              value: 1,
-                              groupValue: _selectedValue,
-                              activeColor: AppColors.darkGreen,
-                              onChanged: (value) => _selectGender(value!),
-                            ),
-                          ),
-                          const Text(
-                            "Nam",
-                            style: TextStyle(
-                                fontSize: 15,
-                                fontFamily: "Comfortaa",
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.darkGreen),
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                        ],
-                      ),
-                    )),
-                    Expanded(
-                        child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _selectedValue = 2;
-                        });
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Transform.scale(
-                            scale: 1.3,
-                            child: Radio(
-                              value: 2,
-                              groupValue: _selectedValue,
-                              activeColor: AppColors.darkGreen,
-                              onChanged: (value) => _selectGender(value!),
-                            ),
-                          ),
-                          const Text(
-                            "Nữ",
-                            style: TextStyle(
-                                fontSize: 15,
-                                fontFamily: "Comfortaa",
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.darkGreen),
-                          ),
-                        ],
-                      ),
-                    )),
-                  ],
-                ),
+                // const SizedBox(
+                //   height: 20,
+                // ),
+                // Row(
+                //   children: [
+                //     Expanded(
+                //         child: GestureDetector(
+                //       onTap: () {
+                //         setState(() {
+                //           _selectedValue = 1;
+                //         });
+                //       },
+                //       child: Row(
+                //         mainAxisAlignment: MainAxisAlignment.start,
+                //         children: [
+                //           Transform.scale(
+                //             scale: 1.3,
+                //             child: Radio(
+                //               value: 1,
+                //               groupValue: _selectedValue,
+                //               activeColor: AppColors.darkGreen,
+                //               onChanged: (value) => _selectGender(value!),
+                //             ),
+                //           ),
+                //           const Text(
+                //             "Nam",
+                //             style: TextStyle(
+                //                 fontSize: 15,
+                //                 fontFamily: "Comfortaa",
+                //                 fontWeight: FontWeight.bold,
+                //                 color: AppColors.darkGreen),
+                //           ),
+                //           const SizedBox(
+                //             width: 10,
+                //           ),
+                //         ],
+                //       ),
+                //     )),
+                //     Expanded(
+                //         child: GestureDetector(
+                //       onTap: () {
+                //         setState(() {
+                //           _selectedValue = 2;
+                //         });
+                //       },
+                //       child: Row(
+                //         mainAxisAlignment: MainAxisAlignment.start,
+                //         children: [
+                //           Transform.scale(
+                //             scale: 1.3,
+                //             child: Radio(
+                //               value: 2,
+                //               groupValue: _selectedValue,
+                //               activeColor: AppColors.darkGreen,
+                //               onChanged: (value) => _selectGender(value!),
+                //             ),
+                //           ),
+                //           const Text(
+                //             "Nữ",
+                //             style: TextStyle(
+                //                 fontSize: 15,
+                //                 fontFamily: "Comfortaa",
+                //                 fontWeight: FontWeight.bold,
+                //                 color: AppColors.darkGreen),
+                //           ),
+                //         ],
+                //       ),
+                //     )),
+                //   ],
+                // ),
                 const SizedBox(
                   height: 20,
                 ),
@@ -234,7 +263,7 @@ class _SubmitFormState extends State<SubmitForm> {
                       fontFamily: "Comfortaa",
                     ),
                     onTap: () {
-                      _selectDate(context);
+                      //_selectDate(context);
                     },
                   ),
                 ),
@@ -418,26 +447,27 @@ class _SubmitFormState extends State<SubmitForm> {
                             )
                           ],
                         )
-                      : ElevatedButton(
-                          onPressed: () {
-                            _openFilePicker();
-                          },
-                          style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(13),
-                            ),
-                            backgroundColor: AppColors.green,
-                          ),
-                          child: const Text(
-                            'Chọn file CV (.pdf)',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 15,
-                              fontFamily: "Comfortaa",
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
+                      : Container()
+                  // : ElevatedButton(
+                  //     onPressed: () {
+                  //       _openFilePicker();
+                  //     },
+                  //     style: ElevatedButton.styleFrom(
+                  //       shape: RoundedRectangleBorder(
+                  //         borderRadius: BorderRadius.circular(13),
+                  //       ),
+                  //       backgroundColor: AppColors.green,
+                  //     ),
+                  //     child: const Text(
+                  //       'Chọn file CV (.pdf)',
+                  //       style: TextStyle(
+                  //         color: Colors.white,
+                  //         fontSize: 15,
+                  //         fontFamily: "Comfortaa",
+                  //         fontWeight: FontWeight.bold,
+                  //       ),
+                  //     ),
+                  //   ),
                 ],
               )
             ],
@@ -474,17 +504,18 @@ class _SubmitFormState extends State<SubmitForm> {
                         content: const Text(
                           "Hãy đảm bảo rằng các thông tin bạn cung cấp hoàn toàn chính xác",
                           style: TextStyle(
-                            fontSize: 15,
-                            fontFamily: "Comfortaa",
-                            fontWeight: FontWeight.bold
-                          ),
+                              fontSize: 15,
+                              fontFamily: "Comfortaa",
+                              fontWeight: FontWeight.bold),
                         ),
                         actions: [
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               ElevatedButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
                                 style: ElevatedButton.styleFrom(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 20, vertical: 15),
@@ -505,8 +536,28 @@ class _SubmitFormState extends State<SubmitForm> {
                               const SizedBox(
                                   width: 10), // Thêm khoảng cách giữa hai nút
                               ElevatedButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
+                                onPressed: () async {
+                                  print("here");
+                                  print(widget.token);
+                                  print(widget.postId);
+                                  final response = await RAService.apply(
+                                      widget.token, widget.postId);
+                                  final responseData =
+                                      json.decode(response.body);
+                                  print(responseData);
+                                  final int state = responseData['state'];
+                                  if (state == 1) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => Congrate(
+                                          token: widget.token,
+                                          email: widget.email,
+                                          roleName: widget.roleName,
+                                        ),
+                                      ),
+                                    );
+                                  }
                                 },
                                 style: ElevatedButton.styleFrom(
                                   padding: const EdgeInsets.symmetric(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:whatjob/home/home.dart';
 import 'package:whatjob/utils/colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
@@ -6,7 +7,16 @@ import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:file_picker/file_picker.dart';
 
 class Congrate extends StatefulWidget {
-  const Congrate({super.key});
+  final String token;
+  final String roleName;
+  final String email;
+
+  const Congrate({
+    super.key,
+    required this.token,
+    required this.roleName,
+    required this.email,
+  });
 
   @override
   _CongrateState createState() => _CongrateState();
@@ -24,7 +34,7 @@ class _CongrateState extends State<Congrate> {
               children: [
                 Padding(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 30, vertical: 80),
+                  const EdgeInsets.symmetric(horizontal: 30, vertical: 80),
                   child: SvgPicture.asset(
                     'assets/svg/submit_congrate.svg',
                     height: 200,
@@ -74,33 +84,43 @@ class _CongrateState extends State<Congrate> {
                         const SizedBox(
                           height: 30,
                         ),
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 80, vertical: 15),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15),
-                              side: const BorderSide(color: AppColors.green),
-                            ),
-                            backgroundColor: Colors.white,
-                          ),
-                          child: const Text(
-                            "Xem Đơn Đã Nộp",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontFamily: 'Comfortaa',
-                              color: AppColors.green,
-                            ),
-                          ),
-                        ),
+                        // ElevatedButton(
+                        //   onPressed: () {
+                        //     Navigator.of(context).pop();
+                        //   },
+                        //   style: ElevatedButton.styleFrom(
+                        //     padding: const EdgeInsets.symmetric(
+                        //         horizontal: 80, vertical: 15),
+                        //     shape: RoundedRectangleBorder(
+                        //       borderRadius: BorderRadius.circular(15),
+                        //       side: const BorderSide(color: AppColors.green),
+                        //     ),
+                        //     backgroundColor: Colors.white,
+                        //   ),
+                        //   child: const Text(
+                        //     "Xem Đơn Đã Nộp",
+                        //     style: TextStyle(
+                        //       fontSize: 16,
+                        //       fontFamily: 'Comfortaa',
+                        //       color: AppColors.green,
+                        //     ),
+                        //   ),
+                        // ),
                         const SizedBox(
                           height: 30,
                         ),
                         ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => Home(
+                                    token: widget.token,
+                                    email: widget.email,
+                                    roleName: widget.roleName,
+                                  )),
+                            );
+                          },
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 90, vertical: 15),

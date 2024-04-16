@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:whatjob/CVsubmit/submitForm.dart';
+import 'package:whatjob/model/employee.dart';
 import 'package:whatjob/model/raDetail.dart';
 import 'package:whatjob/post/post.dart';
 import 'package:whatjob/service/raService.dart';
@@ -13,11 +15,19 @@ class PostDetail extends StatefulWidget {
   final String postId;
   final String logo;
   final String companyName;
+  final String token;
+  final String roleName;
+  final String email;
+  final Employee employee;
   const PostDetail({
     super.key,
     required this.postId,
     required this.logo,
     required this.companyName,
+    required this.token,
+    required this.roleName,
+    required this.email,
+    required this.employee,
   });
 
   @override
@@ -39,7 +49,8 @@ class _PostDetailState extends State<PostDetail> {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString("token");
-      final raDetailRp = (await RAService.fetchRADetail(widget.postId, token: token));
+      final raDetailRp =
+          (await RAService.fetchRADetail(widget.postId, token: token));
       print(raDetailRp.body);
       final responseData = json.decode(raDetailRp.body);
       final userDataJson = responseData['data'];
@@ -225,7 +236,8 @@ class _PostDetailState extends State<PostDetail> {
                                         width: 5,
                                       ),
                                       Text(
-                                        formatDate(raDetail.dateUpload).toString(),
+                                        formatDate(raDetail.dateUpload)
+                                            .toString(),
                                         style: const TextStyle(
                                             fontFamily: "Comfortaa",
                                             fontSize: 13,
@@ -604,7 +616,8 @@ class _PostDetailState extends State<PostDetail> {
                                         width: 5,
                                       ),
                                       Text(
-                                        formatDate(raDetail.endSubmission).toString(),
+                                        formatDate(raDetail.endSubmission)
+                                            .toString(),
                                         style: const TextStyle(
                                             fontFamily: "Comfortaa",
                                             fontSize: 14,
@@ -675,7 +688,20 @@ class _PostDetailState extends State<PostDetail> {
                             ),
                             Center(
                               child: ElevatedButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => SubmitForm(
+                                        token: widget.token,
+                                        roleName: widget.roleName,
+                                        email: widget.email,
+                                        employee: widget.employee,
+                                        postId: widget.postId,
+                                      ),
+                                    ),
+                                  );
+                                },
                                 style: ElevatedButton.styleFrom(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 20, vertical: 15),
