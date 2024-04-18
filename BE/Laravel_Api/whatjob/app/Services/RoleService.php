@@ -111,9 +111,9 @@ class RoleService
 
     public static function delete(Request $request, $id)
     {
-        $role = Role::find($id);
+        $role = Role::withCount('users')->find($id);
 
-        if ($role) {
+        if ($role && $role->users_count === 0) {
             $role->delete();
             // $roles = RoleService::get($request);
 
@@ -124,10 +124,11 @@ class RoleService
             ];
         } else {
             $data = [
-                'status' => 404,
-                'message' => "Data not found",
+                'status' => 409,
+                'message' => "Role is still in use, can not be deleted",
             ];
         }
         return response()->json($data, 200);
     }
+
 }

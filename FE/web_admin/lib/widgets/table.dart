@@ -200,6 +200,15 @@ class _TableWidgetState extends State<TableWidget> {
           rows.length,
           (index) {
             return DataRow(
+              color:
+                  MaterialStateColor.resolveWith((Set<MaterialState> states) {
+                if (states.contains(MaterialState.selected)) {
+                  return Colors.grey.withOpacity(0.5);
+                }
+                return (index % 2 == 0)
+                    ? AppColors.neutralColor2
+                    : AppColors.neutralColor3;
+              }),
               cells: [
                 ...List.generate(
                   rows[index].length,

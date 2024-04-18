@@ -127,9 +127,9 @@ class FieldService
 
     public static function delete(array $data = null, $id)
     {
-        $field = Field::find($id);
+        $field = Field::with(['recruitmentarticles'])->find($id);
 
-        if ($field) {
+        if ($field && $field->recruitmentarticles->isEmpty()) {
             $field->delete();
             $fields = FieldService::get($data);
 
@@ -140,8 +140,8 @@ class FieldService
             ];
         } else {
             $data = [
-                'status' => 404,
-                'message' => "Data not found",
+                'status' => 400,
+                'message' => "Data still has relationship, can not be deleted",
             ];
         }
         return response()->json($data, 200);

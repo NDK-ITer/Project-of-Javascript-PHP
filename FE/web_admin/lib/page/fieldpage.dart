@@ -1,71 +1,60 @@
-// ignore_for_file: avoid_unnecessarainers, prefer_const_constructors
-
-import 'dart:convert';
+// ignore_for_file: avoid_unnecessary_containers, avoid_unnecessary_containers, avoid_unnecessary_containers, duplicate_ignore, prefer_const_constructors, non_constant_identifier_names, unused_local_variable
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:web_admin/core/color.dart';
-import 'package:web_admin/models/role.dart';
+import 'package:web_admin/models/field.dart';
 import 'package:web_admin/service/api.dart';
-import 'package:web_admin/service/roleservice.dart';
+import 'package:web_admin/service/fieldservice.dart';
 import 'package:web_admin/widgets/header.dart';
 import 'package:web_admin/widgets/table.dart';
 
-class RolePage extends StatefulWidget {
+class FieldPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return RolePageState();
+    return FieldPageState();
   }
 }
 
-class RolePageState extends State<RolePage> {
-  List<Role> roles = [];
+class FieldPageState extends State<FieldPage> {
+  List<Field> fields = [];
   bool loading = false;
   List<List<String>> rows = [];
   List<String> columns = [];
   @override
   void initState() {
     super.initState();
-    getRole();
-    // RoleRepoService().GetAllRole(jwt: APIService.JWT()).then((data) {
-    //   setState(() {
-    //     roles = List<Role>.from(data);
-    //
-    //   });
-    // });
+    getField();
   }
 
-  Future<void> getRole() async {
-    var list = await RoleRepoService().GetAllRole(jwt: APIService.JWT());
+  Future<void> getField() async {
+    var list = await FieldRepoService().GetAllField(jwt: APIService.JWT());
+
+    // var rolelist = await RoleRepoService().GetAllRole(jwt: APIService.JWT());
     print('Dữ liệu mới từ server: ${list.toString()}');
 
-    // setState(() {
-    //   roles = List<Role>.from(list);
-    //   loading = true;
-    //   rows = [];
-    //   // rows.addAll(roles.map((e) => e.toArray()));
-    // });
     rows.clear();
     setState(() {
-      roles = List<Role>.from(list);
+      fields = List<Field>.from(list);
       loading = true;
-
-      rows.addAll(roles.map((e) => e.toArray()));
+      // roles = List<Role>.from(rolelist);
+      rows.addAll(fields.map((e) => e.toArray()));
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (roles.isNotEmpty) {
-      columns = Role.toName();
+    if (fields.isNotEmpty) {
+      columns = Field.toName();
     }
     return loading
         ? Container(
             child: Column(
               children: [
                 Header(
-                  title: "Role",
+                  title: "Field",
                   button: true,
+                  // onAdd: () {},
                   onAdd: () => showDialog(
                       context: context,
                       builder: (context) => _editPopup(context, null)),
@@ -74,17 +63,19 @@ class RolePageState extends State<RolePage> {
                   height: 20,
                 ),
                 TableWidget(
-                  title: "Role",
+                  title: "Field",
                   rows: rows,
                   columns: columns,
                   onEdit: (id) {
-                    final role =
-                        roles.firstWhere((element) => element.id == id);
+                    final field =
+                        fields.firstWhere((element) => element.id == id);
                     showDialog(
                         context: context,
-                        builder: (context) => _editPopup(context, role));
+                        builder: (context) => _editPopup(context, field));
                   },
-                  onDelete: onDelete,
+                  onDelete: (id) {
+                    onDelete(id);
+                  },
                 ),
                 SizedBox(
                   height: 20,
@@ -95,19 +86,19 @@ class RolePageState extends State<RolePage> {
         : Center(child: CircularProgressIndicator());
   }
 
-  Widget _editPopup(BuildContext context, Role? role) {
+  Widget _editPopup(BuildContext context, Field? field) {
     TextEditingController _nameController =
-        TextEditingController(text: role == null ? '' : role.name);
+        TextEditingController(text: field == null ? '' : field.name);
 
     return AlertDialog(
       backgroundColor: AppColors.neutralColor3,
-      title: role == null
+      title: field == null
           ? Text(
-              "Create Role",
+              "Create Field",
               style: TextStyle(color: AppColors.neutralColor8),
             )
           : Text(
-              "Edit Role",
+              "Edit Field",
               style: TextStyle(color: AppColors.neutralColor8),
             ),
       content: ConstrainedBox(
@@ -138,18 +129,18 @@ class RolePageState extends State<RolePage> {
             style: TextStyle(color: AppColors.neutralColor8),
           ),
           onPressed: () async {
-            if (role == null) {
-              var roleAdd = Role(
+            if (field == null) {
+              var fieldAdd = Field(
+                id: '',
                 name: _nameController.text,
-                normalizeName: '',
               );
-              addRole(roleAdd);
-              getRole();
+              addField(fieldAdd);
+              getField();
             } else {
-              role.name = _nameController.text;
-              editRole(role);
+              field.name = _nameController.text;
+              editField(field);
               Navigator.pop(context);
-              getRole();
+              getField();
             }
             // Role updatedRole = role.copyWith(name: _nameController.text);
             // await RoleRepoService().UpdateRole(updatedRole,
@@ -185,55 +176,34 @@ class RolePageState extends State<RolePage> {
                   child: Text("Xóa",
                       style: TextStyle(color: AppColors.neutralColor8)),
                   onPressed: () async {
-                    final role =
-                        roles.firstWhere((element) => element.id == id);
-                    deleteRole(role);
+                    final field =
+                        fields.firstWhere((element) => element.id == id);
+                    deleteField(field);
                     Navigator.pop(context);
-                    getRole();
+                    getField();
                   },
                 ),
               ],
             ));
   }
 
-  void addRole(Role role) {
-    var result = RoleRepoService().CreateRole(
-      role: role,
+  void addField(Field field) {
+    var result = FieldRepoService().CreateField(
+      field: field,
     );
     // print(result);
   }
 
-  void editRole(Role role) {
-    var result = RoleRepoService().UpdateRole(
-      role: role,
+  void editField(Field field) {
+    var result = FieldRepoService().UpdateField(
+      field: field,
     );
   }
 
-  void deleteRole(Role role) {
-    var result = RoleRepoService().DeleteRole(
-      role: role,
+  void deleteField(Field field) {
+    print('object');
+    var result = FieldRepoService().DeleteField(
+      field: field,
     );
-    showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-              backgroundColor: AppColors.neutralColor3,
-              title: Text(
-                "Xóa",
-                style: TextStyle(color: AppColors.neutralColor8),
-              ),
-              content: Text(result == true ? "Xóa thành công" : "Xóa thất bại",
-                  style: TextStyle(color: AppColors.neutralColor8)),
-              actions: [
-                TextButton(
-                  child: Text(
-                    "OK",
-                    style: TextStyle(color: AppColors.neutralColor8),
-                  ),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
-            ));
   }
 }

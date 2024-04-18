@@ -13,7 +13,6 @@ class PopulateRelations
     public static function populateRelations($query, $relations, $model)
     {
         try {
-            print_r($relations);
             if ($relations !== '' && $relations !== null) {
 
                 if ($relations === '*') {

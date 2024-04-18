@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_unnecessary_containers, avoid_unnecessary_containers, avoid_unnecessary_containers
+// ignore_for_file: avoid_unnecessary_containers, avoid_unnecessary_containers, avoid_unnecessary_containers, duplicate_ignore, prefer_const_constructors, non_constant_identifier_names, unused_local_variable
 
 import 'dart:convert';
 
@@ -56,7 +56,8 @@ class UserPageState extends State<UserPage> {
             child: Column(
               children: [
                 Header(
-                  title: "User",
+                  title: "Account User",
+                  button: true,
                   // onAdd: () {},
                   onAdd: () => showDialog(
                       context: context,
@@ -94,7 +95,7 @@ class UserPageState extends State<UserPage> {
     return AlertDialog(
       backgroundColor: AppColors.neutralColor3,
       title: Text(
-        user == null ? "Create User" : "Edit User",
+        user == null ? "Create Account User" : "Edit Account User",
         style: TextStyle(color: AppColors.neutralColor8),
       ),
       content: Form(
@@ -205,13 +206,13 @@ class UserPageState extends State<UserPage> {
         ),
         TextButton(
           child: Text(
-            User == null ? "Thêm" : "Sửa",
+            user == null ? "Thêm" : "Sửa",
             style: TextStyle(color: AppColors.neutralColor8),
           ),
           onPressed: () {
             if (_formKey.currentState!.validate()) {
               _formKey.currentState!.save();
-              if (User == null) {
+              if (user == null) {
                 // addUser(newUser);
               } else {
                 // editUser(newUser);

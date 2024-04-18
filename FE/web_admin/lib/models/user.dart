@@ -1,16 +1,16 @@
 class User {
-  String id;
+  String _id;
   String email;
   String role;
   String password;
   String isBlock;
 
-  User({
-    required this.id,
+  User(
+    this._id, {
     required this.email,
     required this.role,
-    required this.isBlock,
     required this.password,
+    required this.isBlock,
   });
 
   @override
@@ -21,11 +21,11 @@ class User {
     return ['select', 'Id', 'Email', 'Role', 'Password', 'IsBlock'];
   }
 
-  List<String> toArray() => ['false', id!, email, role, password, isBlock];
+  List<String> toArray() => ['false', id, email, role, password, isBlock];
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: json['id'].toString(),
+      json['id'].toString(),
       email: json['email'].toString(),
       role: json['role'].toString(),
       password: json['password'].toString(),
@@ -41,5 +41,13 @@ class User {
       'password': password,
       'isBlock': isBlock,
     };
+  }
+
+  // Getter để truy cập vào giá trị id
+  String get id => _id;
+
+  // Setter để cập nhật giá trị id
+  set id(String value) {
+    _id = value;
   }
 }

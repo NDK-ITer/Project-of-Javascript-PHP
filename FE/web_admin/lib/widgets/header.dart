@@ -7,7 +7,8 @@ import 'package:web_admin/widgets/button.dart';
 class Header extends StatelessWidget {
   final String title;
   final Function() onAdd;
-  Header({required this.title, required this.onAdd});
+  final bool button;
+  Header({required this.title, required this.onAdd, required this.button});
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -61,14 +62,16 @@ class Header extends StatelessWidget {
               ),
             ],
           ),
-          ButtonWidget(
-            text: 'Add ' + title,
-            textColor_1: AppColors.neutralColor8,
-            textColor_2: AppColors.primaryColor1,
-            backgroundColor_1: AppColors.primaryColor1,
-            backgroundColor_2: AppColors.neutralColor8,
-            onTap: onAdd,
-          )
+          button
+              ? ButtonWidget(
+                  text: 'Add ' + title,
+                  textColor_1: AppColors.neutralColor8,
+                  textColor_2: AppColors.primaryColor1,
+                  backgroundColor_1: AppColors.primaryColor1,
+                  backgroundColor_2: AppColors.neutralColor8,
+                  onTap: onAdd,
+                )
+              : Container()
         ],
       ),
     );
