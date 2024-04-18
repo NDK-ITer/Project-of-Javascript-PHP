@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Comfortaa',
         useMaterial3: true,
       ),
-      home: HomePage(),
+      home: LoginPage(),
     );
   }
 }

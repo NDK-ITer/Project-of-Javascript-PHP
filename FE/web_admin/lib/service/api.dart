@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 
 class APIService {
   static const int timeOutDuration = 35;
-  static String GetUrl() => 'http://192.168.1.19:7000/api';
+  static String GetUrl() => 'http://127.0.0.1:8000/api';
 
   static String JWT() =>
       'eyJ0eXAiOiJKV1QiLCJ0b2tlbl9pZCI6Ijc5MDAxZGYzLTMxYjMtNGI4OS04MWExLTUwOGE2Y2JjOWFkMiIsImFsZyI6IkhTNTEyIn0.eyJpZCI6IjRlYmY3N2U1LWQwYmMtNDRiZi05MjVkLWYzMTIxNzI4OTE4YyIsImVtYWlsIjoiYUBnbWFpbC5jb20iLCJleHAiOjE3MTMyMjAyNjN9.ZFCEdtzIxLnyee4mIhfApe4oFMY_KgmyespC7PvpEcOcJYTCD9jl3qon0pYGG584Ib9KJBs34AjYIXc6c_AbEw';

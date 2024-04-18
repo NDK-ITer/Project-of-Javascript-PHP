@@ -9,6 +9,7 @@ import 'package:web_admin/page/employerpage.dart';
 import 'package:web_admin/page/fieldpage.dart';
 import 'package:web_admin/page/rapage.dart';
 import 'package:web_admin/page/rolepage.dart';
+import 'package:web_admin/page/settingpage.dart';
 import 'package:web_admin/widgets/header.dart';
 import 'package:web_admin/widgets/sidebar.dart';
 import 'package:web_admin/widgets/table.dart';
@@ -85,6 +86,17 @@ class _HomePageState extends State<HomePage> {
       ]
     },
     {
+      'text': 'SQL Lite',
+      'icon': Icons.bar_chart,
+      'selected': false,
+      'items': [
+        {
+          'text': 'Test Page',
+          'selected': false,
+        }
+      ]
+    },
+    {
       'text': 'System Configuration',
       'icon': Icons.system_update_tv,
       'selected': false,
@@ -153,6 +165,13 @@ class _HomePageState extends State<HomePage> {
       case 'Field':
         content = FieldPage();
         break;
+      case 'Test Page':
+        content = Container();
+        break;
+      case 'Settings':
+        content = SettingPage();
+        break;
+
       default:
         break;
     }

@@ -3,8 +3,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:web_admin/_MyAppState.dart';
 import 'package:web_admin/core/color.dart';
 import 'package:web_admin/home.dart';
+import 'package:web_admin/service/api.dart';
+import 'package:web_admin/service/roleservice.dart';
 import 'package:web_admin/widgets/button.dart';
 
 class LoginPage extends StatelessWidget {
@@ -27,7 +30,20 @@ class LoginPage extends StatelessWidget {
             children: [
               Expanded(
                 flex: 1,
-                child: Container(),
+                child: Container(
+                  child: ButtonWidget(
+                    text: 'Login',
+                    textColor_1: AppColors.neutralColor3,
+                    textColor_2: AppColors.neutralColor8,
+                    backgroundColor_1: AppColors.neutralColor8,
+                    backgroundColor_2: AppColors.neutralColor3,
+                    onTap: () async {
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => IPAddressChecker(),
+                      ));
+                    },
+                  ),
+                ),
               ),
               Expanded(
                   flex: 2,
