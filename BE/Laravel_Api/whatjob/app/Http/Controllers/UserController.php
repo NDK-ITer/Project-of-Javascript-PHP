@@ -10,29 +10,25 @@ class UserController extends Controller
     //
     public function get(Request $request)
     {
-        $data = $request->only(['populate', 'per_page']);
-        $result = UserService::get($request->all());
+        $result = UserService::get($request);
         return $result;
     }
 
     public function show(Request $request, $id)
     {
-        $data = $request->only(['populate', 'per_page']);
-        $result = UserService::get($request->all(), $id);
+        $result = UserService::get($request, $id);
         return $result;
     }
 
     public function upload(Request $request)
     {
-        // $data = $request->only(['Name', 'FullName', 'Email', 'Password', 'Born', 'IsBlock',"RoleId"]);
-        $result = UserService::upload($request->all());
+        $result = UserService::upload($request);
         return $result;
     }
 
     public function edit(Request $request, $id)
     {
-        // $data = $request->only(['Name', 'FullName', 'Email', 'Password', 'Born', 'IsBlock',"RoleId"]);
-        $result = UserService::upload($request->all(), $id);
+        $result = UserService::upload($request, $id);
         return $result;
     }
 
