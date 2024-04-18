@@ -29,4 +29,15 @@ class Employer {
       address: json['address'] ?? '',
     );
   }
+
+  @override
+  String toString() {
+    return '\nEmployer{'
+        'companyName: $companyName, '
+        'logo: $logo, '
+        'description: $description, '
+        'hotLine: $hotLine, '
+        'address: $address'
+        '}';
+  }
 }

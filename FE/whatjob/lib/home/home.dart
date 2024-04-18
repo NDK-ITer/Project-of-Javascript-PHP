@@ -45,12 +45,15 @@ class _HomeState extends State<Home> {
         final employeeResponse = await EmployeeService.getInfo(token);
         final employeeData = json.decode(employeeResponse.body);
         final userDataJson = employeeData['data'];
+
         employee = Employee.fromJson(userDataJson);
+        print(employee.toString());
       } else {
         final employerResponse = await EmployerService.getInfo(token);
         final employerData = json.decode(employerResponse.body);
         final userDataJson = employerData['data'];
         employer = Employer.fromJson(userDataJson);
+        print(employer.toString());
       }
     } catch (e) {
       print('Failed to get user info: $e');
@@ -70,14 +73,13 @@ class _HomeState extends State<Home> {
   List<PostClass> postList = [];
   Future<void> _loadPosts() async {
     try {
-      List<PostClass> fetchedPosts = await RAService.fetchPublicItems();
-
+      List<PostClass> fetchedPosts =
+          await RAService.fetchPublicItems(token: widget.token);
       setState(() {
         postList = fetchedPosts;
       });
     } catch (e) {
       // Handle error
-
       print('Error loading posts: $e');
     }
   }
@@ -97,10 +99,10 @@ class _HomeState extends State<Home> {
       backgroundColor: AppColors.yellow,
       body: !_isDoneUpdatingDistance
           ? const Center(
-            child: CircularProgressIndicator(
+              child: CircularProgressIndicator(
                 valueColor: AlwaysStoppedAnimation<Color>(AppColors.green),
               ),
-          )
+            )
           : Stack(
               children: [
                 Padding(
@@ -166,91 +168,80 @@ class _HomeState extends State<Home> {
                                 ),
                                 child: Row(
                                   children: [
-                                    widget.roleName == "Employee"
-                                        ? employee.avatar == ""
-                                            ? Container(
-                                                width: 30,
-                                                height: 30,
-                                                decoration: BoxDecoration(
-                                                  shape: BoxShape.circle,
-                                                  image: DecorationImage(
-                                                    fit: BoxFit.cover,
-                                                    image: const AssetImage(
-                                                        'assets/images/default-avatar.jpg'),
-                                                    onError: (exception,
-                                                        stackTrace) {},
-                                                  ),
-                                                ),
-                                              )
-                                            : Container(
-                                                width: 30,
-                                                height: 30,
-                                                decoration: BoxDecoration(
-                                                  shape: BoxShape.circle,
-                                                  image: DecorationImage(
-                                                    fit: BoxFit.cover,
-                                                    image: NetworkImage(employee.avatar),
-                                                    onError: (exception,
-                                                        stackTrace) {},
-                                                  ),
-                                                ),
-                                              )
-                                        : employer.logo == ""
-                                            ? Container(
-                                                width: 30,
-                                                height: 30,
-                                                decoration: BoxDecoration(
-                                                  shape: BoxShape.circle,
-                                                  image: DecorationImage(
-                                                    fit: BoxFit.cover,
-                                                    image: const AssetImage(
-                                                        'assets/images/default-avatar.jpg'),
-                                                    onError: (exception,
-                                                        stackTrace) {},
-                                                  ),
-                                                ),
-                                              )
-                                            : Container(
-                                                width: 30,
-                                                height: 30,
-                                                decoration: BoxDecoration(
-                                                  shape: BoxShape.circle,
-                                                  image: DecorationImage(
-                                                    fit: BoxFit.cover,
-                                                    image: NetworkImage(
-                                                        employer.logo),
-                                                    onError: (exception,
-                                                        stackTrace) {},
-                                                  ),
-                                                ),
-                                              ),
+                                    // widget.roleName == "Employee"
+                                    //     ? employee.avatar == ""
+                                    //         ? Container(
+                                    //             width: 30,
+                                    //             height: 30,
+                                    //             decoration: BoxDecoration(
+                                    //               shape: BoxShape.circle,
+                                    //               image: DecorationImage(
+                                    //                 fit: BoxFit.cover,
+                                    //                 image: const AssetImage(
+                                    //                     'assets/images/default-avatar.jpg'),
+                                    //                 onError: (exception,
+                                    //                     stackTrace) {},
+                                    //               ),
+                                    //             ),
+                                    //           )
+                                    //         : Container(
+                                    //             width: 30,
+                                    //             height: 30,
+                                    //             decoration: BoxDecoration(
+                                    //               shape: BoxShape.circle,
+                                    //               image: DecorationImage(
+                                    //                 fit: BoxFit.cover,
+                                    //                 image: NetworkImage(employee.avatar),
+                                    //                 onError: (exception,
+                                    //                     stackTrace) {},
+                                    //               ),
+                                    //             ),
+                                    //           )
+                                    //     : employer.logo == ""
+                                    //         ? Container(
+                                    //             width: 30,
+                                    //             height: 30,
+                                    //             decoration: BoxDecoration(
+                                    //               shape: BoxShape.circle,
+                                    //               image: DecorationImage(
+                                    //                 fit: BoxFit.cover,
+                                    //                 image: const AssetImage(
+                                    //                     'assets/images/default-avatar.jpg'),
+                                    //                 onError: (exception,
+                                    //                     stackTrace) {},
+                                    //               ),
+                                    //             ),
+                                    //           )
+                                    //         : Container(
+                                    //             width: 30,
+                                    //             height: 30,
+                                    //             decoration: BoxDecoration(
+                                    //               shape: BoxShape.circle,
+                                    //               image: DecorationImage(
+                                    //                 fit: BoxFit.cover,
+                                    //                 image: NetworkImage(
+                                    //                     employer.logo),
+                                    //                 onError: (exception,
+                                    //                     stackTrace) {},
+                                    //               ),
+                                    //             ),
+                                    //           ),
                                     const SizedBox(
                                       width: 10,
                                     ),
                                     widget.roleName == "Employee"
-                                        ? SizedBox(
-                                          width: 35,
-                                          child: Text(splitName(employee.fullName),
-                                              style: const TextStyle(
-                                                  fontSize: 15,
-                                                  fontFamily: 'Comfortaa',
-                                                  color: AppColors.green,
-                                                  fontWeight: FontWeight.bold),
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                              ),
-                                        )
-                                        : SizedBox(
-                                          width: 35,
-                                          child: Text(splitName(employer.companyName),
-                                              style: const TextStyle(
-                                                  fontSize: 15,
-                                                  fontFamily: 'Comfortaa',
-                                                  color: AppColors.green,
-                                                  fontWeight: FontWeight.bold),
-                                                  overflow: TextOverflow.ellipsis,
-                                              ),
-                                        ),
+                                        ? Text(splitName(employee.fullName),
+                                            style: const TextStyle(
+                                                fontSize: 15,
+                                                fontFamily: 'Comfortaa',
+                                                color: AppColors.green,
+                                                fontWeight: FontWeight.bold))
+                                        : Text(splitName(employer.companyName),
+                                            style: const TextStyle(
+                                                fontSize: 15,
+                                                fontFamily: 'Comfortaa',
+                                                color: AppColors.green,
+                                                fontWeight: FontWeight.bold)),
                                   ],
                                 ),
                               ),

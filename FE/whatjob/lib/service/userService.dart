@@ -38,7 +38,6 @@ class UserService {
         },
         body: jsonEncode(userData),
       );
-      print(response.body);
       return response;
     } catch (e) {
       print('Failed to login user. Error: $e');

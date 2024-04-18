@@ -1,6 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:whatjob/CVsubmit/congrate.dart';
 import 'package:whatjob/CVsubmit/submitForm.dart';
 import 'package:whatjob/employee/cvDetail.dart';
@@ -13,8 +12,9 @@ import 'package:whatjob/signup/signupEmployee.dart';
 import 'package:whatjob/signup/signupEmployer.dart';
 import 'package:whatjob/login/splashScreen.dart';
 
+
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: const FirebaseOptions(
       apiKey: 'AIzaSyA-jb9J27ArBrzGChVuJemdOqmgZxgWiHY',
@@ -25,7 +25,7 @@ Future<void> main() async {
       appId: '1:1049009016949:android:3aa88260719a2baf89283c',
     ),
   );
-
+  
   runApp(const MyApp());
 }
 

@@ -448,26 +448,26 @@ class _SubmitFormState extends State<SubmitForm> {
                           ],
                         )
                       : Container()
-                      // : ElevatedButton(
-                      //     onPressed: () {
-                      //       _openFilePicker();
-                      //     },
-                      //     style: ElevatedButton.styleFrom(
-                      //       shape: RoundedRectangleBorder(
-                      //         borderRadius: BorderRadius.circular(13),
-                      //       ),
-                      //       backgroundColor: AppColors.green,
-                      //     ),
-                      //     child: const Text(
-                      //       'Chọn file CV (.pdf)',
-                      //       style: TextStyle(
-                      //         color: Colors.white,
-                      //         fontSize: 15,
-                      //         fontFamily: "Comfortaa",
-                      //         fontWeight: FontWeight.bold,
-                      //       ),
-                      //     ),
-                      //   ),
+                  // : ElevatedButton(
+                  //     onPressed: () {
+                  //       _openFilePicker();
+                  //     },
+                  //     style: ElevatedButton.styleFrom(
+                  //       shape: RoundedRectangleBorder(
+                  //         borderRadius: BorderRadius.circular(13),
+                  //       ),
+                  //       backgroundColor: AppColors.green,
+                  //     ),
+                  //     child: const Text(
+                  //       'Chọn file CV (.pdf)',
+                  //       style: TextStyle(
+                  //         color: Colors.white,
+                  //         fontSize: 15,
+                  //         fontFamily: "Comfortaa",
+                  //         fontWeight: FontWeight.bold,
+                  //       ),
+                  //     ),
+                  //   ),
                 ],
               )
             ],
@@ -544,6 +544,7 @@ class _SubmitFormState extends State<SubmitForm> {
                                       widget.token, widget.postId);
                                   final responseData =
                                       json.decode(response.body);
+                                  print(responseData);
                                   final int state = responseData['state'];
                                   if (state == 1) {
                                     Navigator.push(

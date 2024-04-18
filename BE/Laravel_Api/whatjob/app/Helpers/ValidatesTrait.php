@@ -7,9 +7,9 @@ use Illuminate\Support\Facades\Validator;
 trait ValidatesTrait{
 
 
-    public function validate(Request $request)
+    public function validate(array $data)
     {
-        $validator = Validator::make($request->all(), $this->rules);
+        $validator = Validator::make($data, $this->rules ?? []);
 
         if ($validator->fails()) {
             $errors = $validator->errors()->toArray();

@@ -10,15 +10,27 @@ class RAService {
   static Future<http.Response> newPost(
       Map<String, dynamic> userData, String token) async {
     try {
-      final response = await http.post(
-        Uri.parse('${BaseURL.baseURL}/api/ra/upload'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': 'Bearer $token',
-        },
-        body: jsonEncode(userData),
-      );
-      print(userData);
+      var response;
+      if (BaseURL.serve == 'php') {
+        response = await http.post(
+          Uri.parse('${BaseURL.baseURL}/api/ra'),
+          headers: <String, String>{
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: jsonEncode(userData),
+        );
+      } else {
+        response = await http.post(
+          Uri.parse('${BaseURL.baseURL}/api/ra/upload'),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+            'Authorization': 'Bearer $token',
+          },
+          body: jsonEncode(userData),
+        );
+      }
+      print(response.body);
 
       if (response.statusCode == 200) {
         print('Upload ra successfully');
@@ -49,10 +61,20 @@ class RAService {
   //   }
   // }
 
-  static Future<List<PostClass>> fetchPublicItems() async {
-    final response =
-        await http.get(Uri.parse('${BaseURL.baseURL}/api/ra/public/all'));
-
+  static Future<List<PostClass>> fetchPublicItems({String token = ''}) async {
+    var response;
+    if (BaseURL.serve == 'php') {
+      response = await http.get(
+        Uri.parse('${BaseURL.baseURL}/api/ra/public/all'),
+        headers: <String, String>{
+          'Authorization': 'Bearer $token',
+        },
+      );
+    } else {
+      final response =
+          await http.get(Uri.parse('${BaseURL.baseURL}/api/ra/public/all'));
+    }
+    print(response.body);
     if (response.statusCode == 200) {
       final jsonData = jsonDecode(response.body);
 
@@ -72,10 +94,21 @@ class RAService {
     }
   }
 
-  static Future<http.Response> fetchRADetail(String id) async {
-    final response =
-        await http.get(Uri.parse('${BaseURL.baseURL}/api/ra/public?id=$id'));
-
+  static Future<http.Response> fetchRADetail(String id,
+      {String? token = ''}) async {
+    var response;
+    if (BaseURL.serve == 'php') {
+      response = await http.get(
+        Uri.parse('${BaseURL.baseURL}/api/ra/$id'),
+        headers: <String, String>{
+          'Authorization': 'Bearer $token',
+        },
+      );
+    } else {
+      final response =
+          await http.get(Uri.parse('${BaseURL.baseURL}/api/ra/public?id=$id'));
+    }
+    print(response.body);
     if (response.statusCode == 200) {
       return response;
     } else {
@@ -85,16 +118,15 @@ class RAService {
 
   static Future<http.Response> apply(String token, String raId) async {
     try {
-      final response = await http.post(
-        Uri.parse('${BaseURL.baseURL}/api/ra/apply'),
-        headers: <String, String>{
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode({'raId': raId})
-      );
+      final response =
+          await http.post(Uri.parse('${BaseURL.baseURL}/api/ra/apply'),
+              headers: <String, String>{
+                'Authorization': 'Bearer $token',
+                'Content-Type': 'application/json; charset=UTF-8',
+              },
+              body: jsonEncode({'raId': raId}));
 
-      print(response.statusCode);
+      print(response.body);
       if (response.statusCode == 200) {
         print('Apply successfully');
         print('Response: ${response.body}');

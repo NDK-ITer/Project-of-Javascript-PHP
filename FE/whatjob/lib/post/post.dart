@@ -13,16 +13,13 @@ class Post extends StatefulWidget {
   final String email;
   final Employee employee;
 
-  const Post({
-    super.key, 
-    required this.post,
-    required this.token,
-    required this.roleName,
-    required this.email,
-    required this.employee,
-    
-  
-  });
+  const Post(
+      {super.key,
+      required this.post,
+      required this.token,
+      required this.roleName,
+      required this.email,
+      required this.employee});
 
   @override
   _PostState createState() => _PostState();
@@ -218,7 +215,6 @@ class _PostState extends State<Post> {
                                 email: widget.email,
                                 roleName: widget.roleName,
                                 employee: widget.employee,
-                                
                               )),
                     );
                   },

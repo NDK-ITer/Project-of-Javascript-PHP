@@ -265,6 +265,7 @@ class _EmployerEditInfoState extends State<EmployerEditInfo> {
                         'hotLine': _phoneController.text,
                         'address': _addressController.text,
                       };
+                      print(newData.toString());
                       final response = await EmployerService.updateInfo(
                           widget.token, newData);
                       final responseData = json.decode(response.body);
@@ -277,7 +278,7 @@ class _EmployerEditInfoState extends State<EmployerEditInfo> {
                                     token: widget.token,
                                     email: widget.email,
                                     roleName: widget.roleName,
-                                    
+
                                   )),
                         );
                       }

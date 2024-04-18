@@ -1,3 +1,4 @@
 class BaseURL {
-  static const String baseURL = 'http://10.17.13.141:7000';
+  static const String baseURL = 'http://192.168.6.61:7000';
+  static const String serve = 'php';
 }

@@ -34,7 +34,7 @@ class _CongrateState extends State<Congrate> {
               children: [
                 Padding(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 30, vertical: 80),
+                  const EdgeInsets.symmetric(horizontal: 30, vertical: 80),
                   child: SvgPicture.asset(
                     'assets/svg/submit_congrate.svg',
                     height: 200,
@@ -115,10 +115,10 @@ class _CongrateState extends State<Congrate> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => Home(
-                                        token: widget.token,
-                                        email: widget.email,
-                                        roleName: widget.roleName,
-                                      )),
+                                    token: widget.token,
+                                    email: widget.email,
+                                    roleName: widget.roleName,
+                                  )),
                             );
                           },
                           style: ElevatedButton.styleFrom(

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:whatjob/CVsubmit/submitForm.dart';
 import 'package:whatjob/model/employee.dart';
 import 'package:whatjob/model/raDetail.dart';
@@ -18,7 +19,6 @@ class PostDetail extends StatefulWidget {
   final String roleName;
   final String email;
   final Employee employee;
-
   const PostDetail({
     super.key,
     required this.postId,
@@ -47,7 +47,10 @@ class _PostDetailState extends State<PostDetail> {
 
   Future<void> _loadRADetail() async {
     try {
-      final raDetailRp = (await RAService.fetchRADetail(widget.postId));
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString("token");
+      final raDetailRp =
+          (await RAService.fetchRADetail(widget.postId, token: token));
       print(raDetailRp.body);
       final responseData = json.decode(raDetailRp.body);
       final userDataJson = responseData['data'];
@@ -93,7 +96,7 @@ class _PostDetailState extends State<PostDetail> {
                                   size: 30,
                                 ),
                                 onPressed: () {
-                                  Navigator.of(context).pop();
+                                  // Navigator.of(context).pop();
                                 },
                               ),
                             ),
@@ -182,7 +185,7 @@ class _PostDetailState extends State<PostDetail> {
                           width: MediaQuery.of(context).size.width,
                           height: 300,
                           child: Image.network(
-                            raDetail.image,
+                            widget.logo,
                             fit: BoxFit.fitWidth,
                           ),
                         )),
@@ -689,13 +692,14 @@ class _PostDetailState extends State<PostDetail> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => SubmitForm(
-                                              employee: widget.employee,
-                                              token: widget.token,
-                                              email: widget.email,
-                                              roleName: widget.roleName,
-                                              postId: widget.postId,
-                                            )),
+                                      builder: (context) => SubmitForm(
+                                        token: widget.token,
+                                        roleName: widget.roleName,
+                                        email: widget.email,
+                                        employee: widget.employee,
+                                        postId: widget.postId,
+                                      ),
+                                    ),
                                   );
                                 },
                                 style: ElevatedButton.styleFrom(

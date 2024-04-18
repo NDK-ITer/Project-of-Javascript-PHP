@@ -15,8 +15,8 @@ return new class extends Migration
         if(Schema::hasTable('roles')) return;
         Schema::create('roles', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->String('Name')-> nullable();
-            $table->String('NormalizeName')-> nullable();
+            $table->String('name')-> nullable();
+            $table->String('normalizeName')-> nullable();
             $table->timestamps();
         });
     }

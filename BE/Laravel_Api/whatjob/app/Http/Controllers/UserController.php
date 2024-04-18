@@ -34,7 +34,14 @@ class UserController extends Controller
 
     public function delete(Request $request, $id)
     {
-        $result = UserService::delete($request, $id);
+        $result = UserService::delete($request->all(), $id);
+
+        return $result;
+    }
+
+    public function lock(Request $request, $id)
+    {
+        $result = UserService::lock($request->all(), $id);
 
         return $result;
     }

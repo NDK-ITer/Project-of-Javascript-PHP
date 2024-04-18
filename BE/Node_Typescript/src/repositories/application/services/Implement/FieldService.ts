@@ -73,4 +73,18 @@ export default class FieldService extends BaseService {
             mess: `Cập nhập thất bại`
         }
     }
+
+    public async GetById(id: string): Promise<any> {
+        const field = await this.uow.FieldRepository.getById(id)
+        if(field) {
+            return{
+                state: 1,
+                data: field
+            }
+        }
+        return{
+            state: 0,
+            mess: `Không tìm thấy`
+        }
+    }
 }

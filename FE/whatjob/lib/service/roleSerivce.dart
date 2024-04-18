@@ -6,6 +6,8 @@ import 'package:whatjob/model/role.dart';
 
 class RoleService {
   static Future<List<Role>> fetchRoles() async {
+
+
     final response = await http.get(Uri.parse('${BaseURL.baseURL}/api/all-role'));
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = jsonDecode(response.body)['data'];

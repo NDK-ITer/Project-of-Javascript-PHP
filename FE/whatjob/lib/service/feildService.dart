@@ -3,9 +3,18 @@ import 'package:http/http.dart' as http;
 import 'package:whatjob/baseULR.dart';
 
 class FieldService {
-  static Future<List<dynamic>> fetchFields() async {
+  static Future<List<dynamic>> fetchFields({String? token = ''}) async {
     try {
-      final response = await http.get(Uri.parse('${BaseURL.baseURL}/api/field'));
+      var response;
+      if(BaseURL.serve == 'php'){
+        response = await http.get(Uri.parse('${BaseURL.baseURL}/api/fields'),headers: <String, String>{
+          'Authorization': 'Bearer $token',
+        },);
+      }
+      else{
+        response = await http.get(Uri.parse('${BaseURL.baseURL}/api/field'));
+      }
+      print(response.body);
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body)['data']['fields'];
         return jsonData;

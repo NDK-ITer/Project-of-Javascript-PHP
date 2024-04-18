@@ -21,8 +21,8 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+  TextEditingController _emailController = TextEditingController(text: 'b@gmail.com');
+  TextEditingController _passwordController = TextEditingController(text: '123456789');
 
   @override
   Widget build(BuildContext context) {
@@ -257,19 +257,29 @@ class _LoginState extends State<Login> {
 
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
+
         final int state = responseData['state'];
+
         final userDataJson = responseData['data'];
+
         final token = responseData['token'];
+        print(userDataJson);
         final User user = User.fromJson(userDataJson);
         String roleName = "";
 
         if (state == 1) {
-          List<Role> roles = await RoleService.fetchRoles();
-          roles.forEach((role) {
-            if (role.id == user.roleId) {
-              roleName = role.name;
-            }
-          });
+
+          if(BaseURL.serve == 'php'){
+            roleName = userDataJson['role'];
+          }
+          else{
+            List<Role> roles = await RoleService.fetchRoles();
+            roles.forEach((role) {
+              if (role.id == user.roleId) {
+                roleName = role.name;
+              }
+            });
+          }
           SharedPreferences prefs = await SharedPreferences.getInstance();
           await prefs.setString("token", token);
           await prefs.setString("roleName", roleName);

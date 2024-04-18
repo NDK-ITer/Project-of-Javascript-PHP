@@ -40,7 +40,7 @@ export default class EmployerService extends BaseService{
         if(!result){
             return{
                 state: 0,
-                mess: `không có nhà tuyển dụng với id: ${id}}`
+                mess: `không tìm thấy nhà tuyển dụng với id: ${id}`
             }
         }
         return{

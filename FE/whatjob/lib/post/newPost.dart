@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:whatjob/employer/employerHomeInfo.dart';
 import 'package:whatjob/home/home.dart';
 import 'package:whatjob/model/field.dart';
@@ -116,7 +117,9 @@ class _NewPostState extends State<NewPost> {
   late Field selectedField = Field(id: '', name: '');
 
   Future<void> _fetchFields() async {
-    final fieldsJson = await FieldService.fetchFields();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString("token");
+    final fieldsJson = await FieldService.fetchFields(token: token);
     fields = fieldsJson.map((fieldJson) => Field.fromJson(fieldJson)).toList();
     setState(() {
       selectedField = fields.isNotEmpty ? fields[0] : Field(id: '', name: '');

@@ -10,10 +10,11 @@ export default class RAService extends BaseService {
     public async Create(employerId: string, fieldId: string, data: {
         name: string,
         description: string,
-        requirement: string,
+        // requirement: string,
         image: string,
         salary: string,
         addressWork: string,
+        position: string,
         endSubmission: Date,
         ageEmployee: string,
         countEmployee: string,
@@ -21,15 +22,18 @@ export default class RAService extends BaseService {
         yearOfExpensive: string,
         degree: string,
     }): Promise<any> {
-        const result = await this.uow.RARepository.create({
-            Id: v4.toString(),
+
+        const newRA = {
+            Id: v4().toString(),
             Name: data.name,
             Description: data.description,
-            Requirement: data.requirement,
-            Image: data.requirement,
+            DateUpload: Date.now(),
+            Requirement: "",
+            Image: data.image,
             Salary: data.salary,
             AddressWork: data.addressWork,
-            IsApproved: false,
+            Position: data.position,
+            IsApproved: true,
             View: 0,
             EndSubmission: data.endSubmission,
             AgeEmployee: data.ageEmployee,
@@ -39,7 +43,8 @@ export default class RAService extends BaseService {
             Degree: data.degree,
             EmployerId: employerId,
             FieldId: fieldId
-        })
+        }
+        const result = await this.uow.RARepository.create(newRA)
         if (!result) {
             return {
                 state: 0,
@@ -116,13 +121,13 @@ export default class RAService extends BaseService {
         }
     }
 
-    public async GetPublic(): Promise<any> {
+    public async GetPublic(limit: number, page: number): Promise<any> {
         const where: any = {
-            EndSubmission: { [Op.gt]: new Date() },
+            // EndSubmission: { [Op.gt]: new Date() },
             IsApproved: true
         }
         const result = await this.uow.RARepository.filter(where);
-        if (!result || result.length < 1) {
+        if (!result || result.length <= 0) {
             return {
                 state: 0,
                 mess: `Không có tin tuyển dụng`
@@ -147,6 +152,20 @@ export default class RAService extends BaseService {
         return {
             state: 1,
             data: result
+        }
+    }
+
+    public async SetApproved(id: string): Promise<any> {
+        const ra = await this.uow.RARepository.update(id, { IsApproved: true })
+        if (!ra) {
+            return {
+                state: 1,
+                mess: `Có lỗi khi duyệt bài`
+            }
+        }
+        return {
+            state: 1,
+            data: ra
         }
     }
 }

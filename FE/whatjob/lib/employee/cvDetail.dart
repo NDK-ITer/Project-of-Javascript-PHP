@@ -32,7 +32,6 @@ class CVDetail extends StatefulWidget {
 class _CVDetailState extends State<CVDetail> {
   String _pdfPath = "";
   bool _isEdit = false;
-  
 
   @override
   void initState() {

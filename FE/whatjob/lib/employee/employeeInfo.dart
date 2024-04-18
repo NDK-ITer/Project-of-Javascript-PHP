@@ -51,7 +51,7 @@ class _EmployeeInfoState extends State<EmployeeInfo> {
                         size: 30,
                       ),
                       onPressed: () {
-                        Navigator.of(context).pop();
+                        //Navigator.of(context).pop();
                       },
                     ),
                     const SizedBox(
@@ -186,23 +186,18 @@ class _EmployeeInfoState extends State<EmployeeInfo> {
                                       ),
                                     ),
                                   ),
-                                  Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            top: 20, right: 5),
-                                        child: Text(
-                                          widget.employee.introduction,
-                                          style: const TextStyle(
-                                            fontSize: 13,
-                                            fontFamily: "Comfortaa",
-                                          ),
-                                          maxLines: 2,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        top: 20, right: 5),
+                                    child: Text(
+                                      widget.employee.introduction ?? "",
+                                      style: const TextStyle(
+                                        fontSize: 13,
+                                        fontFamily: "Comfortaa",
                                       ),
-                                    ],
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
                                 ],
                               ),
