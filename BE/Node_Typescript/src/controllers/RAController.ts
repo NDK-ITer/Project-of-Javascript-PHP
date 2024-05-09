@@ -77,6 +77,39 @@ export default class RAController {
             res.status(500)
         }
     }
+    
+    static async GetByEmployer(req: any, res: Response): Promise<any> {
+        try {
+            const limit = req.query.limit ? parseInt(req.query.limit as string) : parseInt(process.env.LIMIT_ELEMENT as string);
+            const page = req.query.page ? parseInt(req.query.page as string) : 1;
+            const employerId = req.params.employerId;
+            const result = await UOWService.RAService.GetByEmployer(limit, page, employerId)
+            const listRA: any[] = []
+            if (result.state == 1) {
+                for (const item of result.data) {
+                    let employer: any = await UOWService.EmployerService.GetById(item.EmployerId);
+                    employer = employer.data.employer;
+                    const element = {
+                        id: item.Id,
+                        companyName: employer.CompanyName,
+                        companyLogo: employer.Logo,
+                        name: item.Name,
+                        description: item.Description,
+                        salary: item.Salary,
+                        image: item.Image,
+                    };
+                    listRA.push(element);
+                }
+            }
+            res.status(200).json({
+                state: result.state,
+                data: listRA,
+                mess: result.mess
+            })
+        } catch (error) {
+            res.status(500)
+        }
+    }
     //employer
     static async Upload(req: any, res: Response): Promise<any> {
         try {

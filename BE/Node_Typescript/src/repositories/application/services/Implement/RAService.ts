@@ -141,6 +141,27 @@ export default class RAService extends BaseService {
         }
     }
 
+    public async GetByEmployer(limit: number, page: number, id: string): Promise<any> {
+        const where: any = {
+            // EndSubmission: { [Op.gt]: new Date() },
+            IsApproved: true,
+            EmployerId: id
+        }
+        const result = await this.uow.RARepository.filter(where);
+        if (!result || result.length <= 0) {
+            return {
+                state: 0,
+                mess: `Không có tin tuyển dụng`
+            }
+        }
+        else {
+            return {
+                state: 1,
+                data: result
+            }
+        }
+    }
+
     public async GetAll(limit: number, page: number): Promise<any> {
         const result = await this.uow.RARepository.getAll(limit, page)
         if (!result) {

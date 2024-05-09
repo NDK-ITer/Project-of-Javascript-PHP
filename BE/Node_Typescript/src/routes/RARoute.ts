@@ -72,6 +72,7 @@ raRoute.get('/public', RAController.GetById)
  *                  description: Internal server error
  */
 raRoute.get('/public/all', RAController.GetPublic)
+raRoute.get('/public/:employerId', RAController.GetByEmployer)
 /**
  * @swagger
  * /ra/upload:
