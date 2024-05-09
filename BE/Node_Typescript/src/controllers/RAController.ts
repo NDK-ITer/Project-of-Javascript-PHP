@@ -55,7 +55,7 @@ export default class RAController {
             if (result.state == 1) {
                 for (const item of result.data) {
                     let employer: any = await UOWService.EmployerService.GetById(item.EmployerId);
-                    employer = employer.data;
+                    employer = employer.data.employer;
                     const element = {
                         id: item.Id,
                         companyName: employer.CompanyName,
@@ -68,7 +68,6 @@ export default class RAController {
                     listRA.push(element);
                 }
             }
-            console.log("list ra", listRA)
             res.status(200).json({
                 state: result.state,
                 data: listRA,
