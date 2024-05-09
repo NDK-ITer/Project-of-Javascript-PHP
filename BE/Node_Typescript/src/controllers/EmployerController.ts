@@ -46,11 +46,12 @@ export default class EmployerController {
                 res.status(200).json({
                     state: result.state,
                     data: {
-                        companyName: data.CompanyName,
-                        logo: data.Logo,
-                        description: data.Description,
-                        hotLine: data.Hotline,
-                        address: data.Address
+                        companyName: data.employer.CompanyName,
+                        logo: data.employer.Logo,
+                        description: data.employer.Description,
+                        hotLine: data.employer.Hotline,
+                        address: data.employer.Address,
+                        listRA: data.listRA
                     }
                 })
             }
