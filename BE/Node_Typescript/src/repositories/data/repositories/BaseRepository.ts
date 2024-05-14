@@ -1,4 +1,4 @@
-import { FindOptions} from 'sequelize';
+import { FindOptions } from 'sequelize';
 import { Model, ModelCtor } from 'sequelize-typescript';
 
 abstract class BaseRepository<T extends Model> {
@@ -15,7 +15,7 @@ abstract class BaseRepository<T extends Model> {
         return await this.model.create(data);
     }
 
-    async getAll(page?: number, limit?: number): Promise<T[]> {
+    async getAll(limit?: number, page?: number): Promise<T[]> {
         if (page && limit) {
             const offset = (page - 1) * limit;
             return await this.model.findAll({ limit, offset });
@@ -45,12 +45,21 @@ abstract class BaseRepository<T extends Model> {
         return await this.model.findOne({ where: whereClause });
     }
 
-    async filter(filterObj: Partial<T>): Promise<T[]> {
+    async filter(filterObj: Partial<T>, limit?: number, page?: number): Promise<T[]> {
         const whereClause: any = {};
         for (const key in filterObj) {
             whereClause[key] = filterObj[key];
         }
-        return await this.model.findAll({ where: whereClause });
+        const options: any = { where: whereClause };
+
+        if (page !== undefined && limit !== undefined) {
+            if (page > 0 && limit > 0) {
+                const offset = (page - 1) * limit;
+                options.limit = limit;
+                options.offset = offset;
+            }
+        }
+        return await this.model.findAll(options);
     }
 
     async delete(id: string): Promise<boolean> {

@@ -126,7 +126,7 @@ export default class RAService extends BaseService {
             // EndSubmission: { [Op.gt]: new Date() },
             IsApproved: true
         }
-        const result = await this.uow.RARepository.filter(where);
+        const result = await this.uow.RARepository.filter(where, limit, page);
         if (!result || result.length <= 0) {
             return {
                 state: 0,
